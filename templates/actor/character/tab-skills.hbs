@@ -23,6 +23,7 @@
           <th>{{localize "B5.Field.abilityMod"}}</th>
           <th>{{localize "B5.Field.ranks"}}</th>
           <th>{{localize "B5.Field.misc"}}</th>
+          <th data-tooltip="B5.Tooltip.raceFeatBonus">{{localize "B5.Field.bonus"}}</th>
           <th>{{localize "B5.Field.total"}}</th>
           <th></th>
         </tr>
@@ -34,11 +35,15 @@
               {{row.label}}{{#if row.acp}}<span class="b5-acp-mark" data-tooltip="B5.Tooltip.acp">*</span>{{/if}}
             </th>
             <td class="b5-center">{{#if row.untrained}}<i class="fa-solid fa-check"></i>{{/if}}</td>
-            <td class="b5-center">
-              <input type="checkbox"
-                     name="{{#if row.isItem}}{{else}}system.skills.{{row.id}}.isClassSkill{{/if}}"
-                     data-item-field="isClassSkill" {{checked row.isClassSkill}}
-                     {{#if row.isItem}}disabled{{/if}}>
+            <td class="b5-center" {{#if row.autoClassSkill}}data-tooltip="B5.Tooltip.autoClassSkill"{{/if}}>
+              {{#if row.autoClassSkill}}
+                <i class="fa-solid fa-lock b5-auto-flag"></i>
+              {{else}}
+                <input type="checkbox"
+                       name="{{#if row.isItem}}{{else}}system.skills.{{row.id}}.isClassSkill{{/if}}"
+                       {{checked row.classSkill}}
+                       {{#if row.isItem}}disabled{{/if}}>
+              {{/if}}
             </td>
             <td class="b5-center">{{b5AbilityAbbr row.ability}}</td>
             <td class="b5-readonly">{{b5Signed (lookup (lookup ../system.abilities row.ability) "mod")}}</td>
@@ -56,6 +61,7 @@
                 <input type="number" name="system.skills.{{row.id}}.misc" value="{{row.misc}}">
               {{/if}}
             </td>
+            <td class="b5-readonly">{{#if row.bonus}}{{b5Signed row.bonus}}{{else}}—{{/if}}</td>
             <td class="b5-total">{{b5Signed row.total}}</td>
             <td class="b5-row-actions">
               {{#if row.isItem}}

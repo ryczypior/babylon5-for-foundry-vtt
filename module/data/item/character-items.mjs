@@ -11,6 +11,29 @@ const common = () => ({
   internalId: str()            // stable id for compendium lookups
 });
 
+/**
+ * The numeric, always-on effects an item grants. Races and feats share this shape so the
+ * actor can apply both through one code path.
+ *
+ * Deliberately only *unconditional* bonuses live here. Situational ones — Abbai +8 Athletics
+ * when swimming, Narn +1 to hit Centauri, Veteran Spacehand's +1 aboard spacecraft — stay in
+ * the description, because applying them silently would be wrong more often than right.
+ */
+const bonuses = () => new fields.SchemaField({
+  abilities: new fields.ObjectField({ initial: {} }),   // { str: 2, cha: -2 } — races only
+  skills: new fields.ObjectField({ initial: {} }),      // { bluff: 2 } — plain or subtyped skill key
+  saves: new fields.ObjectField({ initial: {} }),       // { fort: 1 }
+  initiative: int(),
+  dvDodge: int(),
+  hp: int(),
+  naturalDr: int(),
+  acpReduction: int(),                                  // Armour Familiarity: 2
+  acpNatural: int(),                                    // Drazi Dense Scales: 1
+  speedOverride: new fields.NumberField({ required: true, integer: true, nullable: true, initial: null }),
+  /** Bonus applied to whichever skill the item's `choice.value` names (Skill Focus). */
+  chosenSkill: int()
+});
+
 /* -------------------------------------------- */
 
 /**
@@ -81,7 +104,8 @@ export class RaceData extends TypeDataModel {
         new fields.SchemaField({ name: str(), description: html() }),
         { initial: [] }
       ),
-      languages: new fields.ArrayField(str(), { initial: [] })
+      languages: new fields.ArrayField(str(), { initial: [] }),
+      bonuses: bonuses()
     };
   }
 }
@@ -155,7 +179,8 @@ export class FeatData extends TypeDataModel {
         perDay: int(),
         duration: str()
       }),
-      benefit: html()
+      benefit: html(),
+      bonuses: bonuses()
     };
   }
 }

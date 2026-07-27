@@ -2,7 +2,6 @@
   "TYPES.Actor.character": "Postać",
   "TYPES.Actor.npc": "BN",
   "TYPES.Actor.craft": "Jednostka",
-
   "TYPES.Item.class": "Klasa",
   "TYPES.Item.race": "Rasa",
   "TYPES.Item.skill": "Umiejętność",
@@ -16,13 +15,11 @@
   "TYPES.Item.weaponAccessory": "Akcesorium do broni",
   "TYPES.Item.craftWeapon": "Broń jednostki",
   "TYPES.Item.craftFeature": "Cecha jednostki",
-
   "B5.Sheet.Character": "Karta postaci",
   "B5.Sheet.Npc": "Karta BN",
   "B5.Sheet.Craft": "Karta jednostki",
   "B5.Sheet.Item": "Karta przedmiotu",
   "B5.EditImage": "Zmień obrazek",
-
   "B5.Ability.str.long": "Siła",
   "B5.Ability.dex.long": "Zręczność",
   "B5.Ability.con.long": "Kondycja",
@@ -35,18 +32,15 @@
   "B5.Ability.int.abbr": "Int",
   "B5.Ability.wis.abbr": "Roz",
   "B5.Ability.cha.abbr": "Cha",
-
   "B5.Save.fort": "Wytrwałość",
   "B5.Save.ref": "Refleks",
   "B5.Save.will": "Wola",
-
   "B5.Attack.closeCombat": "Walka wręcz",
   "B5.Attack.personalRanged": "Broń dystansowa",
   "B5.Attack.spaceGunnery": "Walka kosmiczna (działa)",
   "B5.Attack.spaceSoloCraft": "Walka kosmiczna (myśliwiec)",
   "B5.Attack.feint": "Zmylenie",
   "B5.Attack.resistFeint": "Odporność na zmylenie",
-
   "B5.Skill.acrobatics": "Akrobatyka",
   "B5.Skill.appraise": "Wycena",
   "B5.Skill.athletics": "Atletyka",
@@ -70,7 +64,6 @@
   "B5.Skill.subterfuge": "Sztuczki",
   "B5.Skill.technical": "Technika",
   "B5.Skill.telepathy": "Telepatia",
-
   "B5.Tab.summary": "Podsumowanie",
   "B5.Tab.combat": "Walka",
   "B5.Tab.skills": "Umiejętności",
@@ -84,7 +77,6 @@
   "B5.Tab.weapons": "Uzbrojenie",
   "B5.Tab.crew": "Załoga",
   "B5.Tab.damage": "Uszkodzenia",
-
   "B5.Section.abilities": "Atrybuty",
   "B5.Section.saves": "Rzuty obronne",
   "B5.Section.classes": "Klasy",
@@ -120,7 +112,6 @@
   "B5.Section.classNumbers": "Wartości klasowe",
   "B5.Section.abilityModifiers": "Modyfikatory atrybutów",
   "B5.Section.ammo": "Amunicja",
-
   "B5.Field.name": "Nazwa",
   "B5.Field.player": "Gracz",
   "B5.Field.race": "Rasa",
@@ -269,15 +260,12 @@
   "B5.Field.crewTraining": "Trening",
   "B5.Field.complement": "Liczebność",
   "B5.Field.passengers": "Pasażerowie",
-
   "B5.Track.good": "Dobry",
   "B5.Track.average": "Średni",
   "B5.Track.poor": "Słaby",
-
   "B5.FeatCategory.general": "Ogólny",
   "B5.FeatCategory.telepathy": "Telepatyczny",
   "B5.FeatCategory.racial": "Rasowy",
-
   "B5.InfluenceCategory.political": "Polityczne",
   "B5.InfluenceCategory.military": "Wojskowe",
   "B5.InfluenceCategory.criminal": "Przestępcze",
@@ -286,25 +274,21 @@
   "B5.InfluenceCategory.religious": "Religijne",
   "B5.InfluenceCategory.local": "Lokalne",
   "B5.InfluenceCategory.social": "Towarzyskie",
-
   "B5.Legality.unrestricted": "Bez ograniczeń",
   "B5.Legality.restricted": "Reglamentowane",
   "B5.Legality.illegal": "Nielegalne",
-
   "B5.DamageType.bludgeoning": "Obuchowe",
   "B5.DamageType.piercing": "Kłute",
   "B5.DamageType.slashing": "Sieczne",
   "B5.DamageType.energy": "Energetyczne",
   "B5.DamageType.projectile": "Pociskowe",
   "B5.DamageType.special": "Specjalne",
-
   "B5.WeaponCategory.closeCombat": "Walka wręcz",
   "B5.WeaponCategory.exotic": "Egzotyczna",
   "B5.WeaponCategory.grenade": "Granat",
   "B5.WeaponCategory.heavy": "Ciężka",
   "B5.WeaponCategory.pistol": "Pistolet",
   "B5.WeaponCategory.rifle": "Karabin",
-
   "B5.Size.fine": "Drobny",
   "B5.Size.diminutive": "Malutki",
   "B5.Size.tiny": "Mały",
@@ -314,24 +298,20 @@
   "B5.Size.huge": "Wielki",
   "B5.Size.gargantuan": "Ogromny",
   "B5.Size.colossal": "Kolosalny",
-
   "B5.Arc.fore": "Dziób",
   "B5.Arc.aft": "Rufa",
   "B5.Arc.port": "Lewa burta",
   "B5.Arc.starboard": "Prawa burta",
   "B5.Arc.turret": "Wieżyczka",
-
   "B5.Space.cargo": "Ładownia",
   "B5.Space.control": "Sterowanie",
   "B5.Space.crew": "Załoga",
   "B5.Space.engine": "Silniki",
   "B5.Space.hangar": "Hangar",
   "B5.Space.weapons": "Uzbrojenie",
-
   "B5.CraftType.spacecraft": "Statek kosmiczny",
   "B5.CraftType.aircraft": "Statek powietrzny",
   "B5.CraftType.surfaceVehicle": "Pojazd naziemny",
-
   "B5.CraftRole.commander": "Dowódca",
   "B5.CraftRole.pilot": "Pilot",
   "B5.CraftRole.chiefPilot": "Główny pilot",
@@ -342,22 +322,18 @@
   "B5.CraftRole.engineer": "Inżynier",
   "B5.CraftRole.mechanic": "Mechanik",
   "B5.CraftRole.uninvolved": "Bez przydziału",
-
   "B5.CrewGrade.green": "Zielona",
   "B5.CrewGrade.trained": "Wyszkolona",
   "B5.CrewGrade.veteran": "Weterani",
   "B5.CrewGrade.elite": "Elita",
-
   "B5.Discipline.scan": "Skanowanie",
   "B5.Discipline.manipulation": "Manipulacja",
   "B5.Discipline.communication": "Komunikacja",
   "B5.Discipline.perception": "Percepcja",
   "B5.Discipline.assault": "Atak umysłowy",
-
   "B5.Range.close": "Bliski",
   "B5.Range.medium": "Średni",
   "B5.Range.long": "Daleki",
-
   "B5.Condition.blinded": "Oślepiony",
   "B5.Condition.dazed": "Oszołomiony",
   "B5.Condition.dazzled": "Olśniony",
@@ -381,7 +357,6 @@
   "B5.Condition.staggered": "Zamroczony",
   "B5.Condition.stunned": "Ogłuszony ciosem",
   "B5.Condition.unconscious": "Nieprzytomny",
-
   "B5.Hint.abilityBreakdown": "Modyfikatory rasowe i z poziomów są nakładane automatycznie z przedmiotów rasy i klasy.",
   "B5.Hint.iteratives": "Ataki iteracyjne",
   "B5.Hint.flatFooted": "Zachowuje premię klasową do obrony; traci premię ze Zręczności i wszystkie premie z uniku.",
@@ -398,7 +373,6 @@
   "B5.Hint.totalOffence": "Ofensywa łączna = najwyższa Ofensywa + połowa każdego kolejnego trafienia.",
   "B5.Hint.craftDamage": "Każdy punkt obrażeń niszczy jedną przestrzeń konstrukcyjną; jednostka eksploduje przy pancerzu 0.",
   "B5.Hint.dropActorOnStation": "Przypisywanie załogi z aktorów nie jest jeszcze podpięte — w kolejnym etapie.",
-
   "B5.Tooltip.nonlethal": "Liczone osobno; nigdy nie odejmuje się ich od punktów życia.",
   "B5.Tooltip.dv": "10 + premia klasowa do obrony + mod. Zręczności + mod. rozmiaru",
   "B5.Tooltip.dr": "Redukcja obrażeń z pancerza, rasy i innych źródeł",
@@ -424,7 +398,6 @@
   "B5.Tooltip.absorbsDamage": "Zniszczona cecha pochłania 1k4 obrażeń przy wyniku lokacji 12",
   "B5.Tooltip.addGear": "Dodaj wyposażenie",
   "B5.Tooltip.addAmmo": "Dodaj amunicję",
-
   "B5.Empty.classes": "Brak klasy — dodaj ją, by wyliczyć BPA, rzuty obronne i obronę.",
   "B5.Empty.race": "Brak rasy.",
   "B5.Empty.weapons": "Brak broni.",
@@ -435,18 +408,19 @@
   "B5.Empty.telepathicAbilities": "Brak zdolności telepatycznych.",
   "B5.Empty.craftFeatures": "Brak cech.",
   "B5.Empty.station": "puste",
-
   "B5.Warning.multiclassPenalty": "Poziomy klas różnią się o więcej niż jeden — postać dostaje karę −20% PD.",
-
   "B5.Item.New": "Nowy: {type}",
   "B5.Item.DeleteTitle": "Usuń przedmiot",
   "B5.Item.DeleteConfirm": "Usunąć {name}?",
-
   "B5.Roll.SkillCheck": "Test: {skill}",
   "B5.Roll.SaveCheck": "Rzut obronny: {save}",
   "B5.Roll.AttackCheck": "Atak: {line}",
   "B5.Roll.Initiative": "Inicjatywa (test Zręczności)",
   "B5.Roll.InfluenceCheck": "Wpływy: {faction} (2k6)",
   "B5.Roll.WeaponAttack": "Atak bronią: {weapon}",
-  "B5.Roll.WeaponDamage": "Obrażenia: {weapon}"
+  "B5.Roll.WeaponDamage": "Obrażenia: {weapon}",
+  "B5.Field.bonus": "Premia",
+  "B5.Tooltip.raceFeatBonus": "Premie nakładane automatycznie przez rasę i atuty",
+  "B5.Tooltip.autoClassSkill": "Nadana przez klasę lub rasę — nie można odznaczyć",
+  "B5.Hint.autoApplied": "Modyfikatory atrybutów, umiejętności klasowe i liczbowe efekty atutów są nakładane automatycznie z przedmiotów rasy, klasy i atutów."
 }

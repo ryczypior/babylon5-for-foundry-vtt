@@ -85,8 +85,11 @@ export default class B5CharacterSheet extends B5ActorSheet {
         acp: false,
         ranks: item.system.ranks,
         isClassSkill: item.system.isClassSkill,
+        classSkill: item.system.classSkill,
+        autoClassSkill: item.system.autoClassSkill,
         misc: item.system.misc,
         synergy: item.system.synergy,
+        bonus: item.system.bonus ?? 0,
         total: item.system.total
       }))
     ].sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang));

@@ -2,7 +2,6 @@
   "TYPES.Actor.character": "Character",
   "TYPES.Actor.npc": "NPC",
   "TYPES.Actor.craft": "Craft",
-
   "TYPES.Item.class": "Class",
   "TYPES.Item.race": "Race",
   "TYPES.Item.skill": "Skill",
@@ -16,13 +15,11 @@
   "TYPES.Item.weaponAccessory": "Weapon Accessory",
   "TYPES.Item.craftWeapon": "Craft Weapon",
   "TYPES.Item.craftFeature": "Craft Feature",
-
   "B5.Sheet.Character": "Character Sheet",
   "B5.Sheet.Npc": "NPC Sheet",
   "B5.Sheet.Craft": "Craft Sheet",
   "B5.Sheet.Item": "Item Sheet",
   "B5.EditImage": "Change image",
-
   "B5.Ability.str.long": "Strength",
   "B5.Ability.dex.long": "Dexterity",
   "B5.Ability.con.long": "Constitution",
@@ -35,18 +32,15 @@
   "B5.Ability.int.abbr": "Int",
   "B5.Ability.wis.abbr": "Wis",
   "B5.Ability.cha.abbr": "Cha",
-
   "B5.Save.fort": "Fortitude",
   "B5.Save.ref": "Reflex",
   "B5.Save.will": "Will",
-
   "B5.Attack.closeCombat": "Close Combat",
   "B5.Attack.personalRanged": "Personal Ranged",
   "B5.Attack.spaceGunnery": "Space Combat (Gunnery)",
   "B5.Attack.spaceSoloCraft": "Space Combat (Solo Craft)",
   "B5.Attack.feint": "Feint",
   "B5.Attack.resistFeint": "Resist Feint",
-
   "B5.Skill.acrobatics": "Acrobatics",
   "B5.Skill.appraise": "Appraise",
   "B5.Skill.athletics": "Athletics",
@@ -70,7 +64,6 @@
   "B5.Skill.subterfuge": "Subterfuge",
   "B5.Skill.technical": "Technical",
   "B5.Skill.telepathy": "Telepathy",
-
   "B5.Tab.summary": "Summary",
   "B5.Tab.combat": "Combat",
   "B5.Tab.skills": "Skills",
@@ -84,7 +77,6 @@
   "B5.Tab.weapons": "Weapons",
   "B5.Tab.crew": "Crew",
   "B5.Tab.damage": "Damage",
-
   "B5.Section.abilities": "Ability Scores",
   "B5.Section.saves": "Saving Throws",
   "B5.Section.classes": "Classes",
@@ -120,7 +112,6 @@
   "B5.Section.classNumbers": "Class Numbers",
   "B5.Section.abilityModifiers": "Ability Modifiers",
   "B5.Section.ammo": "Ammunition",
-
   "B5.Field.name": "Name",
   "B5.Field.player": "Player",
   "B5.Field.race": "Race",
@@ -269,15 +260,12 @@
   "B5.Field.crewTraining": "Training",
   "B5.Field.complement": "Complement",
   "B5.Field.passengers": "Passengers",
-
   "B5.Track.good": "Good",
   "B5.Track.average": "Average",
   "B5.Track.poor": "Poor",
-
   "B5.FeatCategory.general": "General",
   "B5.FeatCategory.telepathy": "Telepathy",
   "B5.FeatCategory.racial": "Racial",
-
   "B5.InfluenceCategory.political": "Political",
   "B5.InfluenceCategory.military": "Military",
   "B5.InfluenceCategory.criminal": "Criminal",
@@ -286,25 +274,21 @@
   "B5.InfluenceCategory.religious": "Religious",
   "B5.InfluenceCategory.local": "Local",
   "B5.InfluenceCategory.social": "Social",
-
   "B5.Legality.unrestricted": "Unrestricted",
   "B5.Legality.restricted": "Restricted",
   "B5.Legality.illegal": "Illegal",
-
   "B5.DamageType.bludgeoning": "Bludgeoning",
   "B5.DamageType.piercing": "Piercing",
   "B5.DamageType.slashing": "Slashing",
   "B5.DamageType.energy": "Energy",
   "B5.DamageType.projectile": "Projectile",
   "B5.DamageType.special": "Special",
-
   "B5.WeaponCategory.closeCombat": "Close combat",
   "B5.WeaponCategory.exotic": "Exotic",
   "B5.WeaponCategory.grenade": "Grenade",
   "B5.WeaponCategory.heavy": "Heavy",
   "B5.WeaponCategory.pistol": "Pistol",
   "B5.WeaponCategory.rifle": "Rifle",
-
   "B5.Size.fine": "Fine",
   "B5.Size.diminutive": "Diminutive",
   "B5.Size.tiny": "Tiny",
@@ -314,24 +298,20 @@
   "B5.Size.huge": "Huge",
   "B5.Size.gargantuan": "Gargantuan",
   "B5.Size.colossal": "Colossal",
-
   "B5.Arc.fore": "Fore",
   "B5.Arc.aft": "Aft",
   "B5.Arc.port": "Port",
   "B5.Arc.starboard": "Starboard",
   "B5.Arc.turret": "Turret",
-
   "B5.Space.cargo": "Cargo",
   "B5.Space.control": "Control",
   "B5.Space.crew": "Crew",
   "B5.Space.engine": "Engine",
   "B5.Space.hangar": "Hangar",
   "B5.Space.weapons": "Weapons",
-
   "B5.CraftType.spacecraft": "Spacecraft",
   "B5.CraftType.aircraft": "Aircraft",
   "B5.CraftType.surfaceVehicle": "Surface vehicle",
-
   "B5.CraftRole.commander": "Commander",
   "B5.CraftRole.pilot": "Pilot",
   "B5.CraftRole.chiefPilot": "Chief pilot",
@@ -342,22 +322,18 @@
   "B5.CraftRole.engineer": "Engineer",
   "B5.CraftRole.mechanic": "Mechanic",
   "B5.CraftRole.uninvolved": "Uninvolved",
-
   "B5.CrewGrade.green": "Green",
   "B5.CrewGrade.trained": "Trained",
   "B5.CrewGrade.veteran": "Veteran",
   "B5.CrewGrade.elite": "Elite",
-
   "B5.Discipline.scan": "Scan",
   "B5.Discipline.manipulation": "Manipulation",
   "B5.Discipline.communication": "Communication",
   "B5.Discipline.perception": "Perception",
   "B5.Discipline.assault": "Assault",
-
   "B5.Range.close": "Close",
   "B5.Range.medium": "Medium",
   "B5.Range.long": "Long",
-
   "B5.Condition.blinded": "Blinded",
   "B5.Condition.dazed": "Dazed",
   "B5.Condition.dazzled": "Dazzled",
@@ -381,7 +357,6 @@
   "B5.Condition.staggered": "Staggered",
   "B5.Condition.stunned": "Stunned",
   "B5.Condition.unconscious": "Unconscious",
-
   "B5.Hint.abilityBreakdown": "Racial and level modifiers are applied automatically from the race and class items.",
   "B5.Hint.iteratives": "Iterative attacks",
   "B5.Hint.flatFooted": "Keeps the class Defence bonus; loses the Dex bonus and all dodge bonuses.",
@@ -398,7 +373,6 @@
   "B5.Hint.totalOffence": "Total Offence = highest Offence + half of every other hit.",
   "B5.Hint.craftDamage": "Each point of damage destroys one structural space; the craft explodes at 0 Armour.",
   "B5.Hint.dropActorOnStation": "Assigning crew from actors is not wired up yet — planned for the next slice.",
-
   "B5.Tooltip.nonlethal": "Tracked separately; it is never subtracted from hit points.",
   "B5.Tooltip.dv": "10 + class Defence bonus + Dex mod + size mod",
   "B5.Tooltip.dr": "Damage Reduction from armour, race and other sources",
@@ -424,7 +398,6 @@
   "B5.Tooltip.absorbsDamage": "A destroyed feature absorbs 1d4 damage on a location roll of 12",
   "B5.Tooltip.addGear": "Add gear",
   "B5.Tooltip.addAmmo": "Add ammunition",
-
   "B5.Empty.classes": "No class yet — add one to derive BAB, saves and Defence.",
   "B5.Empty.race": "No race yet.",
   "B5.Empty.weapons": "No weapons.",
@@ -435,18 +408,19 @@
   "B5.Empty.telepathicAbilities": "No telepathic abilities.",
   "B5.Empty.craftFeatures": "No features.",
   "B5.Empty.station": "empty",
-
   "B5.Warning.multiclassPenalty": "Class levels differ by more than one — this character takes a −20% XP penalty.",
-
   "B5.Item.New": "New {type}",
   "B5.Item.DeleteTitle": "Delete item",
   "B5.Item.DeleteConfirm": "Delete {name}?",
-
   "B5.Roll.SkillCheck": "{skill} check",
   "B5.Roll.SaveCheck": "{save} save",
   "B5.Roll.AttackCheck": "{line} attack",
   "B5.Roll.Initiative": "Initiative (Dex check)",
   "B5.Roll.InfluenceCheck": "Influence: {faction} (2d6)",
   "B5.Roll.WeaponAttack": "Attack with {weapon}",
-  "B5.Roll.WeaponDamage": "Damage: {weapon}"
+  "B5.Roll.WeaponDamage": "Damage: {weapon}",
+  "B5.Field.bonus": "Bonus",
+  "B5.Tooltip.raceFeatBonus": "Bonuses applied automatically by the race and by feats",
+  "B5.Tooltip.autoClassSkill": "Granted by a class or by the race — cannot be unticked",
+  "B5.Hint.autoApplied": "Ability modifiers, class skills and the numeric effects of feats are applied automatically from the race, class and feat items."
 }

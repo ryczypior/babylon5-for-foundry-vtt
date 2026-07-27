@@ -32,7 +32,7 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
 
     const skillField = (key, cfg) => new fields.SchemaField({
       ranks: num(0, { min: 0 }),
-      isClassSkill: bool(false),
+      isClassSkill: bool(false),   // manual tick; classes and races add to it, never remove
       misc: int(),
       synergy: int(),
       keyAbility: str(cfg.ability),
@@ -194,14 +194,156 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
 
   /** @override */
   prepareDerivedData() {
+    this.#collectBonuses();     // race + feats, gathered before anything reads them
+    this.#applyRace();
     this.#prepareAbilities();
     this.#prepareClasses();
+    this.#prepareClassSkills();
     this.#prepareEquipment();
     this.#prepareHitPoints();
     this.#prepareDefences();
     this.#prepareAttacks();
     this.#prepareSkills();
     this.#prepareSubsystems();
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Sum the always-on bonuses granted by the race and the feats. Both item types carry the
+   * same `system.bonuses` shape, so one pass handles them.
+   *
+   * A feat that is not marked as stacking is counted **once per distinct choice** — two
+   * Skill Focus items on different skills both count, two copies of Iron Will do not.
+   */
+  #collectBonuses() {
+    const total = {
+      abilities: {}, skills: {}, saves: {},
+      initiative: 0, dvDodge: 0, hp: 0, naturalDr: 0,
+      acpReduction: 0, acpNatural: 0, speedOverride: null
+    };
+
+    const add = (bonuses, choiceValue) => {
+      if (!bonuses) return;
+      for (const [key, value] of Object.entries(bonuses.abilities ?? {})) {
+        total.abilities[key] = (total.abilities[key] ?? 0) + value;
+      }
+      for (const [key, value] of Object.entries(bonuses.skills ?? {})) {
+        const k = CharacterData.normaliseSkillKey(key);
+        total.skills[k] = (total.skills[k] ?? 0) + value;
+      }
+      for (const [key, value] of Object.entries(bonuses.saves ?? {})) {
+        total.saves[key] = (total.saves[key] ?? 0) + value;
+      }
+      if (bonuses.chosenSkill && choiceValue) {
+        const k = CharacterData.normaliseSkillKey(choiceValue);
+        total.skills[k] = (total.skills[k] ?? 0) + bonuses.chosenSkill;
+      }
+      total.initiative += bonuses.initiative ?? 0;
+      total.dvDodge += bonuses.dvDodge ?? 0;
+      total.hp += bonuses.hp ?? 0;
+      total.acpReduction += bonuses.acpReduction ?? 0;
+      total.acpNatural += bonuses.acpNatural ?? 0;
+      // Natural DR does not stack — Drazi Dense Scales replaces the racial 1 with 2.
+      total.naturalDr = Math.max(total.naturalDr, bonuses.naturalDr ?? 0);
+      if (bonuses.speedOverride !== null && bonuses.speedOverride !== undefined) {
+        total.speedOverride = Math.max(total.speedOverride ?? 0, bonuses.speedOverride);
+      }
+    };
+
+    const race = this.parent.itemTypes.race[0];
+    add(race?.system?.bonuses);
+
+    const counted = new Set();
+    for (const feat of this.parent.itemTypes.feat) {
+      const choice = feat.system.choice?.value ?? "";
+      const key = `${feat.system.internalId || feat.name}::${choice}`;
+      if (!feat.system.repeatable?.stacks) {
+        if (counted.has(key)) continue;
+        counted.add(key);
+      }
+      add(feat.system.bonuses, choice);
+    }
+
+    this.appliedBonuses = total;
+  }
+
+  /** Ability modifiers, size, speed, natural DR and telepathy eligibility come from the race. */
+  #applyRace() {
+    const race = this.parent.itemTypes.race[0];
+    this.race = race ?? null;
+
+    // A race states its ability adjustments in `abilityModifiers`; `bonuses.abilities` is the
+    // generic channel any item may use on top of that. With no race item the manually entered
+    // racial column is left alone.
+    for (const key of Object.keys(this.abilities)) {
+      const fromRace = race ? (race.system.abilityModifiers?.[key] ?? 0) : null;
+      const fromBonuses = this.appliedBonuses.abilities[key] ?? 0;
+      this.abilities[key].racial = fromRace === null && !fromBonuses
+        ? this.abilities[key].racial
+        : (fromRace ?? 0) + fromBonuses;
+    }
+
+    if (race) {
+      this.attributes.size = race.system.size || this.attributes.size;
+      this.attributes.speed.base = race.system.speed || this.attributes.speed.base;
+      this.details.race ||= race.name;
+      this.telepathy.canBeTelepath = race.system.canBeTelepath;
+      if (race.system.caste) this.details.minbariCaste ||= race.system.caste;
+    }
+
+    // A feat may raise the base speed outright (Minbari Enhanced Speed: 40 ft.).
+    if (this.appliedBonuses.speedOverride !== null) {
+      this.attributes.speed.base = Math.max(this.attributes.speed.base, this.appliedBonuses.speedOverride);
+    }
+
+    this.attributes.dr.natural = Math.max(
+      this.attributes.dr.natural,
+      race?.system?.naturalDr ?? 0,
+      this.appliedBonuses.naturalDr
+    );
+
+    if (!this.telepathy.canBeTelepath) {
+      this.telepathy.isTelepath = false;
+      this.telepathy.pRating.base = 0;
+      this.telepathy.pRating.bonus = 0;
+    }
+  }
+
+  /**
+   * Class skills are the union of every class's list plus the race's grants; the manual tick
+   * on the sheet can only add to that, never take away.
+   *
+   * The book's lists name subtypes loosely ("Knowledge (law, specific culture or specific
+   * local)"), so a subtyped entry marks the whole skill family — Knowledge, Operations,
+   * Profession or Technical — rather than trying to match one subtype.
+   */
+  #prepareClassSkills() {
+    const granted = new Set();
+    const families = new Set();
+
+    const register = entry => {
+      const base = String(entry).split("(")[0];
+      const key = CharacterData.normaliseSkillKey(base);
+      if (key in B5.subtypedSkills) families.add(key);
+      else if (key) granted.add(key);
+    };
+
+    for (const cls of this.parent.itemTypes.class) cls.system.classSkills.forEach(register);
+    this.parent.itemTypes.race[0]?.system?.grantedClassSkills?.forEach(register);
+
+    for (const [key, skill] of Object.entries(this.skills)) {
+      skill.autoClassSkill = granted.has(key);
+      skill.classSkill = skill.isClassSkill || skill.autoClassSkill;
+    }
+
+    for (const item of this.parent.itemTypes.skill) {
+      const auto = families.has(item.system.skillKey);
+      item.system.autoClassSkill = auto;
+      item.system.classSkill = item.system.isClassSkill || auto;
+    }
+
+    this.classSkillFamilies = [...families];
   }
 
   /* -------------------------------------------- */
@@ -227,7 +369,10 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
     const prog = this.progression;
 
     prog.level = Math.max(level, 1);
-    prog.featsGranted = CharacterData.featsAtLevel(prog.level);
+    // Racial bonus feats (Human +1, Drazi Brawler, Narn Toughness, Pak'ma'ra Great Fortitude)
+    // are granted on top of the level progression.
+    prog.featsGranted = CharacterData.featsAtLevel(prog.level)
+      + (this.parent.itemTypes.race[0]?.system?.bonusFeats ?? 0);
     prog.featsSpent = this.parent.itemTypes.feat.length;
     prog.abilityIncreasesGranted = Math.floor(prog.level / 4);
 
@@ -266,6 +411,10 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
       a.acp += armour.system.acp;
       a.speed.armourReduction += armour.system.speedReduction;
     }
+
+    // Armour Familiarity cuts the armour's own penalty (never below 0); a natural penalty
+    // such as Drazi Dense Scales is added afterwards and is not reduced by the feat.
+    a.acp = Math.max(0, a.acp - this.appliedBonuses.acpReduction) + this.appliedBonuses.acpNatural;
     a.dr.total = a.dr.natural + a.dr.armour + a.dr.misc;
     a.speed.value = Math.max(0, a.speed.base - a.speed.armourReduction);
 
@@ -292,7 +441,7 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
         const levelsAfterFirst = cls === first ? cls.system.levels - 1 : cls.system.levels;
         max += Math.max(0, levelsAfterFirst) * cls.system.additionalHp;
       }
-      hp.max = Math.max(1, max);
+      hp.max = Math.max(1, max + this.appliedBonuses.hp);   // Toughness stacks here
     }
     this.attributes.massiveDamageThreshold = this.abilities.con.value;
   }
@@ -305,18 +454,21 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
 
     // The class Defence bonus applies even when flat-footed; only the Dex *bonus* and
     // dodge bonuses are lost. A Dex penalty still counts.
+    const dodge = a.dv.dodge + this.appliedBonuses.dvDodge;
     const dexWhenFlatFooted = Math.min(0, a.dv.dexMod);
-    a.dv.total = 10 + a.dv.classBonus + a.dv.dexMod + a.dv.sizeMod + a.dv.dodge + a.dv.misc;
+    a.dv.total = 10 + a.dv.classBonus + a.dv.dexMod + a.dv.sizeMod + dodge + a.dv.misc;
     a.dv.flatFooted = 10 + a.dv.classBonus + dexWhenFlatFooted + a.dv.sizeMod + a.dv.misc;
 
     for (const [key, cfg] of Object.entries(B5.saves)) {
       const save = this.saves[key];
       save.abilityMod = this.abilities[cfg.ability].mod;
-      save.total = save.classBonus + save.abilityMod + save.misc;
+      save.bonus = this.appliedBonuses.saves[key] ?? 0;   // race and feats
+      save.total = save.classBonus + save.abilityMod + save.misc + save.bonus;
     }
 
     a.initiative.abilityMod = this.abilities.dex.mod;
-    a.initiative.total = a.initiative.abilityMod + a.initiative.misc;
+    a.initiative.bonus = this.appliedBonuses.initiative;
+    a.initiative.total = a.initiative.abilityMod + a.initiative.misc + a.initiative.bonus;
   }
 
   /** Four attack lines plus feint/resist feint, each keyed to a different ability. */
@@ -335,9 +487,18 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
     for (const [key, cfg] of Object.entries(B5.skills)) {
       const skill = this.skills[key];
       skill.keyAbility = cfg.ability;
+      skill.bonus = this.appliedBonuses.skills[key] ?? 0;   // race and feats
       const penalty = cfg.acp ? acp : 0;
       skill.total = Math.floor(skill.ranks) + this.abilities[cfg.ability].mod
-        + skill.misc + skill.synergy - penalty;
+        + skill.misc + skill.synergy + skill.bonus - penalty;
+    }
+
+    // Subtyped skills are Items and prepared before the actor, so their family-wide bonus
+    // (Minbari worker caste's +2 Technical, for instance) is folded in here.
+    for (const item of this.parent.itemTypes.skill) {
+      const bonus = this.appliedBonuses.skills[item.system.skillKey] ?? 0;
+      item.system.bonus = bonus;
+      item.system.total += bonus;
     }
   }
 
@@ -360,6 +521,19 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
   /* -------------------------------------------- */
   /*  Static helpers                              */
   /* -------------------------------------------- */
+
+  /**
+   * Turn a book-style skill name into a `B5.skills` key: "Sense Motive", "sense motive" and
+   * "senseMotive" all resolve to `senseMotive`.
+   */
+  static normaliseSkillKey(name) {
+    const cleaned = String(name ?? "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (!cleaned) return "";
+    for (const key of [...Object.keys(B5.skills), ...Object.keys(B5.subtypedSkills)]) {
+      if (key.toLowerCase() === cleaned) return key;
+    }
+    return cleaned;
+  }
 
   /** Feats arrive at character levels 1, 3, 6, 9, 12, 15 and 18. */
   static featsAtLevel(level) {
