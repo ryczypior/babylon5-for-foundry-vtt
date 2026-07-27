@@ -499,12 +499,16 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
         + skill.misc + skill.synergy + skill.bonus - penalty;
     }
 
-    // Subtyped skills are Items and prepared before the actor, so their family-wide bonus
-    // (Minbari worker caste's +2 Technical, for instance) is folded in here.
+    // Subtyped skills are Items, and items are prepared before the actor's derived data —
+    // so the ability modifier and the family-wide bonus (the Minbari worker caste's +2
+    // Technical, say) have to be added here, where both are current.
     for (const item of this.parent.itemTypes.skill) {
       const bonus = this.appliedBonuses.skills[item.system.skillKey] ?? 0;
+      const mod = this.abilities[item.system.keyAbility]?.mod ?? 0;
       item.system.bonus = bonus;
-      item.system.total += bonus;
+      item.system.abilityMod = mod;
+      item.system.total = Math.floor(item.system.ranks) + mod
+        + item.system.misc + item.system.synergy + bonus;
     }
   }
 

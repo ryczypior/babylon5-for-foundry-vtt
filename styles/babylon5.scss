@@ -520,17 +520,66 @@
 
   .b5-station {
     display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.25rem 0.4rem;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.3rem 0.45rem;
     border: 1px dashed var(--b5-line);
     border-radius: $b5-radius;
+    transition: border-color 0.12s, background 0.12s;
+
+    &.filled {
+      border-style: solid;
+      border-left: 3px solid var(--b5-accent);
+      background: var(--b5-panel-strong);
+    }
+
+    // Highlighted while an actor is dragged over it.
+    &.dragover {
+      border-color: var(--b5-accent-bright);
+      background: rgba(143, 131, 216, 0.14);
+    }
+  }
+
+  .b5-station-head {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .b5-station-body {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    button {
+      width: auto;
+      margin-left: auto;
+      padding: 0 0.25rem;
+      background: none;
+      border: none;
+      color: var(--b5-text-muted);
+      cursor: pointer;
+
+      &:hover { color: $b5-danger; }
+    }
   }
 
   .b5-station-label {
     font-size: 0.7rem;
     text-transform: uppercase;
+    letter-spacing: 0.04em;
     color: var(--b5-text-muted);
+  }
+
+  .b5-station-attack { font-size: 0.65rem; color: var(--b5-accent-bright); }
+  .b5-station-empty { opacity: 0.6; font-size: 0.8rem; }
+
+  .b5-station-skill {
+    font-size: 0.72rem;
+    color: var(--b5-text-muted);
+
+    strong { margin-left: 0.3rem; color: var(--b5-accent-bright); }
+    strong.b5-untrained { color: $b5-danger; }
   }
 
   /* ---------- hints & warnings ---------- */

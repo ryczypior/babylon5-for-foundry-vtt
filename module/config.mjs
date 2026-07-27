@@ -246,6 +246,24 @@ B5.craftSpaces = ["cargo", "control", "crew", "engine", "hangar", "weapons"];
 
 B5.craftRoles = ["commander", "pilot", "chiefPilot", "sensorOperator", "gunner", "systemsOperator", "technician", "engineer", "mechanic", "uninvolved"];
 
+/**
+ * The signature skill each shipboard role rolls, and whether it may make attack rolls
+ * (book p. 188). A PC holds one role per turn and handles every order using that skill;
+ * anything no PC covers is rolled by the crew with its Training bonus.
+ */
+B5.craftRoleSkills = {
+  commander:       { skill: null,        subtype: null,         canAttack: false },
+  pilot:           { skill: "pilot",     subtype: null,         canAttack: true },
+  chiefPilot:      { skill: "operations", subtype: "piloting",  canAttack: false },
+  sensorOperator:  { skill: "operations", subtype: "sensors",   canAttack: false },
+  gunner:          { skill: "operations", subtype: "gunnery",   canAttack: true },
+  systemsOperator: { skill: "operations", subtype: "systems",   canAttack: false },
+  technician:      { skill: "technical",  subtype: "electronics", canAttack: false },
+  engineer:        { skill: "technical",  subtype: "engineering", canAttack: false },
+  mechanic:        { skill: "technical",  subtype: "mechanical",  canAttack: false },
+  uninvolved:      { skill: null,        subtype: null,         canAttack: false }
+};
+
 B5.orderTypes = ["offensive", "defensive", "tactical", "response"];
 
 B5.crewGrades = ["green", "trained", "veteran", "elite"];

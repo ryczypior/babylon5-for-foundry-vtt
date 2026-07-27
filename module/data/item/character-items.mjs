@@ -132,11 +132,14 @@ export class SkillData extends TypeDataModel {
     };
   }
 
+  /**
+   * Only the actor-independent part is computed here. Embedded items are prepared *before*
+   * the actor's derived data, so reading `abilities.<x>.mod` at this point yields the value
+   * from the previous preparation cycle — stale right after an ability changes. The owning
+   * CharacterData finishes the total in `#prepareSkills()`.
+   */
   prepareDerivedData() {
-    const actor = this.parent.actor;
-    if (!actor) return;
-    const mod = actor.system.abilities?.[this.keyAbility]?.mod ?? 0;
-    this.total = Math.floor(this.ranks) + mod + this.misc + this.synergy;
+    this.total = Math.floor(this.ranks) + this.misc + this.synergy;
   }
 
   get label() {

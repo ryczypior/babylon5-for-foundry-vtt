@@ -16,10 +16,10 @@
           {{/each}}
         </select>
       </label>
-      <label>{{localize "B5.Field.crewBab"}}
+      <label data-tooltip="B5.Tooltip.crewTraining">{{localize "B5.Field.crewBab"}}
         <input type="number" name="system.crew.bab" value="{{system.crew.bab}}">
       </label>
-      <label>{{localize "B5.Field.crewTraining"}}
+      <label data-tooltip="B5.Tooltip.crewTraining">{{localize "B5.Field.crewTraining"}}
         <input type="number" name="system.crew.training" value="{{system.crew.training}}">
       </label>
       <label>{{localize "B5.Field.complement"}}
@@ -34,15 +34,53 @@
   <div class="b5-card">
     <h3>{{localize "B5.Section.stations"}}</h3>
     <p class="b5-hint">{{localize "B5.Hint.dropActorOnStation"}}</p>
+
     <ul class="b5-stations">
       {{#each stations as |station|}}
-        <li class="b5-station" data-station="{{station.role}}" data-drop-types="__actor">
-          <span class="b5-station-label">{{station.label}}</span>
-          <span class="b5-station-actor">
-            {{#if station.actor}}{{station.actor.name}}{{else}}<em>{{localize "B5.Empty.station"}}</em>{{/if}}
-          </span>
+        <li class="b5-station {{#if station.actor}}filled{{/if}}"
+            data-station="{{station.role}}" data-uuid="{{station.uuid}}"
+            data-drop-types="__actor">
+          <div class="b5-station-head">
+            <span class="b5-station-label">{{station.label}}</span>
+            {{#if station.canAttack}}
+              <i class="fa-solid fa-crosshairs b5-station-attack" data-tooltip="B5.Tooltip.roleMayAttack"></i>
+            {{/if}}
+          </div>
+
+          <div class="b5-station-body">
+            {{#if station.actor}}
+              <span class="b5-station-actor b5-clickable" data-action="openStation">{{station.actor.name}}</span>
+              <button type="button" data-action="clearStation" data-tooltip="B5.Tooltip.clearStation">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            {{else if station.missing}}
+              <em class="b5-warning-inline">{{localize "B5.Empty.stationMissing"}}</em>
+              <button type="button" data-action="clearStation"><i class="fa-solid fa-xmark"></i></button>
+            {{else}}
+              <em class="b5-station-empty">{{localize "B5.Empty.station"}}</em>
+            {{/if}}
+          </div>
+
+          {{#if station.skillLabel}}
+            <div class="b5-station-skill">
+              {{station.skillLabel}}
+              {{#if station.actor}}
+                {{#if station.skill}}
+                  <strong class="{{#unless station.skill.trained}}b5-untrained{{/unless}}">
+                    {{b5Signed station.skill.total}}
+                  </strong>
+                {{else}}
+                  <span class="b5-warning-inline" data-tooltip="B5.Tooltip.roleSkillMissing">
+                    {{localize "B5.Field.untrainedShort"}}
+                  </span>
+                {{/if}}
+              {{/if}}
+            </div>
+          {{/if}}
         </li>
       {{/each}}
     </ul>
+
+    <p class="b5-hint">{{localize "B5.Hint.stationRules"}}</p>
   </div>
 </section>
