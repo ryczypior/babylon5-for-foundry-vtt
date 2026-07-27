@@ -1,0 +1,29 @@
+{{!-- Order resolution card. The roll itself is rendered by Foundry below this flavour block. --}}
+<div class="b5-order-card">
+  <div class="b5-order-head">
+    <span class="b5-order-name">{{name}}</span>
+    <span class="b5-order-type">{{type}}</span>
+    {{#if asResponse}}<span class="b5-chip">{{localize "B5.Order.responseTag"}}</span>{{/if}}
+  </div>
+
+  <div class="b5-order-line">
+    {{executor}} — {{localize "B5.Order.rolled"}} <strong>{{total}}</strong>
+    {{#unless undecided}} {{localize "B5.Order.versus"}} {{dc}}{{/unless}}
+  </div>
+
+  {{#if undecided}}
+    <div class="b5-order-result undecided">{{localize "B5.Order.dcSpecialHint"}}</div>
+  {{else if success}}
+    <div class="b5-order-result ok">{{localize "B5.Order.success"}}</div>
+    <div class="b5-order-effect">{{effect}}</div>
+  {{else}}
+    <div class="b5-order-result fail">{{localize "B5.Order.failure"}}</div>
+    <div class="b5-order-effect">{{failure}}</div>
+  {{/if}}
+
+  <div class="b5-order-foot">
+    {{localize "B5.Field.band"}}: {{band}} ·
+    {{localize "B5.Order.ordersLeft"}}: {{remaining}} ·
+    {{localize "B5.Field.stealth"}} −{{stealthPenalty}}
+  </div>
+</div>

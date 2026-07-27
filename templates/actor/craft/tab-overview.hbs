@@ -1,6 +1,29 @@
 <section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="overview">
 
   <div class="b5-card">
+    <h3>{{localize "B5.Section.orders"}}</h3>
+    <div class="b5-order-bar">
+      <button type="button" class="b5-order-button" data-action="issueOrder"
+              {{#unless ordersRemaining}}disabled{{/unless}}>
+        <i class="fa-solid fa-satellite-dish"></i> {{localize "B5.Order.issue"}}
+      </button>
+      <span class="b5-budget-part">
+        {{localize "B5.Order.ordersLeft"}} <strong>{{ordersRemaining}}</strong> / {{orderBudget}}
+      </span>
+      <span class="b5-budget-part" data-tooltip="B5.Tooltip.effectiveStealth">
+        {{localize "B5.Field.stealth"}} <strong>{{effectiveStealth}}</strong>
+        {{#if system.combat.stealthPenalty}}
+          <span class="b5-warning-inline">(−{{system.combat.stealthPenalty}})</span>
+        {{/if}}
+      </span>
+      <button type="button" class="b5-add" data-action="resetOrders" data-tooltip="B5.Tooltip.resetOrders">
+        <i class="fa-solid fa-rotate-left"></i>
+      </button>
+    </div>
+    <p class="b5-hint">{{localize "B5.Hint.orders"}}</p>
+  </div>
+
+  <div class="b5-card">
     <h3>{{localize "B5.Section.craftStats"}}</h3>
     <div class="b5-grid-4">
       <label>{{localize "B5.Field.handling"}}

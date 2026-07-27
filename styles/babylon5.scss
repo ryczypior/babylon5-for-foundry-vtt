@@ -403,6 +403,29 @@
     font-weight: 700;
   }
 
+  .b5-order-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .b5-order-button {
+    width: auto;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--b5-panel-strong);
+    border: 1px solid var(--b5-accent);
+    border-radius: $b5-radius;
+    color: inherit;
+    cursor: pointer;
+
+    &:hover:not(:disabled) { background: var(--b5-accent); color: #fff; }
+    &:disabled { opacity: 0.45; cursor: not-allowed; }
+  }
+
   .b5-ok-flag { color: $b5-ok; font-size: 0.75rem; }
   .b5-warn-flag { color: $b5-danger; font-size: 0.8rem; }
   tr.b5-unmet td, tr.b5-unmet th { background: rgba(179, 69, 47, 0.08); }
@@ -600,4 +623,55 @@
   .b5-warning-inline { color: $b5-danger; }
 
   .b5-prereq { font-size: 0.75rem; color: var(--b5-text-muted); text-align: left; }
+}
+
+// Order resolution cards in chat — outside the sheet wrapper, so scoped to their own class.
+.b5-order-card {
+  font-size: 0.85rem;
+
+  .b5-order-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .b5-order-name { font-weight: 700; letter-spacing: 0.03em; }
+
+  .b5-order-type {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .b5-order-line { font-size: 0.8rem; opacity: 0.9; }
+
+  .b5-order-result {
+    margin: 0.2rem 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+
+    &.ok { color: #3f7d4e; }
+    &.fail { color: #b3452f; }
+    &.undecided { color: #6f63b5; }
+  }
+
+  .b5-order-effect { font-size: 0.8rem; }
+
+  .b5-order-foot {
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+    opacity: 0.65;
+  }
+
+  .b5-chip {
+    padding: 0 0.3rem;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    border: 1px solid currentColor;
+    border-radius: 8px;
+    opacity: 0.8;
+  }
 }

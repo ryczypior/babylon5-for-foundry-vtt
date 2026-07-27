@@ -65,6 +65,10 @@ export default class CraftData extends foundry.abstract.TypeDataModel {
         band: str("long"),                   // long | medium | close
         initiative: int(),
         ordersUsed: int(),
+        /** Keys of the orders issued this round — drives the once-per-round limits. */
+        ordersIssued: new fields.ArrayField(str(), { initial: [] }),
+        /** Executing orders gives the craft away: −5 Stealth each, cleared every turn. */
+        stealthPenalty: int(),
         drifting: bool(false),
         destroyed: bool(false)
       })
@@ -82,6 +86,9 @@ export default class CraftData extends foundry.abstract.TypeDataModel {
     // Total structural spaces left drives the impairment check DC (25 + 1 per 10 spaces).
     this.spacesRemaining = Object.values(this.spaces).reduce((sum, s) => sum + s.value, 0);
     this.spacesTotal = Object.values(this.spaces).reduce((sum, s) => sum + s.max, 0);
+
+    // Every order executed this round costs 5 Stealth — this is what Lock Weapons rolls against.
+    this.attributes.effectiveStealth = Math.max(0, this.attributes.stealth - this.combat.stealthPenalty);
     this.combat.destroyed = this.attributes.armour.value <= 0 && this.attributes.armour.max > 0;
   }
 

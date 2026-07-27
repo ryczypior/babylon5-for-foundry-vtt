@@ -1,5 +1,6 @@
 import B5ActorSheet from "./actor-sheet.mjs";
 import { B5 } from "../config.mjs";
+import B5OrderTests from "../tests/order-tests.mjs";
 
 const PATH = "systems/babylon5/templates/actor/craft";
 
@@ -15,7 +16,9 @@ export default class B5CraftSheet extends B5ActorSheet {
     position: { width: 840, height: 760 },
     actions: {
       clearStation: B5CraftSheet.#onClearStation,
-      openStation: B5CraftSheet.#onOpenStation
+      openStation: B5CraftSheet.#onOpenStation,
+      issueOrder: B5CraftSheet.#onIssueOrder,
+      resetOrders: B5CraftSheet.#onResetOrders
     }
   };
 
@@ -55,6 +58,10 @@ export default class B5CraftSheet extends B5ActorSheet {
     context.spacesRemaining = this.actor.system.spacesRemaining;
     context.spacesTotal = this.actor.system.spacesTotal;
     context.isSurface = this.actor.system.details.craftType === "surfaceVehicle";
+
+    context.orderBudget = B5OrderTests.orderBudget(this.actor);
+    context.ordersRemaining = B5OrderTests.ordersRemaining(this.actor);
+    context.effectiveStealth = this.actor.system.attributes.effectiveStealth;
 
     context.stations = B5.craftRoles.map(role => {
       const uuid = this.actor.system.crew.stations[role];
@@ -129,6 +136,16 @@ export default class B5CraftSheet extends B5ActorSheet {
     ui.notifications.info(game.i18n.format("B5.Info.crewAssigned", {
       name: crewman.name, role: game.i18n.localize(`B5.CraftRole.${role}`)
     }));
+  }
+
+  static async #onIssueOrder() {
+    await B5OrderTests.promptOrder(this.actor);
+  }
+
+  /** New turn: the order allowance and the Stealth these orders cost both reset. */
+  static async #onResetOrders() {
+    await B5OrderTests.resetTurn(this.actor);
+    await this.actor.update({ "system.combat.ordersIssued": [] });
   }
 
   static async #onClearStation(event, target) {
