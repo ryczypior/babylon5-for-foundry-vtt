@@ -1,5 +1,6 @@
 import B5ActorSheet from "./actor-sheet.mjs";
 import { B5 } from "../config.mjs";
+import { checkFeatPrerequisites } from "../system/prerequisites.mjs";
 
 const PATH = "systems/babylon5/templates/actor/character";
 
@@ -99,6 +100,22 @@ export default class B5CharacterSheet extends B5ActorSheet {
 
     context.classSummary = this.actor.itemTypes.class
       .map(c => `${c.name} ${c.system.levels}`).join(" / ");
+
+    // Feats carry their prerequisite verdict so the sheet can flag the ones that do not hold.
+    context.featRows = this.actor.itemTypes.feat.map(item => {
+      const check = checkFeatPrerequisites(this.actor, item);
+      return {
+        item,
+        met: check.met,
+        unmet: check.unmet,
+        notes: check.notes,
+        unmetLabel: check.unmet.map(r => `${r.label}${r.detail ? ` (${r.detail})` : ""}`).join(", "),
+        noteLabel: check.notes.map(r => r.label).join("; "),
+        summary: [item.system.prerequisites?.other, ...check.results
+          .filter(r => r.met !== null).map(r => r.label)].filter(Boolean).join(", ")
+      };
+    });
+    context.unmetFeatCount = context.featRows.filter(r => !r.met).length;
 
     context.weapons = this.actor.itemTypes.weapon;
     context.armours = this.actor.itemTypes.armour;

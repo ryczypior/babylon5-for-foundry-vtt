@@ -1,4 +1,4 @@
-{{!-- Feats: granted vs spent, and the list itself. --}}
+{{!-- Feats: granted vs spent, prerequisite verdict per feat, and the list itself. --}}
 <section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="feats">
 
   <div class="b5-card">
@@ -7,6 +7,11 @@
       <span class="b5-hint">
         {{system.progression.featsSpent}} / {{system.progression.featsGranted}}
       </span>
+      {{#if unmetFeatCount}}
+        <span class="b5-warning-inline" data-tooltip="B5.Tooltip.unmetFeats">
+          <i class="fa-solid fa-triangle-exclamation"></i> {{unmetFeatCount}}
+        </span>
+      {{/if}}
       <button type="button" class="b5-add" data-action="createItem" data-type="feat">
         <i class="fa-solid fa-plus"></i>
       </button>
@@ -15,26 +20,46 @@
     <table class="b5-feats">
       <thead>
         <tr>
+          <th></th>
           <th>{{localize "B5.Field.name"}}</th>
           <th>{{localize "B5.Field.category"}}</th>
+          <th>{{localize "B5.Field.choice"}}</th>
           <th>{{localize "B5.Field.prerequisites"}}</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        {{#each itemsByType.feat as |item|}}
-          <tr data-item-id="{{item.id}}">
-            <td class="b5-item-name" data-action="editItem">{{item.name}}</td>
-            <td>{{localize (concat "B5.FeatCategory." item.system.category)}}</td>
-            <td class="b5-prereq">{{item.system.prerequisites.other}}</td>
+        {{#each featRows as |row|}}
+          <tr data-item-id="{{row.item.id}}" class="{{#unless row.met}}b5-unmet{{/unless}}">
+            <td class="b5-center">
+              {{#if row.met}}
+                <i class="fa-solid fa-check b5-ok-flag" data-tooltip="B5.Tooltip.prereqMet"></i>
+              {{else}}
+                <i class="fa-solid fa-triangle-exclamation b5-warn-flag"
+                   data-tooltip="{{localize 'B5.Tooltip.prereqUnmet'}}: {{row.unmetLabel}}"></i>
+              {{/if}}
+            </td>
+            <td class="b5-item-name" data-action="editItem">{{row.item.name}}</td>
+            <td>{{localize (concat "B5.FeatCategory." row.item.system.category)}}</td>
+            <td>{{#if row.item.system.choice.value}}{{row.item.system.choice.value}}{{else}}—{{/if}}</td>
+            <td class="b5-prereq">
+              {{#if row.unmetLabel}}
+                <span class="b5-warning-inline">{{row.unmetLabel}}</span>
+              {{else if row.noteLabel}}
+                <span class="b5-hint">{{row.noteLabel}}</span>
+              {{else}}
+                —
+              {{/if}}
+            </td>
             <td class="b5-row-actions">
               <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
             </td>
           </tr>
         {{else}}
-          <tr><td colspan="4" class="b5-empty">{{localize "B5.Empty.feats"}}</td></tr>
+          <tr><td colspan="6" class="b5-empty">{{localize "B5.Empty.feats"}}</td></tr>
         {{/each}}
       </tbody>
     </table>
+    <p class="b5-hint">{{localize "B5.Hint.prerequisites"}}</p>
   </div>
 </section>

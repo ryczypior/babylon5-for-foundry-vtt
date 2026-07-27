@@ -375,6 +375,9 @@
 
   .b5-acp-mark { color: $b5-danger; }
   .b5-auto-flag { opacity: 0.55; font-size: 0.7rem; }
+  .b5-ok-flag { color: $b5-ok; font-size: 0.75rem; }
+  .b5-warn-flag { color: $b5-danger; font-size: 0.8rem; }
+  tr.b5-unmet td, tr.b5-unmet th { background: rgba(179, 69, 47, 0.08); }
 
   .b5-clickable {
     cursor: pointer;

@@ -1,4 +1,5 @@
 import { B5 } from "../config.mjs";
+import { checkFeatPrerequisites } from "../system/prerequisites.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -103,6 +104,25 @@ export default class B5ActorSheet extends HandlebarsApplicationMixin(ActorSheetV
     for (const panel of this.element.querySelectorAll(".b5-tab-panel")) {
       panel.classList.toggle("active", panel.dataset.tab === active);
     }
+  }
+
+  /**
+   * @override — warn when a dropped feat does not qualify, but never refuse it: a GM may hand
+   * out a feat deliberately, and the sheet keeps flagging it afterwards.
+   */
+  async _onDropItem(event, item) {
+    const created = await super._onDropItem(event, item);
+    const dropped = Array.isArray(created) ? created[0] : created;
+    if (dropped?.type === "feat") {
+      const check = checkFeatPrerequisites(this.actor, dropped);
+      if (!check.met) {
+        ui.notifications.warn(game.i18n.format("B5.Warning.featPrerequisites", {
+          feat: dropped.name,
+          list: check.unmet.map(r => r.label).join(", ")
+        }));
+      }
+    }
+    return created;
   }
 
   /* -------------------------------------------- */

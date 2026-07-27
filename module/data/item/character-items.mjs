@@ -163,7 +163,8 @@ export class FeatData extends TypeDataModel {
         pRatingMin: int(),
         pRatingMax: new fields.NumberField({ required: true, integer: true, nullable: true, initial: null }),
         firstLevelOnly: bool(false),
-        other: str()
+        caste: str(),                        // Minbari feats gate on the caste
+        other: str()                         // narrative gates — reported, never enforced
       }),
       repeatable: new fields.SchemaField({
         allowed: bool(false),
