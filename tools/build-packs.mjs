@@ -19,7 +19,9 @@ const sourceDir = path.join(root, "packs", "_source");
 /** source file → the two packs it produces */
 const PACKS = [
   { source: "classes.json", en: "classes", pl: "classes-pl" },
-  { source: "races.json", en: "races", pl: "races-pl" }
+  { source: "races.json", en: "races", pl: "races-pl" },
+  { source: "feats.json", en: "feats", pl: "feats-pl" },
+  { source: "equipment.json", en: "equipment", pl: "equipment-pl" }
 ];
 
 /** Strip the *Pl fields (English pack) or promote them (Polish pack). */

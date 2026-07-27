@@ -44,13 +44,52 @@
       "type": "Item",
       "system": "babylon5",
       "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "feats",
+      "label": "Feats",
+      "path": "packs/feats",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "feats-pl",
+      "label": "Atuty (PL)",
+      "path": "packs/feats-pl",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "equipment",
+      "label": "Equipment",
+      "path": "packs/equipment",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "equipment-pl",
+      "label": "Ekwipunek (PL)",
+      "path": "packs/equipment-pl",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
     }
   ],
   "packFolders": [
     {
       "name": "Babylon 5",
       "sorting": "m",
-      "packs": ["classes", "races", "classes-pl", "races-pl"]
+      "packs": ["classes", "races", "feats", "equipment"],
+      "folders": [
+        {
+          "name": "Polski",
+          "sorting": "m",
+          "packs": ["classes-pl", "races-pl", "feats-pl", "equipment-pl"]
+        }
+      ]
     }
   ],
   "languages": [
