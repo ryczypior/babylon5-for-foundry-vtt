@@ -30,7 +30,7 @@ step is needed to play.
 |---|---|
 | **Actors** | `character`, `npc` and `craft` (spacecraft, aircraft and surface vehicles share one stat block) |
 | **Items** | 13 types: class, race, skill, feat, influence, telepathic ability, weapon, armour, ammunition, gear, weapon accessory, craft weapon, craft feature |
-| **Compendia** | 14 classes, 10 races, 91 feats, 91 pieces of equipment — each in an English and a Polish pack |
+| **Compendia** | supported and wired up, but **not distributed** — see [Compendium content](#compendium-content) |
 | **Automation** | racial modifiers, class skills, feat effects and prerequisites, the skill-point budget and rank caps, crew stations, and the 47 space-combat orders |
 | **Rolls** | skills, saving throws, the four attack lines, initiative, Influence (2d6) and orders, all posted to chat |
 
@@ -49,6 +49,21 @@ Worth knowing before you file a bug:
   added exactly once, at 1st level.
 - **Influence checks roll 2d6**, not d20, against a per-faction score that never refreshes.
 - Class tables run to **10th level**; beyond that characters multiclass.
+
+## Compendium content
+
+The system reads its classes, races, feats and equipment from compendium packs, and the code
+for building and loading them is here — but **the packs themselves are not published in this
+repository**, and neither is the rules digest they were built from.
+
+The rulebook designates its mechanics as Open Game Content while reserving the setting
+material — alien species names, ship classes, organisations and so on — as Product Identity.
+Until that is properly cleared with the rights holders, that content stays out of the public
+repository. You can still build your own packs: put documents in `packs/_source/*.json`
+following the shape the build script expects and run `npm run pack`.
+
+Without packs, the system runs with empty compendia. Everything else — sheets, derived
+values, rolls, the order system — works normally.
 
 ## What is missing
 
@@ -78,20 +93,21 @@ module/          entry point, config, data models, documents, sheets
 templates/       Handlebars templates for actors, items and chat cards
 styles/          SCSS source and the compiled stylesheet
 lang/            English and Polish translations (~640 keys each)
-packs/_source/   editable compendium sources, bilingual
-packs/<name>/    built LevelDB packs
-docs/rules/      the rulebook distilled into implementation notes
 docs/design/     data-model and layout decisions
+packs/           compendium sources and built packs — local only, not published
+docs/rules/      the rulebook distilled into implementation notes — local only
 ```
 
 Compendium sources carry both languages side by side (`name`/`namePl`,
 `description`/`descriptionPl`), and `npm run pack` emits one English and one Polish pack from
-each — Foundry has no built-in translation for pack contents.
+each — Foundry has no built-in translation for pack contents. Those sources are not part of
+this repository; see [Compendium content](#compendium-content).
 
 ## Contributing
 
-Issues and pull requests are welcome. Rules questions are usually already answered in
-`docs/rules/`, which cites the corebook page for each mechanic.
+Issues and pull requests are welcome. Rules questions are best raised as issues — the
+detailed rules digest is kept out of this repository for the reasons given above, so please
+cite the corebook page rather than quoting it.
 
 ## Licence and legal
 

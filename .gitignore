@@ -14,8 +14,10 @@ build
 .claude
 CLAUDE.md
 
-# LevelDB runtime files inside the built packs.
-# The .ldb and .log files ARE pack data and must stay tracked — only these three are noise.
-packs/*/LOCK
-packs/*/LOG
-packs/*/LOG.old
+# Compendium packs and the distilled rules are NOT distributed.
+# The rulebook designates its setting material — species and ship names, organisations —
+# as Product Identity rather than Open Game Content, so the packs, their sources and the
+# rules digest stay local until the rights question is settled. They remain on disk and
+# the system loads them normally; they are simply not published.
+packs/
+docs/rules/
