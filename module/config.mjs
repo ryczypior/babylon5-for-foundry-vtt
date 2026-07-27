@@ -164,6 +164,12 @@ B5.professionGroups = ["whiteCollar", "blueCollar", "performing"];
 B5.maxRanks = (characterLevel, isClassSkill) =>
   isClassSkill ? characterLevel + 3 : (characterLevel + 3) / 2;
 
+/** The first character level buys four times the per-level allowance. */
+B5.FIRST_LEVEL_SKILL_MULTIPLIER = 4;
+
+/** A cross-class rank costs two points; one point buys half a rank. */
+B5.CROSS_CLASS_RANK_COST = 2;
+
 /* -------------------------------------------- */
 /*  Attacks & combat                            */
 /* -------------------------------------------- */

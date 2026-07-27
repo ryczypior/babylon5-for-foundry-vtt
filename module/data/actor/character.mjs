@@ -61,7 +61,12 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
         featsGranted: int(1),                // derived from character level
         featsSpent: int(),                   // derived: count of feat Items
         abilityIncreasesGranted: int(),      // derived: levels 4, 8, 12, 16, 20
-        skillPoints: new fields.SchemaField({ total: int(), spent: int() }),
+        skillPoints: new fields.SchemaField({
+          total: int(),                      // derived budget
+          spent: int(),                      // derived: ranks × 1 (class) or × 2 (cross-class)
+          available: int(),                  // derived
+          manualTotal: new fields.NumberField({ required: true, integer: true, nullable: true, initial: null })
+        }),
         multiclassBalanced: bool(true),      // derived: class levels within 1 of each other
         xpPenalty: int()                     // derived: −20 when unbalanced
       }),
@@ -204,6 +209,7 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
     this.#prepareDefences();
     this.#prepareAttacks();
     this.#prepareSkills();
+    this.#prepareSkillPoints();
     this.#prepareSubsystems();
   }
 
@@ -500,6 +506,59 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
       item.system.bonus = bonus;
       item.system.total += bonus;
     }
+  }
+
+  /**
+   * Skill points.
+   *
+   * Budget: the very first character level pays `(class base + Int mod) × 4`, every later
+   * level pays `class base + Int mod` for whichever class that level was taken in. The sum
+   * therefore depends only on how many levels sit in each class, never on the order they
+   * were taken — which is why this works without a level-up log.
+   *
+   * Humans add a flat +4 at 1st level and +1 per later level on top.
+   *
+   * Cost: a class skill charges 1 point per rank, a cross-class skill 1 point per *half*
+   * rank — so a cross-class rank costs 2.
+   *
+   * Simplification worth knowing: the current Intelligence modifier is used for every level.
+   * A character whose Int rose at 4th level really earned fewer points at levels 1–3. Set
+   * `manualTotal` to record the true figure when it matters.
+   */
+  #prepareSkillPoints() {
+    const points = this.progression.skillPoints;
+    const intMod = this.abilities.int.mod;
+    const race = this.parent.itemTypes.race[0];
+    const classes = this.parent.itemTypes.class;
+    const first = classes.find(c => c.system.takenAtFirstLevel) ?? classes[0];
+
+    let total = 0;
+    if (first) {
+      const perLevel = first.system.skillPoints + intMod;
+      total += Math.max(0, perLevel) * B5.FIRST_LEVEL_SKILL_MULTIPLIER;
+      total += race?.system?.bonusSkillPointsFirst ?? 0;
+    }
+    for (const cls of classes) {
+      const laterLevels = Math.max(0, cls.system.levels - (cls === first ? 1 : 0));
+      const perLevel = cls.system.skillPoints + intMod + (race?.system?.bonusSkillPointsPerLevel ?? 0);
+      total += laterLevels * Math.max(0, perLevel);
+    }
+
+    let spent = 0;
+    for (const [key, skill] of Object.entries(this.skills)) {
+      spent += skill.ranks * (skill.classSkill ? 1 : 2);
+      skill.maxRanks = B5.maxRanks(this.progression.level, skill.classSkill);
+      skill.overMaxRanks = skill.ranks > skill.maxRanks;
+    }
+    for (const item of this.parent.itemTypes.skill) {
+      spent += item.system.ranks * (item.system.classSkill ? 1 : 2);
+      item.system.maxRanks = B5.maxRanks(this.progression.level, item.system.classSkill);
+      item.system.overMaxRanks = item.system.ranks > item.system.maxRanks;
+    }
+
+    points.total = points.manualTotal ?? total;
+    points.spent = Math.round(spent);
+    points.available = points.total - points.spent;
   }
 
   #prepareSubsystems() {

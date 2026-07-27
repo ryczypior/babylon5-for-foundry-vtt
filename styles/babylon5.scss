@@ -375,6 +375,34 @@
 
   .b5-acp-mark { color: $b5-danger; }
   .b5-auto-flag { opacity: 0.55; font-size: 0.7rem; }
+  .b5-budget {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+    padding: 0.25rem 0.4rem;
+    background: var(--b5-panel-strong);
+    border-left: 2px solid var(--b5-accent);
+    border-radius: $b5-radius;
+    font-size: 0.78rem;
+
+    &.over { border-left-color: $b5-danger; }
+    strong { color: var(--b5-accent-bright); }
+    &.over strong { color: $b5-danger; }
+  }
+
+  .b5-budget-part {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--b5-text-muted);
+  }
+
+  .b5-over-max input, .b5-over-max .b5-readonly {
+    color: $b5-danger;
+    font-weight: 700;
+  }
+
   .b5-ok-flag { color: $b5-ok; font-size: 0.75rem; }
   .b5-warn-flag { color: $b5-danger; font-size: 0.8rem; }
   tr.b5-unmet td, tr.b5-unmet th { background: rgba(179, 69, 47, 0.08); }

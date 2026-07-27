@@ -442,5 +442,12 @@
   "B5.Race.human": "Human",
   "B5.Race.minbari": "Minbari",
   "B5.Race.narn": "Narn",
-  "B5.Race.pakmara": "Pak'ma'ra"
+  "B5.Race.pakmara": "Pak'ma'ra",
+  "B5.Field.skillPointsAvailable": "Available",
+  "B5.Field.skillPointsOverride": "Skill points (override)",
+  "B5.Tooltip.skillBudget": "Spent / budget. The budget is (class points + Int mod) ×4 at 1st level, then per level, plus racial bonuses.",
+  "B5.Tooltip.skillPointsOverride": "Replaces the calculated budget — use it when the Intelligence modifier changed mid-career",
+  "B5.Tooltip.overMaxRanks": "Above the maximum ranks for this character level",
+  "B5.Hint.crossClassCost": "A class rank costs 1 point, a cross-class rank costs 2.",
+  "B5.Warning.skillPointsOverspent": "Over budget"
 }

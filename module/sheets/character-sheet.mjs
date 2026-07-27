@@ -88,6 +88,8 @@ export default class B5CharacterSheet extends B5ActorSheet {
         isClassSkill: item.system.isClassSkill,
         classSkill: item.system.classSkill,
         autoClassSkill: item.system.autoClassSkill,
+        maxRanks: item.system.maxRanks,
+        overMaxRanks: item.system.overMaxRanks,
         misc: item.system.misc,
         synergy: item.system.synergy,
         bonus: item.system.bonus ?? 0,
@@ -97,6 +99,7 @@ export default class B5CharacterSheet extends B5ActorSheet {
 
     context.maxRanksClass = B5.maxRanks(system.progression.level, true);
     context.maxRanksCross = B5.maxRanks(system.progression.level, false);
+    context.budgetOverspent = system.progression.skillPoints.available < 0;
 
     context.classSummary = this.actor.itemTypes.class
       .map(c => `${c.name} ${c.system.levels}`).join(" / ");

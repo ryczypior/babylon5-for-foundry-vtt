@@ -442,5 +442,12 @@
   "B5.Race.human": "Człowiek",
   "B5.Race.minbari": "Minbari",
   "B5.Race.narn": "Narn",
-  "B5.Race.pakmara": "Pak'ma'ra"
+  "B5.Race.pakmara": "Pak'ma'ra",
+  "B5.Field.skillPointsAvailable": "Dostępne",
+  "B5.Field.skillPointsOverride": "Punkty umiejętności (nadpisanie)",
+  "B5.Tooltip.skillBudget": "Wydane / budżet. Budżet to (punkty klasy + mod. Int) ×4 na 1. poziomie, potem za każdy poziom, plus premie rasowe.",
+  "B5.Tooltip.skillPointsOverride": "Zastępuje wyliczony budżet — przydatne, gdy modyfikator Inteligencji zmienił się w trakcie kariery",
+  "B5.Tooltip.overMaxRanks": "Powyżej maksimum rang dla tego poziomu postaci",
+  "B5.Hint.crossClassCost": "Ranga klasowa kosztuje 1 punkt, pozaklasowa 2.",
+  "B5.Warning.skillPointsOverspent": "Przekroczony budżet"
 }

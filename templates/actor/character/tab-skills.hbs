@@ -13,6 +13,23 @@
       </button>
     </h3>
 
+    <div class="b5-budget {{#if budgetOverspent}}over{{/if}}">
+      <span class="b5-budget-part" data-tooltip="B5.Tooltip.skillBudget">
+        {{localize "B5.Field.skillPoints"}}
+        <strong>{{system.progression.skillPoints.spent}}</strong> /
+        <strong>{{system.progression.skillPoints.total}}</strong>
+      </span>
+      <span class="b5-budget-part">
+        {{localize "B5.Field.skillPointsAvailable"}}
+        <strong>{{system.progression.skillPoints.available}}</strong>
+      </span>
+      <span class="b5-hint">{{localize "B5.Hint.crossClassCost"}}</span>
+      {{#if budgetOverspent}}
+        <span class="b5-warning-inline"><i class="fa-solid fa-triangle-exclamation"></i>
+          {{localize "B5.Warning.skillPointsOverspent"}}</span>
+      {{/if}}
+    </div>
+
     <table class="b5-skills">
       <thead>
         <tr>
@@ -47,7 +64,8 @@
             </td>
             <td class="b5-center">{{b5AbilityAbbr row.ability}}</td>
             <td class="b5-readonly">{{b5Signed (lookup (lookup ../system.abilities row.ability) "mod")}}</td>
-            <td>
+            <td class="{{#if row.overMaxRanks}}b5-over-max{{/if}}"
+                {{#if row.overMaxRanks}}data-tooltip="{{localize 'B5.Tooltip.overMaxRanks'}} ({{row.maxRanks}})"{{/if}}>
               {{#if row.isItem}}
                 <span class="b5-readonly">{{row.ranks}}</span>
               {{else}}

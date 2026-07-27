@@ -109,8 +109,14 @@
       <label>{{localize "B5.Field.featsGranted"}}<span class="b5-readonly">{{system.progression.featsGranted}}</span></label>
       <label>{{localize "B5.Field.featsSpent"}}<span class="b5-readonly">{{system.progression.featsSpent}}</span></label>
       <label>{{localize "B5.Field.abilityIncreases"}}<span class="b5-readonly">{{system.progression.abilityIncreasesGranted}}</span></label>
-      <label>{{localize "B5.Field.skillPoints"}}
-        <input type="number" name="system.progression.skillPoints.total" value="{{system.progression.skillPoints.total}}">
+      <label data-tooltip="B5.Tooltip.skillBudget">{{localize "B5.Field.skillPoints"}}
+        <span class="b5-readonly">
+          {{system.progression.skillPoints.spent}} / {{system.progression.skillPoints.total}}
+        </span>
+      </label>
+      <label data-tooltip="B5.Tooltip.skillPointsOverride">{{localize "B5.Field.skillPointsOverride"}}
+        <input type="number" name="system.progression.skillPoints.manualTotal"
+               value="{{system.progression.skillPoints.manualTotal}}" placeholder="{{system.progression.skillPoints.total}}">
       </label>
     </div>
   </div>
