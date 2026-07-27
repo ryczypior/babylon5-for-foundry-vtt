@@ -12,7 +12,47 @@
   ],
   "esmodules": ["module/babylon5.mjs"],
   "styles": ["styles/babylon5.css"],
-  "packs": [],
+  "packs": [
+    {
+      "name": "classes",
+      "label": "Classes",
+      "path": "packs/classes",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "classes-pl",
+      "label": "Klasy (PL)",
+      "path": "packs/classes-pl",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "races",
+      "label": "Races",
+      "path": "packs/races",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "races-pl",
+      "label": "Rasy (PL)",
+      "path": "packs/races-pl",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    }
+  ],
+  "packFolders": [
+    {
+      "name": "Babylon 5",
+      "sorting": "m",
+      "packs": ["classes", "races", "classes-pl", "races-pl"]
+    }
+  ],
   "languages": [
     { "lang": "en", "name": "English", "path": "lang/en.json" },
     { "lang": "pl", "name": "Polski", "path": "lang/pl.json" }

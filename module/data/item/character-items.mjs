@@ -37,8 +37,12 @@ export class ClassData extends TypeDataModel {
       skillPoints: int(4),
       classSkills: new fields.ArrayField(str(), { initial: [] }),
       initialInfluence: str(),               // e.g. "2d4 political"
+      additionalInfluenceText: str(),        // the full rule, which is rarely just a number
       additionalInfluence: int(1),
       startingCredits: str(),
+      keyAbilities: str(),
+      weaponProficiencies: str(),            // there is no armour proficiency system
+      entryRequirement: str(),               // Ranger level 5+, telepath needs the Telepath feat
       features: new fields.ArrayField(
         new fields.SchemaField({
           level: int(1),
@@ -66,7 +70,7 @@ export class RaceData extends TypeDataModel {
       speed: int(30),
       swimSpeed: int(),
       naturalDr: int(),
-      favouredClass: str(),
+      favouredClasses: new fields.ArrayField(str(), { initial: [] }),
       canBeTelepath: bool(true),             // Narn: false
       caste: str(),                          // Minbari only
       grantedClassSkills: new fields.ArrayField(str(), { initial: [] }),

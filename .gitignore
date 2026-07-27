@@ -12,3 +12,9 @@ foundryconfig.json
 build
 .claude
 CLAUDE.md
+
+# LevelDB runtime files inside the built packs.
+# The .ldb and .log files ARE pack data and must stay tracked — only these three are noise.
+packs/*/LOCK
+packs/*/LOG
+packs/*/LOG.old
