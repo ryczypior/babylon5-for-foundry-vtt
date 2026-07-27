@@ -4,7 +4,8 @@ debug.log
 /.vs/slnx.sqlite
 /.vs/VSWorkspaceState.json
 .sass-cache/
-styles/babylon5.css
+# babylon5.css is tracked on purpose — system.json loads it, so a fresh clone has to
+# work in Foundry without running the build first. Rebuild it after editing any .scss.
 styles/babylon5.css.map
 node_modules
 babylon5.lock
