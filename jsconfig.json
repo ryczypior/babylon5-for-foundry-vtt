@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Node",
+    "checkJs": false,
+    "types": ["@league-of-foundry-developers/foundry-vtt-types"]
+  },
+  "include": ["module/**/*.mjs", "tools/**/*.mjs"],
+  "exclude": ["node_modules", "styles/babylon5.css"]
+}

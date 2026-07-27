@@ -1,0 +1,72 @@
+{{!-- Skills: 19 fixed rows plus the subtyped skill Items, merged into one alphabetical list. --}}
+<section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="skills">
+
+  <div class="b5-card">
+    <h3>
+      {{localize "B5.Section.skills"}}
+      <span class="b5-hint">
+        {{localize "B5.Hint.maxRanks"}}: {{maxRanksClass}} / {{maxRanksCross}}
+      </span>
+      <button type="button" class="b5-add" data-action="createItem" data-type="skill"
+              data-tooltip="B5.Tooltip.addSubtypedSkill">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </h3>
+
+    <table class="b5-skills">
+      <thead>
+        <tr>
+          <th>{{localize "B5.Field.skill"}}</th>
+          <th data-tooltip="B5.Tooltip.untrained">{{localize "B5.Field.untrained"}}</th>
+          <th>{{localize "B5.Field.classSkill"}}</th>
+          <th>{{localize "B5.Field.keyAbility"}}</th>
+          <th>{{localize "B5.Field.abilityMod"}}</th>
+          <th>{{localize "B5.Field.ranks"}}</th>
+          <th>{{localize "B5.Field.misc"}}</th>
+          <th>{{localize "B5.Field.total"}}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each skillRows as |row|}}
+          <tr data-item-id="{{#if row.isItem}}{{row.id}}{{/if}}">
+            <th class="b5-row-label b5-clickable" data-action="rollSkill" data-skill="{{row.id}}">
+              {{row.label}}{{#if row.acp}}<span class="b5-acp-mark" data-tooltip="B5.Tooltip.acp">*</span>{{/if}}
+            </th>
+            <td class="b5-center">{{#if row.untrained}}<i class="fa-solid fa-check"></i>{{/if}}</td>
+            <td class="b5-center">
+              <input type="checkbox"
+                     name="{{#if row.isItem}}{{else}}system.skills.{{row.id}}.isClassSkill{{/if}}"
+                     data-item-field="isClassSkill" {{checked row.isClassSkill}}
+                     {{#if row.isItem}}disabled{{/if}}>
+            </td>
+            <td class="b5-center">{{b5AbilityAbbr row.ability}}</td>
+            <td class="b5-readonly">{{b5Signed (lookup (lookup ../system.abilities row.ability) "mod")}}</td>
+            <td>
+              {{#if row.isItem}}
+                <span class="b5-readonly">{{row.ranks}}</span>
+              {{else}}
+                <input type="number" step="0.5" min="0" name="system.skills.{{row.id}}.ranks" value="{{row.ranks}}">
+              {{/if}}
+            </td>
+            <td>
+              {{#if row.isItem}}
+                <span class="b5-readonly">{{row.misc}}</span>
+              {{else}}
+                <input type="number" name="system.skills.{{row.id}}.misc" value="{{row.misc}}">
+              {{/if}}
+            </td>
+            <td class="b5-total">{{b5Signed row.total}}</td>
+            <td class="b5-row-actions">
+              {{#if row.isItem}}
+                <button type="button" data-action="editItem"><i class="fa-solid fa-pen"></i></button>
+                <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
+              {{/if}}
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <p class="b5-hint">{{localize "B5.Hint.subtypedSkills"}}</p>
+  </div>
+</section>

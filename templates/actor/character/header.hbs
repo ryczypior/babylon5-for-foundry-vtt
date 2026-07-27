@@ -1,0 +1,64 @@
+{{!-- Character header: identity plus the numbers you read every round. --}}
+<header class="b5-header">
+  <img class="b5-portrait" src="{{actor.img}}" data-edit="img" data-action="editImage"
+       alt="{{actor.name}}" data-tooltip="B5.EditImage">
+
+  <div class="b5-header-main">
+    <input class="b5-name" type="text" name="name" value="{{actor.name}}" placeholder="{{localize 'B5.Field.name'}}">
+
+    <div class="b5-identity">
+      <label>{{localize "B5.Field.player"}}
+        <input type="text" name="system.details.player" value="{{system.details.player}}">
+      </label>
+      <label>{{localize "B5.Field.race"}}
+        <input type="text" name="system.details.race" value="{{system.details.race}}">
+      </label>
+      <label>{{localize "B5.Field.classes"}}
+        <span class="b5-readonly">{{#if classSummary}}{{classSummary}}{{else}}—{{/if}}</span>
+      </label>
+      <label>{{localize "B5.Field.level"}}
+        <span class="b5-readonly">{{system.progression.level}}</span>
+      </label>
+      <label>{{localize "B5.Field.xp"}}
+        <input type="number" name="system.progression.xp.value" value="{{system.progression.xp.value}}">
+      </label>
+    </div>
+  </div>
+
+  <div class="b5-vitals">
+    <div class="b5-vital b5-vital-hp">
+      <span class="b5-vital-label">{{localize "B5.Field.hp"}}</span>
+      <div class="b5-hp-inputs">
+        <input type="number" name="system.attributes.hp.value" value="{{system.attributes.hp.value}}">
+        <span class="b5-sep">/</span>
+        <span class="b5-readonly">{{system.attributes.hp.max}}</span>
+      </div>
+      <div class="b5-hp-bar"><div class="b5-hp-fill" style="width: {{b5Percent system.attributes.hp.value system.attributes.hp.max}}%"></div></div>
+      <label class="b5-nonlethal" data-tooltip="B5.Tooltip.nonlethal">
+        {{localize "B5.Field.nonlethal"}}
+        <input type="number" name="system.attributes.hp.nonlethal" value="{{system.attributes.hp.nonlethal}}">
+      </label>
+    </div>
+
+    <div class="b5-vital" data-tooltip="B5.Tooltip.dv">
+      <span class="b5-vital-label">{{localize "B5.Field.dv"}}</span>
+      <span class="b5-vital-value">{{system.attributes.dv.total}}</span>
+      <span class="b5-vital-sub">{{localize "B5.Field.flatFooted"}} {{system.attributes.dv.flatFooted}}</span>
+    </div>
+
+    <div class="b5-vital" data-tooltip="B5.Tooltip.dr">
+      <span class="b5-vital-label">{{localize "B5.Field.dr"}}</span>
+      <span class="b5-vital-value">{{system.attributes.dr.total}}</span>
+    </div>
+
+    <div class="b5-vital b5-clickable" data-action="rollInitiative" data-tooltip="B5.Tooltip.initiative">
+      <span class="b5-vital-label">{{localize "B5.Field.initiative"}}</span>
+      <span class="b5-vital-value">{{b5Signed system.attributes.initiative.total}}</span>
+    </div>
+
+    <div class="b5-vital">
+      <span class="b5-vital-label">{{localize "B5.Field.speed"}}</span>
+      <span class="b5-vital-value">{{system.attributes.speed.value}}</span>
+    </div>
+  </div>
+</header>

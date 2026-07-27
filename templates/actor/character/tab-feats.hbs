@@ -1,0 +1,40 @@
+{{!-- Feats: granted vs spent, and the list itself. --}}
+<section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="feats">
+
+  <div class="b5-card">
+    <h3>
+      {{localize "B5.Section.feats"}}
+      <span class="b5-hint">
+        {{system.progression.featsSpent}} / {{system.progression.featsGranted}}
+      </span>
+      <button type="button" class="b5-add" data-action="createItem" data-type="feat">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </h3>
+
+    <table class="b5-feats">
+      <thead>
+        <tr>
+          <th>{{localize "B5.Field.name"}}</th>
+          <th>{{localize "B5.Field.category"}}</th>
+          <th>{{localize "B5.Field.prerequisites"}}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each itemsByType.feat as |item|}}
+          <tr data-item-id="{{item.id}}">
+            <td class="b5-item-name" data-action="editItem">{{item.name}}</td>
+            <td>{{localize (concat "B5.FeatCategory." item.system.category)}}</td>
+            <td class="b5-prereq">{{item.system.prerequisites.other}}</td>
+            <td class="b5-row-actions">
+              <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        {{else}}
+          <tr><td colspan="4" class="b5-empty">{{localize "B5.Empty.feats"}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</section>

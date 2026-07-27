@@ -1,0 +1,54 @@
+{
+  "id": "babylon5",
+  "title": "Babylon 5 2nd Edition (Unofficial)",
+  "description": "Unofficial system for the Babylon 5 Roleplaying Game, 2nd Edition (Mongoose Publishing, d20 System).",
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Ryczypior",
+      "email": "ryczypior@gmail.com",
+      "discord": "Ryczypior"
+    }
+  ],
+  "esmodules": ["module/babylon5.mjs"],
+  "styles": ["styles/babylon5.css"],
+  "packs": [],
+  "languages": [
+    { "lang": "en", "name": "English", "path": "lang/en.json" },
+    { "lang": "pl", "name": "Polski", "path": "lang/pl.json" }
+  ],
+  "documentTypes": {
+    "Actor": {
+      "character": {},
+      "npc": {},
+      "craft": {}
+    },
+    "Item": {
+      "class": {},
+      "race": {},
+      "skill": {},
+      "feat": {},
+      "influence": {},
+      "telepathicAbility": {},
+      "weapon": {},
+      "armour": {},
+      "ammunition": {},
+      "gear": {},
+      "weaponAccessory": {},
+      "craftWeapon": {},
+      "craftFeature": {}
+    }
+  },
+  "initiative": "1d20 + @attributes.initiative.total",
+  "grid": {
+    "distance": 5,
+    "units": "ft"
+  },
+  "primaryTokenAttribute": "attributes.hp",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "socket": false,
+  "url": "https://github.com/ryczypior/babylon5-for-foundry-vtt"
+}

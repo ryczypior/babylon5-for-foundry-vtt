@@ -1,0 +1,21 @@
+<section class="b5-item-body">
+  {{> (lookup . "bodyTemplate")}}
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.description"}}</h3>
+    <prose-mirror name="system.description" value="{{source.description}}">
+      {{{enriched.description}}}
+    </prose-mirror>
+  </div>
+
+  <div class="b5-card">
+    <div class="b5-grid-2">
+      <label>{{localize "B5.Field.source"}}
+        <input type="text" name="system.source" value="{{system.source}}">
+      </label>
+      <label>{{localize "B5.Field.internalId"}}
+        <input type="text" name="system.internalId" value="{{system.internalId}}">
+      </label>
+    </div>
+  </div>
+</section>

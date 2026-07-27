@@ -1,0 +1,35 @@
+{{!-- Influence is a per-faction score, not a pool: checks roll 2d6 + score. --}}
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.faction"}}
+      <input type="text" name="system.faction" value="{{system.faction}}">
+    </label>
+    <label>{{localize "B5.Field.category"}}
+      <select name="system.category">
+        {{#each config.influenceCategories as |cat|}}
+          <option value="{{cat}}" {{#if (b5Eq cat ../system.category)}}selected{{/if}}>
+            {{localize (concat "B5.InfluenceCategory." cat)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Field.base"}}
+      <input type="number" name="system.base" value="{{system.base}}">
+    </label>
+    <label data-tooltip="B5.Tooltip.burned">{{localize "B5.Field.burned"}}
+      <input type="number" name="system.burned" value="{{system.burned}}">
+    </label>
+    <label>{{localize "B5.Field.misc"}}
+      <input type="number" name="system.misc" value="{{system.misc}}">
+    </label>
+    <label>{{localize "B5.Field.usesThisWeek"}}
+      <input type="number" name="system.usesThisWeek" value="{{system.usesThisWeek}}">
+    </label>
+    <label>{{localize "B5.Field.score"}}<span class="b5-total">{{system.value}}</span></label>
+  </div>
+</div>
+
+<div class="b5-card">
+  <h3>{{localize "B5.Field.pressures"}}</h3>
+  <prose-mirror name="system.pressures" value="{{source.pressures}}"></prose-mirror>
+</div>

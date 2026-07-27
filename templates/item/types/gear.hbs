@@ -1,0 +1,31 @@
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.subtype"}}
+      <input type="text" name="system.subtype" value="{{system.subtype}}">
+    </label>
+    <label>{{localize "B5.Field.quantity"}}
+      <input type="number" name="system.quantity" value="{{system.quantity}}">
+    </label>
+    <label>{{localize "B5.Field.weight"}}
+      <input type="number" step="0.1" name="system.weight" value="{{system.weight}}">
+    </label>
+    <label>{{localize "B5.Field.cost"}}
+      <input type="number" name="system.cost" value="{{system.cost}}">
+    </label>
+    <label>{{localize "B5.Field.uses"}}
+      <input type="number" name="system.uses.value" value="{{system.uses.value}}">
+    </label>
+    <label>{{localize "B5.Field.usesMax"}}
+      <input type="number" name="system.uses.max" value="{{system.uses.max}}">
+    </label>
+    <label>{{localize "B5.Field.legality"}}
+      <select name="system.legality">
+        {{#each config.legality as |l|}}
+          <option value="{{l}}" {{#if (b5Eq l ../system.legality)}}selected{{/if}}>
+            {{localize (concat "B5.Legality." l)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+  </div>
+</div>

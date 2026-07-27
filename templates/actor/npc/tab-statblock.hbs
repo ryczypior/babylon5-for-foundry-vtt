@@ -1,0 +1,74 @@
+{{!-- NPC stat block: everything a GM reads mid-scene, on one screen. --}}
+<section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="statblock">
+
+  <div class="b5-card">
+    <div class="b5-grid-4">
+      <label>{{localize "B5.Field.role"}}
+        <input type="text" name="system.npc.role" value="{{system.npc.role}}">
+      </label>
+      <label>{{localize "B5.Field.disposition"}}
+        <input type="text" name="system.npc.disposition" value="{{system.npc.disposition}}">
+      </label>
+      <label>{{localize "B5.Field.hp"}}
+        <input type="number" name="system.attributes.hp.value" value="{{system.attributes.hp.value}}">
+      </label>
+      <label>{{localize "B5.Field.hpMaxOverride"}}
+        <input type="number" name="system.attributes.hp.maxOverride" value="{{system.attributes.hp.maxOverride}}"
+               placeholder="{{system.attributes.hp.max}}">
+      </label>
+    </div>
+  </div>
+
+  <div class="b5-columns">
+    <div class="b5-card">
+      <h3>{{localize "B5.Section.abilities"}}</h3>
+      <table>
+        <tbody>
+          {{#each system.abilities as |ability key|}}
+            <tr>
+              <th class="b5-row-label">{{b5AbilityAbbr key}}</th>
+              <td><input type="number" name="system.abilities.{{key}}.base" value="{{ability.base}}"></td>
+              <td class="b5-readonly">{{b5Signed ability.mod}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="b5-card">
+      <h3>{{localize "B5.Section.defence"}}</h3>
+      <div class="b5-grid-2">
+        <label>{{localize "B5.Field.dv"}}<span class="b5-total">{{system.attributes.dv.total}}</span></label>
+        <label>{{localize "B5.Field.flatFooted"}}<span class="b5-total">{{system.attributes.dv.flatFooted}}</span></label>
+        <label>{{localize "B5.Field.dr"}}<span class="b5-total">{{system.attributes.dr.total}}</span></label>
+        <label>{{localize "B5.Field.initiative"}}
+          <span class="b5-total b5-clickable" data-action="rollInitiative">{{b5Signed system.attributes.initiative.total}}</span>
+        </label>
+      </div>
+      <h3>{{localize "B5.Section.saves"}}</h3>
+      <div class="b5-grid-3">
+        {{#each system.saves as |save key|}}
+          <label class="b5-clickable" data-action="rollSave" data-save="{{key}}">
+            {{localize (concat "B5.Save." key)}}<span class="b5-total">{{b5Signed save.total}}</span>
+          </label>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.attacks"}}</h3>
+    <div class="b5-grid-3">
+      {{#each system.attacks as |line key|}}
+        <label class="b5-clickable" data-action="rollAttack" data-attack="{{key}}">
+          {{localize (concat "B5.Attack." key)}}<span class="b5-total">{{b5Signed line.total}}</span>
+        </label>
+      {{/each}}
+    </div>
+  </div>
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.gmNotes"}}</h3>
+    <prose-mirror name="system.npc.gmNotes" value="{{source.npc.gmNotes}}"></prose-mirror>
+  </div>
+</section>

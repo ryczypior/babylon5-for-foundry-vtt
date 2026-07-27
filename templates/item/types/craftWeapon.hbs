@@ -1,0 +1,29 @@
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.arc"}}
+      <select name="system.arc">
+        {{#each config.craftArcs as |arc|}}
+          <option value="{{arc}}" {{#if (b5Eq arc ../system.arc)}}selected{{/if}}>
+            {{localize (concat "B5.Arc." arc)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Field.range"}}
+      <input type="text" name="system.range" value="{{system.range}}">
+    </label>
+    <label data-tooltip="B5.Tooltip.offence">{{localize "B5.Field.offence"}}
+      <input type="number" name="system.offence" value="{{system.offence}}">
+    </label>
+    <label>{{localize "B5.Field.weaponSpaces"}}
+      <input type="number" name="system.weaponSpaces" value="{{system.weaponSpaces}}">
+    </label>
+    <label>{{localize "B5.Field.count"}}
+      <input type="number" name="system.count" value="{{system.count}}">
+    </label>
+    <label class="b5-inline-toggle">
+      <input type="checkbox" name="system.destroyed" {{checked system.destroyed}}>
+      {{localize "B5.Field.destroyed"}}
+    </label>
+  </div>
+</div>

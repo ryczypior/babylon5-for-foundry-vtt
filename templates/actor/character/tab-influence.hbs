@@ -1,0 +1,53 @@
+{{!-- Influence: per-faction scores. Checks roll 2d6 + score, never d20. --}}
+<section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="influence">
+
+  <div class="b5-card">
+    <h3>
+      {{localize "B5.Section.influence"}}
+      <button type="button" class="b5-add" data-action="createItem" data-type="influence">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </h3>
+
+    <table class="b5-influence">
+      <thead>
+        <tr>
+          <th>{{localize "B5.Field.faction"}}</th>
+          <th>{{localize "B5.Field.category"}}</th>
+          <th>{{localize "B5.Field.base"}}</th>
+          <th data-tooltip="B5.Tooltip.burned">{{localize "B5.Field.burned"}}</th>
+          <th>{{localize "B5.Field.score"}}</th>
+          <th data-tooltip="B5.Tooltip.usesThisWeek">{{localize "B5.Field.usesThisWeek"}}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each itemsByType.influence as |item|}}
+          <tr data-item-id="{{item.id}}">
+            <td class="b5-item-name b5-clickable" data-action="rollInfluence">{{item.name}}</td>
+            <td>{{localize (concat "B5.InfluenceCategory." item.system.category)}}</td>
+            <td>{{item.system.base}}</td>
+            <td>{{item.system.burned}}</td>
+            <td class="b5-total">{{item.system.value}}</td>
+            <td>{{item.system.usesThisWeek}}{{#if item.system.repeatPenalty}}
+              <span class="b5-warning-inline">({{item.system.repeatPenalty}})</span>{{/if}}</td>
+            <td class="b5-row-actions">
+              <button type="button" data-action="burnInfluence" data-tooltip="B5.Tooltip.burnAction">
+                <i class="fa-solid fa-fire"></i>
+              </button>
+              <button type="button" data-action="editItem"><i class="fa-solid fa-pen"></i></button>
+              <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        {{else}}
+          <tr><td colspan="7" class="b5-empty">{{localize "B5.Empty.influence"}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <p class="b5-hint">{{localize "B5.Hint.influenceCheck"}}</p>
+    <p class="b5-hint">
+      {{localize "B5.Hint.socialBonus"}}: {{b5Signed system.influence.socialBonus}}
+    </p>
+  </div>
+</section>

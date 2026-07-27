@@ -1,0 +1,22 @@
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.effect"}}
+      <input type="text" name="system.effect" value="{{system.effect}}">
+    </label>
+    <label>{{localize "B5.Field.weight"}}
+      <input type="number" step="0.1" name="system.weight" value="{{system.weight}}">
+    </label>
+    <label>{{localize "B5.Field.cost"}}
+      <input type="number" name="system.cost" value="{{system.cost}}">
+    </label>
+    <label>{{localize "B5.Field.legality"}}
+      <select name="system.legality">
+        {{#each config.legality as |l|}}
+          <option value="{{l}}" {{#if (b5Eq l ../system.legality)}}selected{{/if}}>
+            {{localize (concat "B5.Legality." l)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+  </div>
+</div>

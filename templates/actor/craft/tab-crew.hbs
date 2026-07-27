@@ -1,0 +1,48 @@
+{{!-- Crew: the generic complement plus named characters assigned to stations. --}}
+<section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="crew">
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.crew"}}</h3>
+    <div class="b5-grid-4">
+      <label>{{localize "B5.Field.crewRace"}}
+        <input type="text" name="system.crew.race" value="{{system.crew.race}}">
+      </label>
+      <label>{{localize "B5.Field.crewGrade"}}
+        <select name="system.crew.grade">
+          {{#each config.crewGrades as |grade|}}
+            <option value="{{grade}}" {{#if (b5Eq grade ../system.crew.grade)}}selected{{/if}}>
+              {{localize (concat "B5.CrewGrade." grade)}}
+            </option>
+          {{/each}}
+        </select>
+      </label>
+      <label>{{localize "B5.Field.crewBab"}}
+        <input type="number" name="system.crew.bab" value="{{system.crew.bab}}">
+      </label>
+      <label>{{localize "B5.Field.crewTraining"}}
+        <input type="number" name="system.crew.training" value="{{system.crew.training}}">
+      </label>
+      <label>{{localize "B5.Field.complement"}}
+        <input type="number" name="system.crew.complement" value="{{system.crew.complement}}">
+      </label>
+      <label>{{localize "B5.Field.passengers"}}
+        <input type="number" name="system.crew.passengers" value="{{system.crew.passengers}}">
+      </label>
+    </div>
+  </div>
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.stations"}}</h3>
+    <p class="b5-hint">{{localize "B5.Hint.dropActorOnStation"}}</p>
+    <ul class="b5-stations">
+      {{#each stations as |station|}}
+        <li class="b5-station" data-station="{{station.role}}" data-drop-types="__actor">
+          <span class="b5-station-label">{{station.label}}</span>
+          <span class="b5-station-actor">
+            {{#if station.actor}}{{station.actor.name}}{{else}}<em>{{localize "B5.Empty.station"}}</em>{{/if}}
+          </span>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+</section>

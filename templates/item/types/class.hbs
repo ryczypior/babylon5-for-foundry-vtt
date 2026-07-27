@@ -1,0 +1,94 @@
+{{!-- A class declares which of the three shared progression tracks it uses. --}}
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.classKey"}}
+      <input type="text" name="system.classKey" value="{{system.classKey}}">
+    </label>
+    <label>{{localize "B5.Field.levels"}}
+      <input type="number" min="0" max="10" name="system.levels" value="{{system.levels}}">
+    </label>
+    <label>{{localize "B5.Field.variant"}}
+      <input type="text" name="system.variant" value="{{system.variant}}">
+    </label>
+    <label class="b5-inline-toggle" data-tooltip="B5.Tooltip.firstLevel">
+      <input type="checkbox" name="system.takenAtFirstLevel" {{checked system.takenAtFirstLevel}}>
+      {{localize "B5.Field.firstLevel"}}
+    </label>
+  </div>
+</div>
+
+<div class="b5-card">
+  <h3>{{localize "B5.Section.progressionTracks"}}</h3>
+  <div class="b5-grid-5">
+    {{#each config.trackKeys as |trackKey|}}{{/each}}
+    <label>{{localize "B5.Field.bab"}}
+      <select name="system.tracks.bab">
+        {{#each config.trackRatings as |rating|}}
+          <option value="{{rating}}" {{#if (b5Eq rating ../system.tracks.bab)}}selected{{/if}}>
+            {{localize (concat "B5.Track." rating)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Save.fort"}}
+      <select name="system.tracks.fort">
+        {{#each config.trackRatings as |rating|}}
+          <option value="{{rating}}" {{#if (b5Eq rating ../system.tracks.fort)}}selected{{/if}}>
+            {{localize (concat "B5.Track." rating)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Save.ref"}}
+      <select name="system.tracks.ref">
+        {{#each config.trackRatings as |rating|}}
+          <option value="{{rating}}" {{#if (b5Eq rating ../system.tracks.ref)}}selected{{/if}}>
+            {{localize (concat "B5.Track." rating)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Save.will"}}
+      <select name="system.tracks.will">
+        {{#each config.trackRatings as |rating|}}
+          <option value="{{rating}}" {{#if (b5Eq rating ../system.tracks.will)}}selected{{/if}}>
+            {{localize (concat "B5.Track." rating)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Field.defenceBonus"}}
+      <select name="system.tracks.defence">
+        {{#each config.trackRatings as |rating|}}
+          <option value="{{rating}}" {{#if (b5Eq rating ../system.tracks.defence)}}selected{{/if}}>
+            {{localize (concat "B5.Track." rating)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+  </div>
+</div>
+
+<div class="b5-card">
+  <h3>{{localize "B5.Section.classNumbers"}}</h3>
+  <div class="b5-grid-4">
+    <label data-tooltip="B5.Tooltip.initialHp">{{localize "B5.Field.initialHp"}}
+      <input type="number" name="system.initialHp" value="{{system.initialHp}}">
+    </label>
+    <label>{{localize "B5.Field.additionalHp"}}
+      <input type="number" name="system.additionalHp" value="{{system.additionalHp}}">
+    </label>
+    <label>{{localize "B5.Field.skillPointsPerLevel"}}
+      <input type="number" name="system.skillPoints" value="{{system.skillPoints}}">
+    </label>
+    <label>{{localize "B5.Field.additionalInfluence"}}
+      <input type="number" name="system.additionalInfluence" value="{{system.additionalInfluence}}">
+    </label>
+    <label>{{localize "B5.Field.initialInfluence"}}
+      <input type="text" name="system.initialInfluence" value="{{system.initialInfluence}}">
+    </label>
+    <label>{{localize "B5.Field.startingCredits"}}
+      <input type="text" name="system.startingCredits" value="{{system.startingCredits}}">
+    </label>
+  </div>
+</div>

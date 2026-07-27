@@ -1,0 +1,67 @@
+<section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="overview">
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.craftStats"}}</h3>
+    <div class="b5-grid-4">
+      <label>{{localize "B5.Field.handling"}}
+        <input type="number" name="system.attributes.handling" value="{{system.attributes.handling}}">
+      </label>
+      <label>{{localize "B5.Field.sensors"}}
+        <input type="number" name="system.attributes.sensors" value="{{system.attributes.sensors}}">
+      </label>
+      <label>{{localize "B5.Field.stealth"}}
+        <input type="number" name="system.attributes.stealth" value="{{system.attributes.stealth}}">
+      </label>
+      {{#unless isSurface}}
+        <label>{{localize "B5.Field.stress"}}
+          <input type="number" name="system.attributes.stress" value="{{system.attributes.stress}}">
+        </label>
+      {{else}}
+        <label>{{localize "B5.Field.speed"}}
+          <input type="number" name="system.attributes.speed" value="{{system.attributes.speed}}">
+        </label>
+      {{/unless}}
+      <label>{{localize "B5.Field.ordersPerTurn"}}
+        <input type="number" name="system.attributes.ordersPerTurn" value="{{system.attributes.ordersPerTurn}}">
+      </label>
+      <label>{{localize "B5.Field.hangarCapacity"}}
+        <input type="number" name="system.attributes.hangarCapacity" value="{{system.attributes.hangarCapacity}}">
+      </label>
+      <label>{{localize "B5.Field.cargoCapacity"}}
+        <input type="number" name="system.attributes.cargoCapacity" value="{{system.attributes.cargoCapacity}}">
+      </label>
+      <label>{{localize "B5.Field.band"}}
+        <select name="system.combat.band">
+          {{#each config.craftRangeBands as |band|}}
+            <option value="{{band}}" {{#if (b5Eq band ../system.combat.band)}}selected{{/if}}>
+              {{localize (concat "B5.Range." band)}}
+            </option>
+          {{/each}}
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="b5-card">
+    <h3>
+      {{localize "B5.Section.craftFeatures"}}
+      <button type="button" class="b5-add" data-action="createItem" data-type="craftFeature">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </h3>
+    <ul class="b5-item-list">
+      {{#each features as |item|}}
+        <li data-item-id="{{item.id}}" class="{{#if item.system.destroyed}}b5-destroyed-row{{/if}}">
+          <span class="b5-item-name" data-action="editItem">{{item.name}}</span>
+          <span class="b5-item-meta">{{item.system.effect}}</span>
+          <button type="button" data-action="toggleItem" data-field="destroyed">
+            <i class="fa-solid fa-explosion"></i>
+          </button>
+          <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
+        </li>
+      {{else}}
+        <li class="b5-empty">{{localize "B5.Empty.craftFeatures"}}</li>
+      {{/each}}
+    </ul>
+  </div>
+</section>

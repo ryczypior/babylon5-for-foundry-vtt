@@ -1,0 +1,7 @@
+<nav class="b5-tabs">
+  {{#each tabs}}
+    <a class="b5-tab {{#if active}}active{{/if}}" data-tab-target="{{id}}">
+      <i class="{{icon}}"></i><span>{{label}}</span>
+    </a>
+  {{/each}}
+</nav>

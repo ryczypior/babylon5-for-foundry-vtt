@@ -1,0 +1,44 @@
+<div class="b5-card">
+  <h3>{{localize "B5.Section.abilityModifiers"}}</h3>
+  <div class="b5-grid-6">
+    {{#each system.abilityModifiers as |value key|}}
+      <label>{{b5AbilityAbbr key}}
+        <input type="number" name="system.abilityModifiers.{{key}}" value="{{value}}">
+      </label>
+    {{/each}}
+  </div>
+</div>
+
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.raceKey"}}
+      <input type="text" name="system.raceKey" value="{{system.raceKey}}">
+    </label>
+    <label>{{localize "B5.Field.size"}}
+      <select name="system.size">
+        {{#each config.sizes as |data key|}}
+          <option value="{{key}}" {{#if (b5Eq key ../system.size)}}selected{{/if}}>{{localize (concat "B5.Size." key)}}</option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Field.speed"}}
+      <input type="number" name="system.speed" value="{{system.speed}}">
+    </label>
+    <label>{{localize "B5.Field.swimSpeed"}}
+      <input type="number" name="system.swimSpeed" value="{{system.swimSpeed}}">
+    </label>
+    <label>{{localize "B5.Field.drNatural"}}
+      <input type="number" name="system.naturalDr" value="{{system.naturalDr}}">
+    </label>
+    <label>{{localize "B5.Field.caste"}}
+      <input type="text" name="system.caste" value="{{system.caste}}">
+    </label>
+    <label>{{localize "B5.Field.bonusFeats"}}
+      <input type="number" name="system.bonusFeats" value="{{system.bonusFeats}}">
+    </label>
+    <label class="b5-inline-toggle" data-tooltip="B5.Tooltip.canBeTelepath">
+      <input type="checkbox" name="system.canBeTelepath" {{checked system.canBeTelepath}}>
+      {{localize "B5.Field.canBeTelepath"}}
+    </label>
+  </div>
+</div>

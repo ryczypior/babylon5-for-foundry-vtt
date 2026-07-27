@@ -1,0 +1,23 @@
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label data-tooltip="B5.Tooltip.ammoId">{{localize "B5.Field.ammoId"}}
+      <input type="text" name="system.ammoId" value="{{system.ammoId}}">
+    </label>
+    <label>{{localize "B5.Field.capacity"}}
+      <input type="number" name="system.capacity" value="{{system.capacity}}">
+    </label>
+    <label>{{localize "B5.Field.quantity"}}
+      <input type="number" name="system.quantity" value="{{system.quantity}}">
+    </label>
+    <label>{{localize "B5.Field.legality"}}
+      <select name="system.legality">
+        {{#each config.legality as |l|}}
+          <option value="{{l}}" {{#if (b5Eq l ../system.legality)}}selected{{/if}}>
+            {{localize (concat "B5.Legality." l)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+  </div>
+  <p class="b5-hint">{{localize "B5.Hint.ammoLegality"}}</p>
+</div>

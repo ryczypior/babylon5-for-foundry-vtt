@@ -1,0 +1,49 @@
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.category"}}
+      <select name="system.category">
+        <option value="general" {{#if (b5Eq system.category "general")}}selected{{/if}}>{{localize "B5.FeatCategory.general"}}</option>
+        <option value="telepathy" {{#if (b5Eq system.category "telepathy")}}selected{{/if}}>{{localize "B5.FeatCategory.telepathy"}}</option>
+        <option value="racial" {{#if (b5Eq system.category "racial")}}selected{{/if}}>{{localize "B5.FeatCategory.racial"}}</option>
+      </select>
+    </label>
+    <label>{{localize "B5.Field.race"}}
+      <input type="text" name="system.race" value="{{system.race}}">
+    </label>
+    <label class="b5-inline-toggle">
+      <input type="checkbox" name="system.repeatable.allowed" {{checked system.repeatable.allowed}}>
+      {{localize "B5.Field.repeatable"}}
+    </label>
+    <label class="b5-inline-toggle">
+      <input type="checkbox" name="system.repeatable.stacks" {{checked system.repeatable.stacks}}>
+      {{localize "B5.Field.stacks"}}
+    </label>
+  </div>
+</div>
+
+<div class="b5-card">
+  <h3>{{localize "B5.Section.prerequisites"}}</h3>
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.bab"}}
+      <input type="number" name="system.prerequisites.bab" value="{{system.prerequisites.bab}}">
+    </label>
+    <label>{{localize "B5.Field.characterLevel"}}
+      <input type="number" name="system.prerequisites.characterLevel" value="{{system.prerequisites.characterLevel}}">
+    </label>
+    <label>{{localize "B5.Field.pRatingMin"}}
+      <input type="number" name="system.prerequisites.pRatingMin" value="{{system.prerequisites.pRatingMin}}">
+    </label>
+    <label class="b5-inline-toggle">
+      <input type="checkbox" name="system.prerequisites.firstLevelOnly" {{checked system.prerequisites.firstLevelOnly}}>
+      {{localize "B5.Field.firstLevelOnly"}}
+    </label>
+  </div>
+  <label class="b5-full">{{localize "B5.Field.otherPrerequisites"}}
+    <input type="text" name="system.prerequisites.other" value="{{system.prerequisites.other}}">
+  </label>
+</div>
+
+<div class="b5-card">
+  <h3>{{localize "B5.Field.benefit"}}</h3>
+  <prose-mirror name="system.benefit" value="{{source.benefit}}"></prose-mirror>
+</div>

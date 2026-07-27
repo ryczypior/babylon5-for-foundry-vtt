@@ -1,0 +1,522 @@
+@use "variables" as *;
+
+// Every rule is scoped to `.application.babylon5`. Foundry v13's own UI reuses generic
+// class names (.tab, .active, .card…), so an unscoped rule leaks straight into core.
+.application.babylon5 {
+  // Light theme is the baseline; the dark overrides below have to win both when the OS asks
+  // for dark AND when Foundry's own theme toggle stamps .theme-dark (they disagree often).
+  --b5-accent: #{$b5-violet};
+  --b5-accent-bright: #4f4490;
+  --b5-line: rgba(120, 128, 140, 0.35);
+  --b5-panel: rgba(255, 255, 255, 0.55);
+  --b5-panel-strong: rgba(255, 255, 255, 0.8);
+  --b5-text-muted: #{$b5-steel-dark};
+
+  @media (prefers-color-scheme: dark) {
+    --b5-accent: #8b80d4;
+    --b5-accent-bright: #b3a9f7;
+    --b5-line: rgba(180, 190, 205, 0.28);
+    --b5-panel: rgba(255, 255, 255, 0.05);
+    --b5-panel-strong: rgba(255, 255, 255, 0.1);
+    --b5-text-muted: #b8bfcb;
+  }
+}
+
+// Foundry's theme classes land on <html> and on the application itself.
+:where(.theme-dark) .application.babylon5,
+.application.babylon5.theme-dark {
+  --b5-accent: #8b80d4;
+  --b5-accent-bright: #b3a9f7;
+  --b5-line: rgba(180, 190, 205, 0.28);
+  --b5-panel: rgba(255, 255, 255, 0.05);
+  --b5-panel-strong: rgba(255, 255, 255, 0.1);
+  --b5-text-muted: #b8bfcb;
+}
+
+:where(.theme-light) .application.babylon5,
+.application.babylon5.theme-light {
+  --b5-accent: #{$b5-violet};
+  --b5-accent-bright: #4f4490;
+  --b5-line: rgba(120, 128, 140, 0.35);
+  --b5-panel: rgba(255, 255, 255, 0.55);
+  --b5-panel-strong: rgba(255, 255, 255, 0.8);
+  --b5-text-muted: #{$b5-steel-dark};
+}
+
+.application.babylon5 {
+
+  .window-content {
+    // Sheet windows respond to their own width, not the viewport.
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: $b5-gap;
+    padding: 0.5rem;
+    overflow: hidden;
+  }
+
+  /* ---------- header ---------- */
+
+  .b5-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--b5-accent);
+  }
+
+  .b5-portrait {
+    width: 84px;
+    height: 84px;
+    object-fit: cover;
+    border: 1px solid var(--b5-line);
+    border-radius: $b5-radius;
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+
+  .b5-header-main {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .b5-name {
+    width: 100%;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border: none;
+    border-bottom: 1px solid transparent;
+    background: transparent;
+
+    &:hover, &:focus { border-bottom-color: var(--b5-accent); }
+  }
+
+  .b5-identity {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    margin-top: 0.35rem;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--b5-text-muted);
+    }
+
+    input { width: 7rem; }
+  }
+
+  .b5-item-type {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--b5-text-muted);
+  }
+
+  /* ---------- vitals strip ---------- */
+
+  .b5-vitals {
+    display: flex;
+    gap: 0.4rem;
+    flex: 0 0 auto;
+  }
+
+  .b5-vital {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 4.2rem;
+    padding: 0.3rem 0.45rem;
+    background: var(--b5-panel-strong);
+    border: 1px solid var(--b5-line);
+    border-top: 2px solid var(--b5-accent);
+    border-radius: $b5-radius;
+  }
+
+  .b5-vital-label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--b5-text-muted);
+  }
+
+  .b5-vital-value { font-size: 1.2rem; font-weight: 600; line-height: 1.1; }
+  .b5-vital-sub { font-size: 0.65rem; color: var(--b5-text-muted); }
+  .b5-vital-hp { min-width: 8rem; }
+  .b5-destroyed { color: $b5-danger; font-weight: 700; }
+
+  .b5-hp-inputs {
+    display: flex;
+    align-items: baseline;
+    gap: 0.2rem;
+
+    input { width: 2.8rem; text-align: center; font-size: 1.05rem; }
+  }
+
+  .b5-hp-bar {
+    width: 100%;
+    height: 4px;
+    margin-top: 0.2rem;
+    background: var(--b5-line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .b5-hp-fill { height: 100%; background: var(--b5-accent); }
+
+  .b5-nonlethal {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    color: var(--b5-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    input { width: 2.4rem; }
+  }
+
+  /* ---------- tabs ---------- */
+
+  .b5-tabs {
+    display: flex;
+    gap: 2px;
+    flex: 0 0 auto;
+    border-bottom: 1px solid var(--b5-line);
+  }
+
+  .b5-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--b5-text-muted);
+    background: var(--b5-panel);
+    border: 1px solid var(--b5-line);
+    border-bottom: none;
+    border-radius: $b5-radius $b5-radius 0 0;
+    cursor: pointer;
+
+    &:hover { color: var(--b5-accent-bright); }
+
+    &.active {
+      color: inherit;
+      background: var(--b5-panel-strong);
+      border-top: 2px solid var(--b5-accent);
+      font-weight: 600;
+    }
+
+    // Icons stay visible; labels collapse on a narrow sheet.
+    @container (max-width: 640px) {
+      span { display: none; }
+    }
+  }
+
+  /* ---------- tab panels ---------- */
+
+  .b5-tab-panel {
+    display: none;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 0.25rem;
+
+    &.active { display: block; }
+  }
+
+  /* ---------- cards & grids ---------- */
+
+  .b5-card {
+    margin-bottom: 0.6rem;
+    padding: 0.5rem 0.6rem;
+    background: var(--b5-panel);
+    border: 1px solid var(--b5-line);
+    border-left: 3px solid var(--b5-accent);
+    border-radius: $b5-radius;
+
+    h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 0 0.4rem;
+      padding-bottom: 0.15rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      border: none;
+      border-bottom: 1px solid var(--b5-line);
+      color: var(--b5-accent-bright);
+    }
+
+    h4.b5-arc {
+      margin: 0.5rem 0 0.2rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--b5-text-muted);
+    }
+  }
+
+  .b5-columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+
+    @container (min-width: 700px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @each $n in (2, 3, 4, 5, 6) {
+    .b5-grid-#{$n} {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.35rem 0.6rem;
+
+      @container (min-width: 620px) {
+        grid-template-columns: repeat($n, 1fr);
+      }
+    }
+  }
+
+  .b5-grid-2, .b5-grid-3, .b5-grid-4, .b5-grid-5, .b5-grid-6 {
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--b5-text-muted);
+    }
+
+    input, select, .b5-readonly, .b5-total { font-size: 0.9rem; text-transform: none; }
+  }
+
+  label.b5-inline-toggle {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  label.b5-full {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-top: 0.4rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--b5-text-muted);
+  }
+
+  /* ---------- tables ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+
+    th, td {
+      padding: 0.15rem 0.3rem;
+      border-bottom: 1px solid var(--b5-line);
+      text-align: center;
+    }
+
+    thead th {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--b5-text-muted);
+      font-weight: 500;
+    }
+
+    tbody th.b5-row-label {
+      text-align: left;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    input { width: 100%; max-width: 4.5rem; text-align: center; }
+    input[type="checkbox"] { width: auto; }
+
+    // The label column takes the slack; numeric cells stay on one line. Do NOT set an
+    // explicit width on every `td` — with a wide label column the numeric cells then
+    // wrap their contents onto two lines.
+    th.b5-row-label { width: 40%; }
+    td { white-space: nowrap; }
+    td.b5-span, td.b5-prereq { white-space: normal; text-align: left; }
+  }
+
+  // Wide tables scroll inside their card rather than stretching the sheet.
+  .b5-skills, .b5-weapons, .b5-influence, .b5-attacks, .b5-feats {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .b5-total { font-weight: 700; color: var(--b5-accent-bright); }
+  .b5-readonly { display: inline-block; min-width: 1.5rem; }
+  .b5-center { text-align: center; }
+  .b5-sep { opacity: 0.5; }
+
+  .b5-ability-tag {
+    margin-left: 0.3rem;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    color: var(--b5-text-muted);
+  }
+
+  .b5-acp-mark { color: $b5-danger; }
+
+  .b5-clickable {
+    cursor: pointer;
+
+    &:hover { color: var(--b5-accent-bright); text-shadow: 0 0 6px rgba(143, 131, 216, 0.4); }
+  }
+
+  /* ---------- lists ---------- */
+
+  .b5-item-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.2rem 0;
+      border-bottom: 1px solid var(--b5-line);
+    }
+  }
+
+  .b5-item-name { flex: 1 1 auto; cursor: pointer; }
+  .b5-item-name:hover { color: var(--b5-accent-bright); }
+  .b5-item-meta { font-size: 0.75rem; color: var(--b5-text-muted); }
+  .b5-empty { color: var(--b5-text-muted); font-style: italic; }
+  .b5-destroyed-row { opacity: 0.5; text-decoration: line-through; }
+
+  .b5-chip {
+    padding: 0 0.35rem;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    border: 1px solid var(--b5-accent);
+    border-radius: 8px;
+    color: var(--b5-accent-bright);
+  }
+
+  .b5-row-actions {
+    display: flex;
+    gap: 0.15rem;
+    justify-content: flex-end;
+
+    button {
+      width: auto;
+      padding: 0 0.3rem;
+      background: none;
+      border: none;
+      color: var(--b5-text-muted);
+      cursor: pointer;
+
+      &:hover { color: var(--b5-accent-bright); }
+    }
+  }
+
+  .b5-add, .b5-add-group button {
+    margin-left: auto;
+    width: auto;
+    padding: 0 0.4rem;
+    background: none;
+    border: 1px solid var(--b5-line);
+    border-radius: $b5-radius;
+    color: var(--b5-text-muted);
+    cursor: pointer;
+
+    &:hover { color: var(--b5-accent-bright); border-color: var(--b5-accent); }
+  }
+
+  .b5-add-group { display: flex; gap: 0.2rem; margin-left: auto; }
+
+  .b5-toggle {
+    width: auto;
+    background: none;
+    border: none;
+    color: var(--b5-text-muted);
+    cursor: pointer;
+
+    &.on { color: var(--b5-accent-bright); }
+  }
+
+  /* ---------- conditions ---------- */
+
+  .b5-conditions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .b5-condition {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.1rem 0.4rem;
+    font-size: 0.72rem;
+    border: 1px solid var(--b5-line);
+    border-radius: 10px;
+    cursor: pointer;
+
+    &.on { border-color: $b5-danger; color: $b5-danger; }
+  }
+
+  /* ---------- craft stations ---------- */
+
+  .b5-stations {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.3rem;
+  }
+
+  .b5-station {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.25rem 0.4rem;
+    border: 1px dashed var(--b5-line);
+    border-radius: $b5-radius;
+  }
+
+  .b5-station-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--b5-text-muted);
+  }
+
+  /* ---------- hints & warnings ---------- */
+
+  .b5-hint {
+    margin: 0.3rem 0 0;
+    font-size: 0.72rem;
+    font-style: italic;
+    color: var(--b5-text-muted);
+  }
+
+  .b5-warning {
+    margin: 0.3rem 0 0;
+    font-size: 0.75rem;
+    color: $b5-danger;
+  }
+
+  .b5-warning-inline { color: $b5-danger; }
+
+  .b5-prereq { font-size: 0.75rem; color: var(--b5-text-muted); text-align: left; }
+}

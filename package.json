@@ -1,0 +1,15 @@
+{
+  "name": "babylon5",
+  "version": "0.1.0",
+  "description": "Babylon 5 2nd Edition system for Foundry VTT (v13+)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "sass styles/babylon5.scss styles/babylon5.css --style=compressed --no-source-map",
+    "watch": "sass styles/babylon5.scss styles/babylon5.css --watch",
+    "link": "node tools/link-to-foundry.mjs"
+  },
+  "devDependencies": {
+    "sass": "^1.77.0"
+  }
+}

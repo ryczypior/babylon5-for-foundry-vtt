@@ -1,0 +1,14 @@
+debug.log
+.idea
+/.vs/wfrp4/v16/.suo
+/.vs/slnx.sqlite
+/.vs/VSWorkspaceState.json
+.sass-cache/
+styles/babylon5.css
+styles/babylon5.css.map
+node_modules
+babylon5.lock
+foundryconfig.json
+build
+.claude
+CLAUDE.md

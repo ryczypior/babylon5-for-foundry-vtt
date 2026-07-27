@@ -1,0 +1,117 @@
+{{!-- Summary: laid out in the printed sheet's order so the book stays a usable reference. --}}
+<section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="summary">
+
+  <div class="b5-columns">
+    <div class="b5-card b5-abilities">
+      <h3>{{localize "B5.Section.abilities"}}</h3>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>{{localize "B5.Field.score"}}</th>
+            <th>{{localize "B5.Field.mod"}}</th>
+            <th>{{localize "B5.Field.tempScore"}}</th>
+            <th>{{localize "B5.Field.tempMod"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each system.abilities as |ability key|}}
+            <tr>
+              <th class="b5-row-label">{{localize (concat "B5.Ability." key ".long")}}</th>
+              <td><input type="number" name="system.abilities.{{key}}.base" value="{{ability.base}}"></td>
+              <td class="b5-readonly">{{b5Signed ability.mod}}</td>
+              <td><input type="number" name="system.abilities.{{key}}.temp.value" value="{{ability.temp.value}}"></td>
+              <td class="b5-readonly">{{#if ability.temp.value}}{{b5Signed ability.temp.mod}}{{else}}—{{/if}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <p class="b5-hint">{{localize "B5.Hint.abilityBreakdown"}}</p>
+    </div>
+
+    <div class="b5-card b5-saves">
+      <h3>{{localize "B5.Section.saves"}}</h3>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>{{localize "B5.Field.classBonus"}}</th>
+            <th>{{localize "B5.Field.abilityMod"}}</th>
+            <th>{{localize "B5.Field.misc"}}</th>
+            <th>{{localize "B5.Field.total"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each system.saves as |save key|}}
+            <tr>
+              <th class="b5-row-label b5-clickable" data-action="rollSave" data-save="{{key}}">
+                {{localize (concat "B5.Save." key)}}
+              </th>
+              <td class="b5-readonly">{{b5Signed save.classBonus}}</td>
+              <td class="b5-readonly">{{b5Signed save.abilityMod}}</td>
+              <td><input type="number" name="system.saves.{{key}}.misc" value="{{save.misc}}"></td>
+              <td class="b5-total">{{b5Signed save.total}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="b5-columns">
+    <div class="b5-card">
+      <h3>
+        {{localize "B5.Section.classes"}}
+        <button type="button" class="b5-add" data-action="createItem" data-type="class">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </h3>
+      <ul class="b5-item-list">
+        {{#each itemsByType.class as |item|}}
+          <li data-item-id="{{item.id}}">
+            <span class="b5-item-name" data-action="editItem">{{item.name}}</span>
+            <span class="b5-item-meta">{{localize "B5.Field.level"}} {{item.system.levels}}</span>
+            {{#if item.system.takenAtFirstLevel}}<span class="b5-chip">{{localize "B5.Field.firstLevel"}}</span>{{/if}}
+            <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
+          </li>
+        {{else}}
+          <li class="b5-empty">{{localize "B5.Empty.classes"}}</li>
+        {{/each}}
+      </ul>
+      {{#unless system.progression.multiclassBalanced}}
+        <p class="b5-warning">{{localize "B5.Warning.multiclassPenalty"}}</p>
+      {{/unless}}
+    </div>
+
+    <div class="b5-card">
+      <h3>
+        {{localize "B5.Section.race"}}
+        <button type="button" class="b5-add" data-action="createItem" data-type="race">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </h3>
+      <ul class="b5-item-list">
+        {{#each itemsByType.race as |item|}}
+          <li data-item-id="{{item.id}}">
+            <span class="b5-item-name" data-action="editItem">{{item.name}}</span>
+            <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
+          </li>
+        {{else}}
+          <li class="b5-empty">{{localize "B5.Empty.race"}}</li>
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.advancement"}}</h3>
+    <div class="b5-grid-4">
+      <label>{{localize "B5.Field.featsGranted"}}<span class="b5-readonly">{{system.progression.featsGranted}}</span></label>
+      <label>{{localize "B5.Field.featsSpent"}}<span class="b5-readonly">{{system.progression.featsSpent}}</span></label>
+      <label>{{localize "B5.Field.abilityIncreases"}}<span class="b5-readonly">{{system.progression.abilityIncreasesGranted}}</span></label>
+      <label>{{localize "B5.Field.skillPoints"}}
+        <input type="number" name="system.progression.skillPoints.total" value="{{system.progression.skillPoints.total}}">
+      </label>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,49 @@
+{{!-- Structural spaces are the damage track: each point of damage destroys one space. --}}
+<section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="damage">
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.structuralSpaces"}}</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>{{localize "B5.Field.spaceType"}}</th>
+          <th>{{localize "B5.Field.remaining"}}</th>
+          <th>{{localize "B5.Field.max"}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each system.spaces as |space key|}}
+          <tr>
+            <th class="b5-row-label">{{localize (concat "B5.Space." key)}}</th>
+            <td><input type="number" name="system.spaces.{{key}}.value" value="{{space.value}}"></td>
+            <td><input type="number" name="system.spaces.{{key}}.max" value="{{space.max}}"></td>
+          </tr>
+        {{/each}}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>{{localize "B5.Field.total"}}</th>
+          <td class="b5-total">{{spacesRemaining}}</td>
+          <td class="b5-total">{{spacesTotal}}</td>
+        </tr>
+      </tfoot>
+    </table>
+    <p class="b5-hint">{{localize "B5.Hint.craftDamage"}}</p>
+  </div>
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.combatState"}}</h3>
+    <div class="b5-grid-3">
+      <label class="b5-inline-toggle">
+        <input type="checkbox" name="system.combat.drifting" {{checked system.combat.drifting}}>
+        {{localize "B5.Field.drifting"}}
+      </label>
+      <label>{{localize "B5.Field.ordersUsed"}}
+        <input type="number" name="system.combat.ordersUsed" value="{{system.combat.ordersUsed}}">
+      </label>
+      <label>{{localize "B5.Field.initiative"}}
+        <input type="number" name="system.combat.initiative" value="{{system.combat.initiative}}">
+      </label>
+    </div>
+  </div>
+</section>

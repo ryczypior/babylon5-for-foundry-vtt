@@ -1,0 +1,88 @@
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.category"}}
+      <select name="system.category">
+        {{#each config.weaponCategories as |cat|}}
+          <option value="{{cat}}" {{#if (b5Eq cat ../system.category)}}selected{{/if}}>
+            {{localize (concat "B5.WeaponCategory." cat)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Field.damage"}}
+      <input type="text" name="system.damage" value="{{system.damage}}">
+    </label>
+    <label>{{localize "B5.Field.critical"}}
+      <input type="text" name="system.critical" value="{{system.critical}}">
+    </label>
+    <label>{{localize "B5.Field.damageType"}}
+      <select name="system.damageType">
+        {{#each config.damageTypes as |t|}}
+          <option value="{{t}}" {{#if (b5Eq t ../system.damageType)}}selected{{/if}}>
+            {{localize (concat "B5.DamageType." t)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Field.rangeIncrement"}}
+      <input type="number" name="system.rangeIncrement" value="{{system.rangeIncrement}}">
+    </label>
+    <label data-tooltip="B5.Tooltip.ap">{{localize "B5.Field.ap"}}
+      <input type="number" name="system.ap" value="{{system.ap}}">
+    </label>
+    <label>{{localize "B5.Field.areaOfEffect"}}
+      <input type="text" name="system.areaOfEffect" value="{{system.areaOfEffect}}">
+    </label>
+    <label>{{localize "B5.Field.attackLine"}}
+      <select name="system.attackLine">
+        {{#each config.attackLines as |data key|}}
+          <option value="{{key}}" {{#if (b5Eq key ../system.attackLine)}}selected{{/if}}>
+            {{localize (concat "B5.Attack." key)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+  </div>
+</div>
+
+<div class="b5-card">
+  <h3>{{localize "B5.Section.ammo"}}</h3>
+  <div class="b5-grid-4">
+    <label class="b5-inline-toggle">
+      <input type="checkbox" name="system.ammo.usesAmmo" {{checked system.ammo.usesAmmo}}>
+      {{localize "B5.Field.usesAmmo"}}
+    </label>
+    <label>{{localize "B5.Field.ammoId"}}
+      <input type="text" name="system.ammo.ammoId" value="{{system.ammo.ammoId}}">
+    </label>
+    <label data-tooltip="B5.Tooltip.ammoCapacity">{{localize "B5.Field.capacity"}}
+      <input type="number" name="system.ammo.capacity" value="{{system.ammo.capacity}}">
+    </label>
+    <label>{{localize "B5.Field.current"}}
+      <input type="number" name="system.ammo.current" value="{{system.ammo.current}}">
+    </label>
+  </div>
+</div>
+
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.quantity"}}
+      <input type="number" name="system.quantity" value="{{system.quantity}}">
+    </label>
+    <label>{{localize "B5.Field.weight"}}
+      <input type="number" step="0.1" name="system.weight" value="{{system.weight}}">
+    </label>
+    <label>{{localize "B5.Field.cost"}}
+      <input type="number" name="system.cost" value="{{system.cost}}">
+    </label>
+    <label>{{localize "B5.Field.legality"}}
+      <select name="system.legality">
+        {{#each config.legality as |l|}}
+          <option value="{{l}}" {{#if (b5Eq l ../system.legality)}}selected{{/if}}>
+            {{localize (concat "B5.Legality." l)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+  </div>
+</div>

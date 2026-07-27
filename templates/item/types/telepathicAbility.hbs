@@ -1,0 +1,36 @@
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.discipline"}}
+      <select name="system.discipline">
+        {{#each config.telepathyDisciplines as |d|}}
+          <option value="{{d}}" {{#if (b5Eq d ../system.discipline)}}selected{{/if}}>
+            {{localize (concat "B5.Discipline." d)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label data-tooltip="B5.Tooltip.power">{{localize "B5.Field.power"}}
+      <input type="number" name="system.power" value="{{system.power}}">
+    </label>
+    <label>{{localize "B5.Field.action"}}
+      <input type="text" name="system.action" value="{{system.action}}">
+    </label>
+    <label>{{localize "B5.Field.range"}}
+      <input type="text" name="system.range" value="{{system.range}}">
+    </label>
+    <label>{{localize "B5.Field.duration"}}
+      <input type="text" name="system.duration" value="{{system.duration}}">
+    </label>
+    <label>{{localize "B5.Field.saveType"}}
+      <input type="text" name="system.saveType" value="{{system.saveType}}">
+    </label>
+    <label class="b5-inline-toggle">
+      <input type="checkbox" name="system.concentration" {{checked system.concentration}}>
+      {{localize "B5.Field.concentration"}}
+    </label>
+    <label class="b5-inline-toggle">
+      <input type="checkbox" name="system.multiSubject" {{checked system.multiSubject}}>
+      {{localize "B5.Field.multiSubject"}}
+    </label>
+  </div>
+</div>

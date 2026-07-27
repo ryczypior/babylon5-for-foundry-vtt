@@ -1,0 +1,49 @@
+{{!-- Weapons grouped by firing arc — that is how they are fired and how they are destroyed. --}}
+<section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="weapons">
+
+  <div class="b5-card">
+    <h3>
+      {{localize "B5.Section.craftWeapons"}}
+      <button type="button" class="b5-add" data-action="createItem" data-type="craftWeapon">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </h3>
+
+    {{#each weaponsByArc as |weapons arc|}}
+      <h4 class="b5-arc">{{localize (concat "B5.Arc." arc)}}</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>{{localize "B5.Field.name"}}</th>
+            <th>{{localize "B5.Field.range"}}</th>
+            <th>{{localize "B5.Field.offence"}}</th>
+            <th>{{localize "B5.Field.qualities"}}</th>
+            <th>{{localize "B5.Field.weaponSpaces"}}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each weapons as |item|}}
+            <tr data-item-id="{{item.id}}" class="{{#if item.system.destroyed}}b5-destroyed-row{{/if}}">
+              <td class="b5-item-name" data-action="editItem">{{item.name}}</td>
+              <td>{{localize (concat "B5.Range." item.system.range)}}</td>
+              <td class="b5-total">{{item.system.offence}}</td>
+              <td>{{#each item.system.qualities}}{{this}} {{/each}}</td>
+              <td>{{item.system.weaponSpaces}}</td>
+              <td class="b5-row-actions">
+                <button type="button" data-action="toggleItem" data-field="destroyed">
+                  <i class="fa-solid fa-explosion"></i>
+                </button>
+                <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>
+          {{else}}
+            <tr><td colspan="6" class="b5-empty">—</td></tr>
+          {{/each}}
+        </tbody>
+      </table>
+    {{/each}}
+
+    <p class="b5-hint">{{localize "B5.Hint.totalOffence"}}</p>
+  </div>
+</section>

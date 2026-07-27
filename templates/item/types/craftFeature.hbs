@@ -1,0 +1,15 @@
+<div class="b5-card">
+  <div class="b5-grid-3">
+    <label>{{localize "B5.Field.effect"}}
+      <input type="text" name="system.effect" value="{{system.effect}}">
+    </label>
+    <label class="b5-inline-toggle" data-tooltip="B5.Tooltip.absorbsDamage">
+      <input type="checkbox" name="system.absorbsDamage" {{checked system.absorbsDamage}}>
+      {{localize "B5.Field.absorbsDamage"}}
+    </label>
+    <label class="b5-inline-toggle">
+      <input type="checkbox" name="system.destroyed" {{checked system.destroyed}}>
+      {{localize "B5.Field.destroyed"}}
+    </label>
+  </div>
+</div>

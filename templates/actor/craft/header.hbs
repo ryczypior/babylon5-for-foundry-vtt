@@ -1,0 +1,52 @@
+<header class="b5-header b5-header-craft">
+  <img class="b5-portrait" src="{{actor.img}}" data-edit="img" data-action="editImage" alt="{{actor.name}}">
+
+  <div class="b5-header-main">
+    <input class="b5-name" type="text" name="name" value="{{actor.name}}">
+    <div class="b5-identity">
+      <label>{{localize "B5.Field.craftClass"}}
+        <input type="text" name="system.details.craftClass" value="{{system.details.craftClass}}">
+      </label>
+      <label>{{localize "B5.Field.craftType"}}
+        <select name="system.details.craftType">
+          {{#each config.craftTypes as |type|}}
+            <option value="{{type}}" {{#if (b5Eq type ../system.details.craftType)}}selected{{/if}}>
+              {{localize (concat "B5.CraftType." type)}}
+            </option>
+          {{/each}}
+        </select>
+      </label>
+      <label>{{localize "B5.Field.size"}}
+        <select name="system.details.size">
+          {{#each config.sizes as |data key|}}
+            <option value="{{key}}" {{#if (b5Eq key ../system.details.size)}}selected{{/if}}>
+              {{localize (concat "B5.Size." key)}}
+            </option>
+          {{/each}}
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="b5-vitals">
+    <div class="b5-vital" data-tooltip="B5.Tooltip.craftArmour">
+      <span class="b5-vital-label">{{localize "B5.Field.armour"}}</span>
+      <div class="b5-hp-inputs">
+        <input type="number" name="system.attributes.armour.value" value="{{system.attributes.armour.value}}">
+        <span class="b5-sep">/</span>
+        <input type="number" name="system.attributes.armour.max" value="{{system.attributes.armour.max}}">
+      </div>
+    </div>
+    <div class="b5-vital">
+      <span class="b5-vital-label">{{localize "B5.Field.dv"}}</span>
+      <span class="b5-vital-value">{{system.attributes.dv.total}}</span>
+    </div>
+    <div class="b5-vital">
+      <span class="b5-vital-label">{{localize "B5.Field.spaces"}}</span>
+      <span class="b5-vital-value">{{spacesRemaining}}/{{spacesTotal}}</span>
+    </div>
+    {{#if system.combat.destroyed}}
+      <div class="b5-vital b5-destroyed">{{localize "B5.Field.destroyed"}}</div>
+    {{/if}}
+  </div>
+</header>

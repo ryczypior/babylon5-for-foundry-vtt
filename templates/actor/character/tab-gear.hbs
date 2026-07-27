@@ -1,0 +1,97 @@
+{{!-- Gear: armour (DR), other equipment, credits and load. --}}
+<section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="gear">
+
+  <div class="b5-card">
+    <h3>
+      {{localize "B5.Section.armour"}}
+      <button type="button" class="b5-add" data-action="createItem" data-type="armour">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>{{localize "B5.Field.worn"}}</th>
+          <th>{{localize "B5.Field.name"}}</th>
+          <th>{{localize "B5.Field.dr"}}</th>
+          <th>{{localize "B5.Field.speedReduction"}}</th>
+          <th>{{localize "B5.Field.acp"}}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each armours as |item|}}
+          <tr data-item-id="{{item.id}}">
+            <td class="b5-center">
+              <button type="button" data-action="toggleItem" data-field="worn"
+                      class="b5-toggle {{#if item.system.worn}}on{{/if}}">
+                <i class="fa-solid {{#if item.system.worn}}fa-shield{{else}}fa-shield-halved{{/if}}"></i>
+              </button>
+            </td>
+            <td class="b5-item-name" data-action="editItem">{{item.name}}</td>
+            <td>{{item.system.dr}}</td>
+            <td>{{item.system.speedReduction}}</td>
+            <td>{{item.system.acp}}</td>
+            <td class="b5-row-actions">
+              <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        {{else}}
+          <tr><td colspan="6" class="b5-empty">{{localize "B5.Empty.armour"}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="b5-card">
+    <h3>
+      {{localize "B5.Section.equipment"}}
+      <span class="b5-add-group">
+        <button type="button" class="b5-add" data-action="createItem" data-type="gear"
+                data-tooltip="B5.Tooltip.addGear"><i class="fa-solid fa-plus"></i></button>
+        <button type="button" class="b5-add" data-action="createItem" data-type="ammunition"
+                data-tooltip="B5.Tooltip.addAmmo"><i class="fa-solid fa-bolt"></i></button>
+      </span>
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>{{localize "B5.Field.name"}}</th>
+          <th>{{localize "B5.Field.quantity"}}</th>
+          <th>{{localize "B5.Field.weight"}}</th>
+          <th>{{localize "B5.Field.legality"}}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each gear as |item|}}
+          <tr data-item-id="{{item.id}}">
+            <td class="b5-item-name" data-action="editItem">{{item.name}}</td>
+            <td>{{item.system.quantity}}</td>
+            <td>{{item.system.weight}}</td>
+            <td>{{localize (concat "B5.Legality." item.system.legality)}}</td>
+            <td class="b5-row-actions">
+              <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        {{else}}
+          <tr><td colspan="5" class="b5-empty">{{localize "B5.Empty.gear"}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.wealth"}}</h3>
+    <div class="b5-grid-4">
+      <label>{{localize "B5.Field.credits"}}
+        <input type="number" name="system.wealth.credits" value="{{system.wealth.credits}}">
+      </label>
+      <label>{{localize "B5.Field.lifestyle"}}
+        <input type="text" name="system.wealth.lifestyle" value="{{system.wealth.lifestyle}}">
+      </label>
+      <label>{{localize "B5.Field.load"}}<span class="b5-readonly">{{system.encumbrance.load}}</span></label>
+      <label>{{localize "B5.Field.acpTotal"}}<span class="b5-readonly">{{system.attributes.acp}}</span></label>
+    </div>
+  </div>
+</section>

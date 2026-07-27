@@ -1,0 +1,38 @@
+{{!-- Only the four subtyped skills are Items: Knowledge, Operations, Profession, Technical. --}}
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label>{{localize "B5.Field.skill"}}
+      <select name="system.skillKey">
+        {{#each config.subtypedSkills as |data key|}}
+          <option value="{{key}}" {{#if (b5Eq key ../system.skillKey)}}selected{{/if}}>
+            {{localize (concat "B5.Skill." key)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Field.subtype"}}
+      <input type="text" name="system.subtype" value="{{system.subtype}}">
+    </label>
+    <label>{{localize "B5.Field.keyAbility"}}
+      <select name="system.keyAbility">
+        {{#each config.abilities as |label key|}}
+          <option value="{{key}}" {{#if (b5Eq key ../system.keyAbility)}}selected{{/if}}>{{localize label}}</option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Field.group"}}
+      <input type="text" name="system.group" value="{{system.group}}" placeholder="whiteCollar">
+    </label>
+    <label>{{localize "B5.Field.ranks"}}
+      <input type="number" step="0.5" min="0" name="system.ranks" value="{{system.ranks}}">
+    </label>
+    <label>{{localize "B5.Field.misc"}}
+      <input type="number" name="system.misc" value="{{system.misc}}">
+    </label>
+    <label class="b5-inline-toggle">
+      <input type="checkbox" name="system.isClassSkill" {{checked system.isClassSkill}}>
+      {{localize "B5.Field.classSkill"}}
+    </label>
+    <label>{{localize "B5.Field.total"}}<span class="b5-total">{{b5Signed system.total}}</span></label>
+  </div>
+</div>

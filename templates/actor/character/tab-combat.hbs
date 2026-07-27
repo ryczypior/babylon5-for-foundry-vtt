@@ -1,0 +1,133 @@
+{{!-- Combat: the four attack lines, defences, weapons and conditions. --}}
+<section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="combat">
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.attacks"}}</h3>
+    <table class="b5-attacks">
+      <thead>
+        <tr>
+          <th></th>
+          <th>{{localize "B5.Field.bab"}}</th>
+          <th>{{localize "B5.Field.abilityMod"}}</th>
+          <th>{{localize "B5.Field.misc"}}</th>
+          <th>{{localize "B5.Field.total"}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each system.attacks as |line key|}}
+          <tr>
+            <th class="b5-row-label b5-clickable" data-action="rollAttack" data-attack="{{key}}">
+              {{localize (concat "B5.Attack." key)}}
+              <span class="b5-ability-tag">{{b5AbilityAbbr (lookup (lookup ../config.attackLines key) "ability")}}</span>
+            </th>
+            <td class="b5-readonly">{{b5Signed line.bab}}</td>
+            <td class="b5-readonly">{{b5Signed line.abilityMod}}</td>
+            <td><input type="number" name="system.attacks.{{key}}.misc" value="{{line.misc}}"></td>
+            <td class="b5-total">{{b5Signed line.total}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{#if system.attributes.bab.iteratives.length}}
+      <p class="b5-hint">{{localize "B5.Hint.iteratives"}}:
+        {{#each system.attributes.bab.iteratives}}{{b5Signed this}}{{#unless @last}} / {{/unless}}{{/each}}
+      </p>
+    {{/if}}
+  </div>
+
+  <div class="b5-columns">
+    <div class="b5-card">
+      <h3>{{localize "B5.Section.defence"}}</h3>
+      <table>
+        <tbody>
+          <tr>
+            <th class="b5-row-label">{{localize "B5.Field.dv"}}</th>
+            <td class="b5-readonly">10</td>
+            <td class="b5-readonly">{{b5Signed system.attributes.dv.classBonus}}</td>
+            <td class="b5-readonly">{{b5Signed system.attributes.dv.dexMod}}</td>
+            <td class="b5-readonly">{{b5Signed system.attributes.dv.sizeMod}}</td>
+            <td><input type="number" name="system.attributes.dv.misc" value="{{system.attributes.dv.misc}}"></td>
+            <td class="b5-total">{{system.attributes.dv.total}}</td>
+          </tr>
+          <tr>
+            <th class="b5-row-label">{{localize "B5.Field.flatFooted"}}</th>
+            <td colspan="5" class="b5-hint b5-span">{{localize "B5.Hint.flatFooted"}}</td>
+            <td class="b5-total">{{system.attributes.dv.flatFooted}}</td>
+          </tr>
+          <tr>
+            <th class="b5-row-label">{{localize "B5.Field.dodgeBonus"}}</th>
+            <td><input type="number" name="system.attributes.dv.dodge" value="{{system.attributes.dv.dodge}}"></td>
+            <td colspan="5"></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="b5-hint">{{localize "B5.Hint.noArmourClass"}}</p>
+    </div>
+
+    <div class="b5-card">
+      <h3>{{localize "B5.Section.damageReduction"}}</h3>
+      <div class="b5-grid-4">
+        <label>{{localize "B5.Field.drNatural"}}
+          <input type="number" name="system.attributes.dr.natural" value="{{system.attributes.dr.natural}}">
+        </label>
+        <label>{{localize "B5.Field.drArmour"}}<span class="b5-readonly">{{system.attributes.dr.armour}}</span></label>
+        <label>{{localize "B5.Field.misc"}}
+          <input type="number" name="system.attributes.dr.misc" value="{{system.attributes.dr.misc}}">
+        </label>
+        <label>{{localize "B5.Field.total"}}<span class="b5-total">{{system.attributes.dr.total}}</span></label>
+      </div>
+      <p class="b5-hint">{{localize "B5.Hint.drPipeline"}}</p>
+    </div>
+  </div>
+
+  <div class="b5-card">
+    <h3>
+      {{localize "B5.Section.weapons"}}
+      <button type="button" class="b5-add" data-action="createItem" data-type="weapon">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </h3>
+    <table class="b5-weapons">
+      <thead>
+        <tr>
+          <th>{{localize "B5.Field.name"}}</th>
+          <th>{{localize "B5.Field.damage"}}</th>
+          <th>{{localize "B5.Field.critical"}}</th>
+          <th>{{localize "B5.Field.rangeIncrement"}}</th>
+          <th>{{localize "B5.Field.ap"}}</th>
+          <th>{{localize "B5.Field.ammo"}}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each weapons as |item|}}
+          <tr data-item-id="{{item.id}}">
+            <td class="b5-item-name" data-action="editItem">{{item.name}}</td>
+            <td>{{item.system.damage}}</td>
+            <td>{{item.system.critical}}</td>
+            <td>{{#if item.system.rangeIncrement}}{{item.system.rangeIncrement}}{{else}}—{{/if}}</td>
+            <td>{{item.system.ap}}</td>
+            <td>{{#if item.system.ammo.usesAmmo}}{{item.system.ammo.current}}/{{item.system.ammo.capacity}}{{else}}—{{/if}}</td>
+            <td class="b5-row-actions">
+              <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        {{else}}
+          <tr><td colspan="7" class="b5-empty">{{localize "B5.Empty.weapons"}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.conditions"}}</h3>
+    <div class="b5-conditions">
+      {{#each system.conditions as |value key|}}
+        <label class="b5-condition {{#if value}}on{{/if}}">
+          <input type="checkbox" name="system.conditions.{{key}}" {{checked value}}>
+          {{localize (concat "B5.Condition." key)}}
+        </label>
+      {{/each}}
+    </div>
+  </div>
+</section>

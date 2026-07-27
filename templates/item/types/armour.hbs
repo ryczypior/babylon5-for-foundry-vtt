@@ -1,0 +1,34 @@
+{{!-- Armour grants Damage Reduction only — it never adds to Defence Value. --}}
+<div class="b5-card">
+  <div class="b5-grid-4">
+    <label data-tooltip="B5.Tooltip.armourDr">{{localize "B5.Field.dr"}}
+      <input type="number" name="system.dr" value="{{system.dr}}">
+    </label>
+    <label>{{localize "B5.Field.speedReduction"}}
+      <input type="number" name="system.speedReduction" value="{{system.speedReduction}}">
+    </label>
+    <label data-tooltip="B5.Tooltip.acp">{{localize "B5.Field.acp"}}
+      <input type="number" name="system.acp" value="{{system.acp}}">
+    </label>
+    <label class="b5-inline-toggle">
+      <input type="checkbox" name="system.worn" {{checked system.worn}}>
+      {{localize "B5.Field.worn"}}
+    </label>
+    <label>{{localize "B5.Field.weight"}}
+      <input type="number" step="0.1" name="system.weight" value="{{system.weight}}">
+    </label>
+    <label>{{localize "B5.Field.cost"}}
+      <input type="number" name="system.cost" value="{{system.cost}}">
+    </label>
+    <label>{{localize "B5.Field.legality"}}
+      <select name="system.legality">
+        {{#each config.legality as |l|}}
+          <option value="{{l}}" {{#if (b5Eq l ../system.legality)}}selected{{/if}}>
+            {{localize (concat "B5.Legality." l)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+  </div>
+  <p class="b5-hint">{{localize "B5.Hint.donTime"}}</p>
+</div>
