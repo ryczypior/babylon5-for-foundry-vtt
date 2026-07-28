@@ -16,7 +16,7 @@
       <tbody>
         {{#each system.attacks as |line key|}}
           <tr>
-            <th class="b5-row-label b5-clickable" data-action="rollAttack" data-attack="{{key}}">
+            <th class="b5-row-label b5-clickable" data-action="rollAttack" data-tooltip="B5.Tooltip.rollShift" data-attack="{{key}}">
               {{localize (concat "B5.Attack." key)}}
               <span class="b5-ability-tag">{{b5AbilityAbbr (lookup (lookup ../config.attackLines key) "ability")}}</span>
             </th>

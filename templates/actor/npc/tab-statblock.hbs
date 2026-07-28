@@ -42,13 +42,13 @@
         <label>{{localize "B5.Field.flatFooted"}}<span class="b5-total">{{system.attributes.dv.flatFooted}}</span></label>
         <label>{{localize "B5.Field.dr"}}<span class="b5-total">{{system.attributes.dr.total}}</span></label>
         <label>{{localize "B5.Field.initiative"}}
-          <span class="b5-total b5-clickable" data-action="rollInitiative">{{b5Signed system.attributes.initiative.total}}</span>
+          <span class="b5-total b5-clickable" data-action="rollInitiative" data-tooltip="B5.Tooltip.rollShift">{{b5Signed system.attributes.initiative.total}}</span>
         </label>
       </div>
       <h3>{{localize "B5.Section.saves"}}</h3>
       <div class="b5-grid-3">
         {{#each system.saves as |save key|}}
-          <label class="b5-clickable" data-action="rollSave" data-save="{{key}}">
+          <label class="b5-clickable" data-action="rollSave" data-tooltip="B5.Tooltip.rollShift" data-save="{{key}}">
             {{localize (concat "B5.Save." key)}}<span class="b5-total">{{b5Signed save.total}}</span>
           </label>
         {{/each}}
@@ -60,7 +60,7 @@
     <h3>{{localize "B5.Section.attacks"}}</h3>
     <div class="b5-grid-3">
       {{#each system.attacks as |line key|}}
-        <label class="b5-clickable" data-action="rollAttack" data-attack="{{key}}">
+        <label class="b5-clickable" data-action="rollAttack" data-tooltip="B5.Tooltip.rollShift" data-attack="{{key}}">
           {{localize (concat "B5.Attack." key)}}<span class="b5-total">{{b5Signed line.total}}</span>
         </label>
       {{/each}}

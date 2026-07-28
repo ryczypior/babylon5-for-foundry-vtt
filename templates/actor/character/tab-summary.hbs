@@ -44,7 +44,7 @@
         <tbody>
           {{#each system.saves as |save key|}}
             <tr>
-              <th class="b5-row-label b5-clickable" data-action="rollSave" data-save="{{key}}">
+              <th class="b5-row-label b5-clickable" data-action="rollSave" data-tooltip="B5.Tooltip.rollShift" data-save="{{key}}">
                 {{localize (concat "B5.Save." key)}}
               </th>
               <td class="b5-readonly">{{b5Signed save.classBonus}}</td>

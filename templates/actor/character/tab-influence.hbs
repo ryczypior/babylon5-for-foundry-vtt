@@ -24,7 +24,7 @@
       <tbody>
         {{#each itemsByType.influence as |item|}}
           <tr data-item-id="{{item.id}}">
-            <td class="b5-item-name b5-clickable" data-action="rollInfluence">{{item.name}}</td>
+            <td class="b5-item-name b5-clickable" data-action="rollInfluence" data-tooltip="B5.Tooltip.rollShift">{{item.name}}</td>
             <td>{{localize (concat "B5.InfluenceCategory." item.system.category)}}</td>
             <td>{{item.system.base}}</td>
             <td>{{item.system.burned}}</td>

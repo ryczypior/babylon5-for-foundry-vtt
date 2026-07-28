@@ -906,3 +906,53 @@
     li.fail { color: #3f7d4e; }   // the subject resisted
   }
 }
+
+// The applied-modifier breakdown under a roll's flavour line. It renders inside a chat message,
+// outside the sheet wrapper, so it is scoped by its own prefixed class instead.
+.b5-roll-parts {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  opacity: 0.75;
+}
+
+// The modifier prompt. Also outside any sheet — it is a DialogV2 given the .b5-dialog class.
+.b5-dialog {
+
+  .b5-modifier-head { margin-bottom: 0.4rem; }
+
+  .b5-modifier-group {
+    margin: 0.3rem 0;
+    padding: 0.3rem 0.5rem;
+
+    legend {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.7;
+    }
+  }
+
+  .b5-modifier-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.1rem 0;
+    font-size: 0.82rem;
+
+    .b5-modifier-value { font-variant-numeric: tabular-nums; opacity: 0.8; }
+    &:hover { color: #6f63b5; }
+  }
+
+  .b5-modifier-total {
+    margin: 0.4rem 0 0;
+    padding-top: 0.3rem;
+    border-top: 1px solid rgba(128, 128, 128, 0.3);
+    text-align: right;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+
+    strong { font-size: 1.05rem; margin-left: 0.3rem; }
+  }
+}

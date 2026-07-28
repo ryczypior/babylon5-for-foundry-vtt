@@ -48,7 +48,7 @@
       <tbody>
         {{#each skillRows as |row|}}
           <tr data-item-id="{{#if row.isItem}}{{row.id}}{{/if}}">
-            <th class="b5-row-label b5-clickable" data-action="rollSkill" data-skill="{{row.id}}">
+            <th class="b5-row-label b5-clickable" data-action="rollSkill" data-tooltip="B5.Tooltip.rollShift" data-skill="{{row.id}}">
               {{row.label}}{{#if row.acp}}<span class="b5-acp-mark" data-tooltip="B5.Tooltip.acp">*</span>{{/if}}
             </th>
             <td class="b5-center">{{#if row.untrained}}<i class="fa-solid fa-check"></i>{{/if}}</td>

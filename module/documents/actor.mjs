@@ -1,4 +1,5 @@
 import { B5 } from "../config.mjs";
+import { promptRollModifiers } from "../tests/roll-dialog.mjs";
 
 /**
  * Base Actor document. Derived data lives in the type data models; this class holds the
@@ -26,7 +27,7 @@ export default class B5Actor extends Actor {
   /**
    * Skill check: 1d20 + ranks + ability mod + misc + synergy − armour check penalty.
    * @param {string} skillKey  key in `system.skills`, or an Item id for a subtyped skill
-   * @param {object} [options] {situational, flavour}
+   * @param {object} [options] {situational, flavour, prompt, parts, rollMode}
    */
   async rollSkill(skillKey, options = {}) {
     const skill = this.system.skills?.[skillKey];
@@ -39,9 +40,11 @@ export default class B5Actor extends Actor {
       : item.name;
 
     return this.#rollCheck({
+      ...options,
       formula: "1d20",
       modifier: total,
-      situational: options.situational ?? 0,
+      kind: "skill",
+      label,
       flavour: options.flavour ?? game.i18n.format("B5.Roll.SkillCheck", { skill: label })
     });
   }
@@ -50,13 +53,15 @@ export default class B5Actor extends Actor {
   async rollSave(saveKey, options = {}) {
     const save = this.system.saves?.[saveKey];
     if (!save) return null;
+    const label = game.i18n.localize(`B5.Save.${saveKey}`);
     return this.#rollCheck({
+      ...options,
       formula: "1d20",
       modifier: save.total,
-      situational: options.situational ?? 0,
-      flavour: options.flavour ?? game.i18n.format("B5.Roll.SaveCheck", {
-        save: game.i18n.localize(`B5.Save.${saveKey}`)
-      })
+      kind: "save",
+      subtype: saveKey,
+      label,
+      flavour: options.flavour ?? game.i18n.format("B5.Roll.SaveCheck", { save: label })
     });
   }
 
@@ -64,23 +69,28 @@ export default class B5Actor extends Actor {
   async rollAttack(lineKey, options = {}) {
     const line = this.system.attacks?.[lineKey];
     if (!line) return null;
+    const label = game.i18n.localize(`B5.Attack.${lineKey}`);
     return this.#rollCheck({
+      ...options,
       formula: "1d20",
       modifier: line.total,
-      situational: options.situational ?? 0,
-      flavour: game.i18n.format("B5.Roll.AttackCheck", {
-        line: game.i18n.localize(`B5.Attack.${lineKey}`)
-      })
+      kind: "attack",
+      subtype: lineKey,
+      label,
+      flavour: game.i18n.format("B5.Roll.AttackCheck", { line: label })
     });
   }
 
   /** Initiative is a plain Dex check. */
   async rollInitiativeCheck(options = {}) {
+    const label = game.i18n.localize("B5.Roll.Initiative");
     return this.#rollCheck({
+      ...options,
       formula: "1d20",
       modifier: this.system.attributes?.initiative?.total ?? 0,
-      situational: options.situational ?? 0,
-      flavour: game.i18n.localize("B5.Roll.Initiative")
+      kind: "initiative",
+      label,
+      flavour: label
     });
   }
 
@@ -92,22 +102,48 @@ export default class B5Actor extends Actor {
     const item = this.items.get(itemId);
     if (item?.type !== "influence") return null;
     return this.#rollCheck({
+      ...options,
       formula: B5.INFLUENCE_DICE,
       modifier: item.system.value + item.system.repeatPenalty,
-      situational: options.situational ?? 0,
+      kind: "influence",
+      label: item.name,
       flavour: game.i18n.format("B5.Roll.InfluenceCheck", { faction: item.name })
     });
   }
 
-  async #rollCheck({ formula, modifier, situational, flavour }) {
-    const parts = [formula];
-    if (modifier) parts.push(`${modifier}`);
-    if (situational) parts.push(`${situational}`);
-    const roll = await new Roll(parts.join(" + "), this.getRollData()).evaluate();
+  /**
+   * The one place a roll is assembled. `prompt` opens the modifier dialog first — the sheet
+   * passes it on a shift-click, and a macro can ask for it directly. A cancelled dialog returns
+   * null rather than rolling.
+   */
+  async #rollCheck({
+    formula, modifier, flavour, kind, label, subtype = null,
+    situational = 0, parts = [], prompt = false, rollMode = null
+  }) {
+    if (prompt) {
+      const chosen = await promptRollModifiers(this, { kind, subtype, label, base: modifier });
+      if (!chosen) return null;
+      situational += chosen.situational;
+      parts = [...parts, ...chosen.parts];
+      rollMode = chosen.rollMode ?? rollMode;
+    }
+
+    const terms = [formula];
+    if (modifier) terms.push(`${modifier}`);
+    if (situational) terms.push(`${situational}`);
+    const roll = await new Roll(terms.join(" + "), this.getRollData()).evaluate();
+
+    // Print what was applied, so a −2 for Shaken is visible rather than folded into a total.
+    const breakdown = parts.length
+      ? `<div class="b5-roll-parts">${parts.map(part =>
+        `${game.i18n.localize(part.labelKey ?? `B5.Modifier.${part.key}`)} `
+        + `${part.value >= 0 ? "+" : ""}${part.value}`).join(" · ")}</div>`
+      : "";
+
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: flavour
-    });
+      flavor: `${flavour}${breakdown}`
+    }, { rollMode: rollMode ?? undefined });
     return roll;
   }
 

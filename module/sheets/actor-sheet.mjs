@@ -130,29 +130,24 @@ export default class B5ActorSheet extends HandlebarsApplicationMixin(ActorSheetV
   /* -------------------------------------------- */
 
   static async #onRollSkill(event, target) {
-    await this.actor.rollSkill(target.dataset.skill, {
-      situational: B5ActorSheet.#situational(event)
-    });
+    await this.actor.rollSkill(target.dataset.skill, { prompt: event.shiftKey });
   }
 
   static async #onRollSave(event, target) {
-    await this.actor.rollSave(target.dataset.save, {
-      situational: B5ActorSheet.#situational(event)
-    });
+    await this.actor.rollSave(target.dataset.save, { prompt: event.shiftKey });
   }
 
   static async #onRollAttack(event, target) {
-    await this.actor.rollAttack(target.dataset.attack, {
-      situational: B5ActorSheet.#situational(event)
-    });
+    await this.actor.rollAttack(target.dataset.attack, { prompt: event.shiftKey });
   }
 
-  static async #onRollInitiative() {
-    await this.actor.rollInitiativeCheck();
+  static async #onRollInitiative(event) {
+    await this.actor.rollInitiativeCheck({ prompt: event.shiftKey });
   }
 
   static async #onRollInfluence(event, target) {
-    await this.actor.rollInfluence(target.closest("[data-item-id]")?.dataset.itemId);
+    await this.actor.rollInfluence(target.closest("[data-item-id]")?.dataset.itemId,
+      { prompt: event.shiftKey });
   }
 
   /** Burning Influence permanently lowers the score to add +2 per point to a failed check. */
@@ -203,8 +198,4 @@ export default class B5ActorSheet extends HandlebarsApplicationMixin(ActorSheetV
     picker.browse();
   }
 
-  /** Holding shift while rolling opens no dialog yet — reserved for the modifier prompt. */
-  static #situational(event) {
-    return 0;
-  }
 }
