@@ -3,28 +3,98 @@
 
   <div class="b5-card">
     <h3>{{localize "B5.Section.pRating"}}</h3>
+
+    <div class="b5-telepathy-strip">
+      <div class="b5-vital {{#if system.telepathy.pRating.suppressed}}b5-suppressed{{/if}}">
+        <span class="b5-vital-label">{{localize "B5.Field.pRating"}}</span>
+        <span class="b5-vital-value">P{{system.telepathy.effectiveP}}</span>
+        {{#if system.telepathy.pRating.temp}}
+          <span class="b5-vital-sub b5-warning-inline">
+            +{{system.telepathy.pRating.temp}} {{localize "B5.Telepathy.boost"}}
+            <button type="button" data-action="clearMentalEffort" data-tooltip="B5.Tooltip.clearBoost">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          </span>
+        {{/if}}
+      </div>
+      <div class="b5-vital" data-tooltip="B5.Tooltip.telepathySaveDC">
+        <span class="b5-vital-label">{{localize "B5.Field.saveDC"}}</span>
+        <span class="b5-vital-value">{{system.telepathy.saveDC}}</span>
+      </div>
+      <div class="b5-vital b5-vital-hp" data-tooltip="B5.Tooltip.telepathyNonlethal">
+        <span class="b5-vital-label">{{localize "B5.Field.nonlethal"}}</span>
+        <span class="b5-vital-value">
+          {{system.attributes.hp.nonlethal}} / {{system.attributes.hp.value}}
+        </span>
+      </div>
+    </div>
+
     <div class="b5-grid-4">
       <label>{{localize "B5.Field.pRatingBase"}}
-        <input type="number" name="system.telepathy.pRating.base" value="{{system.telepathy.pRating.base}}">
+        <input type="number" name="system.telepathy.pRating.base" value="{{source.telepathy.pRating.base}}">
       </label>
       <label>{{localize "B5.Field.pRatingBonus"}}
-        <input type="number" name="system.telepathy.pRating.bonus" value="{{system.telepathy.pRating.bonus}}">
+        <input type="number" name="system.telepathy.pRating.bonus" value="{{source.telepathy.pRating.bonus}}">
       </label>
-      <label>{{localize "B5.Field.pRating"}}<span class="b5-total">P{{system.telepathy.pRating.value}}</span></label>
-      <label data-tooltip="B5.Tooltip.telepathySaveDC">{{localize "B5.Field.saveDC"}}
-        <span class="b5-total">{{system.telepathy.saveDC}}</span>
+      <label class="b5-inline-toggle">
+        <input type="checkbox" name="system.telepathy.pRating.suppressed"
+               {{checked system.telepathy.pRating.suppressed}}>
+        <span data-tooltip="B5.Tooltip.suppressed">{{localize "B5.Field.suppressed"}}</span>
+      </label>
+      <label class="b5-inline-toggle">
+        <input type="checkbox" name="system.telepathy.gloves" {{checked system.telepathy.gloves}}>
+        <span data-tooltip="B5.Tooltip.gloves">{{localize "B5.Field.gloves"}}</span>
       </label>
     </div>
     <p class="b5-hint">{{localize "B5.Hint.pRatingFixed"}}</p>
 
     <label class="b5-inline-toggle">
-      <input type="checkbox" name="system.telepathy.mindShield.active" {{checked system.telepathy.mindShield.active}}>
+      <input type="checkbox" name="system.telepathy.mindShield.active"
+             {{checked system.telepathy.mindShield.active}}>
       {{localize "B5.Field.mindShield"}}
       <span class="b5-hint">
         {{localize "B5.Field.willBonus"}} {{b5Signed system.telepathy.mindShield.willBonus}},
         {{localize "B5.Field.checkPenalty"}} {{b5Signed system.telepathy.mindShield.checkPenalty}}
+        {{#if system.telepathy.mindShield.dr}}
+          , {{localize "B5.Field.dr"}} {{system.telepathy.mindShield.dr}}
+        {{/if}}
       </span>
     </label>
+  </div>
+
+  {{#if maintaining}}
+    <div class="b5-card b5-maintaining">
+      <h3>{{localize "B5.Section.maintaining"}}</h3>
+      <ul class="b5-item-list">
+        {{#each maintaining as |item|}}
+          <li data-item-id="{{item.id}}">
+            <span class="b5-item-name" data-action="editItem">{{item.name}}</span>
+            <span class="b5-item-meta">{{localize "B5.Field.power"}} {{item.system.power}}</span>
+            <button type="button" data-action="cancelAbility" data-tooltip="B5.Tooltip.cancelAbility">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </li>
+        {{/each}}
+      </ul>
+      <p class="b5-hint">{{localize "B5.Hint.maintaining"}}</p>
+    </div>
+  {{/if}}
+
+  <div class="b5-card">
+    <h3>{{localize "B5.Section.telepathicTraits"}}</h3>
+    <div class="b5-trait-row">
+      <button type="button" class="b5-order-button" data-action="rollTrait" data-trait="accidentalScan"
+              {{#unless system.telepathy.traits.accidentalScan}}disabled{{/unless}}
+              data-tooltip="B5.Tooltip.accidentalScan">
+        {{localize "B5.Telepathy.trait.accidentalScan"}} — DC 16
+      </button>
+      <button type="button" class="b5-order-button" data-action="rollTrait" data-trait="dangerSense"
+              {{#unless system.telepathy.traits.dangerSense}}disabled{{/unless}}
+              data-tooltip="B5.Tooltip.dangerSense">
+        {{localize "B5.Telepathy.trait.dangerSense"}} — DC 20
+      </button>
+    </div>
+    <p class="b5-hint">{{localize "B5.Hint.traits"}}</p>
   </div>
 
   <div class="b5-card">
@@ -34,32 +104,63 @@
         <i class="fa-solid fa-plus"></i>
       </button>
     </h3>
-    <table>
-      <thead>
-        <tr>
-          <th>{{localize "B5.Field.name"}}</th>
-          <th>{{localize "B5.Field.discipline"}}</th>
-          <th>{{localize "B5.Field.power"}}</th>
-          <th data-tooltip="B5.Tooltip.mentalEffort">{{localize "B5.Field.mentalEffort"}}</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each itemsByType.telepathicAbility as |item|}}
-          <tr data-item-id="{{item.id}}">
-            <td class="b5-item-name" data-action="editItem">{{item.name}}</td>
-            <td>{{localize (concat "B5.Discipline." item.system.discipline)}}</td>
-            <td>P{{item.system.power}}</td>
-            <td>{{#if item.system.mentalEffortDice}}{{item.system.mentalEffortDice}}d4{{else}}—{{/if}}</td>
-            <td class="b5-row-actions">
-              <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
-            </td>
+
+    {{#each disciplines as |group|}}
+      <h4 class="b5-arc">
+        {{group.label}}
+        {{#if group.focused}}<span class="b5-chip">{{localize "B5.Field.disciplineFocus"}}</span>{{/if}}
+      </h4>
+      <table>
+        <thead>
+          <tr>
+            <th>{{localize "B5.Field.name"}}</th>
+            <th>{{localize "B5.Field.power"}}</th>
+            <th>{{localize "B5.Field.dc"}}</th>
+            <th>{{localize "B5.Field.range"}}</th>
+            <th data-tooltip="B5.Tooltip.mentalEffort">{{localize "B5.Field.mentalEffort"}}</th>
+            <th></th>
           </tr>
-        {{else}}
-          <tr><td colspan="5" class="b5-empty">{{localize "B5.Empty.telepathicAbilities"}}</td></tr>
-        {{/each}}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {{#each group.abilities as |item|}}
+            <tr data-item-id="{{item.id}}"
+                class="{{#if item.system.outOfReach}}b5-out-of-reach{{/if}}{{#if item.system.maintained}} b5-maintained-row{{/if}}">
+              <td class="b5-item-name" data-action="editItem">
+                {{item.name}}
+                {{#if item.system.concentration}}
+                  <i class="fa-solid fa-circle-notch" data-tooltip="B5.Tooltip.concentration"></i>
+                {{/if}}
+                {{#if item.system.multiSubject}}
+                  <i class="fa-solid fa-users" data-tooltip="B5.Tooltip.multiSubject"></i>
+                {{/if}}
+              </td>
+              <td>P{{item.system.power}}</td>
+              <td class="b5-total">{{item.system.dc}}</td>
+              <td>{{localize (concat "B5.Range." item.system.effectiveRange)}}</td>
+              <td class="{{#if item.system.needsEffort}}b5-warning-inline{{/if}}">
+                {{#if item.system.outOfReach}}
+                  {{localize "B5.Telepathy.outOfReach"}}
+                {{else if item.system.needsEffort}}
+                  {{item.system.mentalEffortDice}}d{{item.system.mentalEffortDie}}
+                {{else}}
+                  —
+                {{/if}}
+              </td>
+              <td class="b5-row-actions">
+                <button type="button" data-action="useAbility" data-tooltip="B5.Tooltip.useAbility"
+                        {{#if item.system.outOfReach}}disabled{{/if}}>
+                  <i class="fa-solid fa-brain"></i>
+                </button>
+                <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    {{else}}
+      <p class="b5-empty">{{localize "B5.Empty.telepathicAbilities"}}</p>
+    {{/each}}
+
     <p class="b5-hint">{{localize "B5.Hint.mentalEffort"}}</p>
   </div>
 </section>

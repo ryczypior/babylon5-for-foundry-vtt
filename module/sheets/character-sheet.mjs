@@ -1,6 +1,8 @@
 import B5ActorSheet from "./actor-sheet.mjs";
 import { B5 } from "../config.mjs";
 import { checkFeatPrerequisites } from "../system/prerequisites.mjs";
+import B5TelepathyTests from "../tests/telepathy-tests.mjs";
+import { DISCIPLINES } from "../system/telepathy.mjs";
 
 const PATH = "systems/babylon5/templates/actor/character";
 
@@ -13,7 +15,13 @@ export default class B5CharacterSheet extends B5ActorSheet {
 
   static DEFAULT_OPTIONS = {
     classes: ["character"],
-    position: { width: 900, height: 840 }
+    position: { width: 900, height: 840 },
+    actions: {
+      useAbility: B5CharacterSheet.#onUseAbility,
+      cancelAbility: B5CharacterSheet.#onCancelAbility,
+      rollTrait: B5CharacterSheet.#onRollTrait,
+      clearMentalEffort: B5CharacterSheet.#onClearMentalEffort
+    }
   };
 
   static PARTS = {
@@ -125,6 +133,58 @@ export default class B5CharacterSheet extends B5ActorSheet {
     context.gear = [...this.actor.itemTypes.gear, ...this.actor.itemTypes.ammunition,
                     ...this.actor.itemTypes.weaponAccessory];
 
+    if (this.showsTelepathy) this.#prepareTelepathyContext(context);
+
     return context;
+  }
+
+  /** Abilities grouped by Discipline, plus the tray of the ones being maintained. */
+  #prepareTelepathyContext(context) {
+    const abilities = this.actor.itemTypes.telepathicAbility;
+
+    context.disciplines = DISCIPLINES
+      .map(key => ({
+        key,
+        label: game.i18n.localize(`B5.Discipline.${key}`),
+        focused: this.actor.system.telepathy.disciplineFocus.includes(key),
+        abilities: abilities.filter(a => a.system.discipline === key)
+      }))
+      .filter(group => group.abilities.length);
+
+    // Anything with a Discipline the config no longer knows would otherwise vanish silently.
+    const orphans = abilities.filter(a => !DISCIPLINES.includes(a.system.discipline));
+    if (orphans.length) {
+      context.disciplines.push({
+        key: "other", label: game.i18n.localize("B5.Discipline.other"), abilities: orphans
+      });
+    }
+
+    context.maintaining = this.actor.system.telepathy.maintaining
+      .map(id => this.actor.items.get(id))
+      .filter(Boolean);
+  }
+
+  /* -------------------------------------------- */
+  /*  Actions                                     */
+  /* -------------------------------------------- */
+
+  static async #onUseAbility(event, target) {
+    const id = target.closest("[data-item-id]")?.dataset.itemId;
+    if (id) await B5TelepathyTests.promptAbility(this.actor, id);
+  }
+
+  static async #onCancelAbility(event, target) {
+    const id = target.closest("[data-item-id]")?.dataset.itemId;
+    if (id) await B5TelepathyTests.cancelAbility(this.actor, id);
+  }
+
+  static async #onRollTrait(event, target) {
+    await B5TelepathyTests.rollTrait(this.actor, target.dataset.trait, {
+      strongEmotions: event.shiftKey
+    });
+  }
+
+  static async #onClearMentalEffort() {
+    await B5TelepathyTests.clearMentalEffort(this.actor);
   }
 }

@@ -1,5 +1,8 @@
 import { B5 } from "../../config.mjs";
 import { int, num, str, bool, html, bonusBlock, attackBlock } from "../fields.mjs";
+import {
+  DANGER_SENSE_P_RATING, MENTAL_FORTRESS_DR, TELEPATHY_FEATS, mentalEffortDie, reach
+} from "../../system/telepathy.mjs";
 
 const fields = foundry.data.fields;
 
@@ -146,14 +149,26 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
         pRating: new fields.SchemaField({
           base: int(),
           bonus: int(),
-          value: int()                       // derived; fixed for life once set
+          value: int(),                      // derived; fixed for life once set
+          /** This round's mental-effort boost — the only part of a P-Rating that ever moves. */
+          temp: int(),
+          /** Sleeper drugs treat the telepath as P0 for ten days. */
+          suppressed: bool(false)
         }),
+        /** Telepath class picks: mental effort in these Disciplines rolls d3 instead of d4. */
         disciplineFocus: new fields.ArrayField(str(), { initial: [] }),
         mindShield: new fields.SchemaField({
           active: bool(false),
           willBonus: int(),                  // derived: +P while active
-          checkPenalty: int()                // derived: −P while active
+          checkPenalty: int(),               // derived: −P while active
+          dr: int()                          // derived: Mental Fortress, only while active
         }),
+        /** Psi Corps gloves: −2 on Touch abilities and half the touch bonus. */
+        gloves: bool(false),
+        /** An enemy Jamming ability subtracts its telepath's P-Rating from every check. */
+        jammedBy: int(),
+        /** Item ids of the abilities being maintained — drives the second-ability DC bump. */
+        maintaining: new fields.ArrayField(str(), { initial: [] }),
         saveDC: int()                        // derived: 5 + P + telepath level + Cha mod
       }),
 
@@ -313,6 +328,7 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
       this.telepathy.isTelepath = false;
       this.telepathy.pRating.base = 0;
       this.telepathy.pRating.bonus = 0;
+      this.telepathy.pRating.temp = 0;
     }
   }
 
@@ -568,17 +584,79 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
   #prepareSubsystems() {
     const tel = this.telepathy;
     tel.pRating.value = tel.pRating.base + tel.pRating.bonus;
-    const telepathLevels = this.parent.itemTypes.class
+
+    // The P-Rating itself never changes; what moves is this round's mental-effort boost, and
+    // sleeper drugs flattening the telepath to P0. `ratedP` is the telepath's standing rating
+    // with the drug applied but not the boost — mental effort buys one ability, not a new band.
+    tel.ratedP = tel.pRating.suppressed ? 0 : tel.pRating.value;
+    tel.effectiveP = tel.ratedP + (tel.pRating.suppressed ? 0 : tel.pRating.temp);
+
+    // Psi Cop levels stack with telepath levels here, but the prestige classes are not shipped
+    // yet — when they are, add their key to this filter rather than a second sum.
+    tel.telepathLevel = this.parent.itemTypes.class
       .filter(c => c.system.classKey === "telepath")
       .reduce((sum, c) => sum + c.system.levels, 0);
-    tel.saveDC = 5 + tel.pRating.value + telepathLevels + this.abilities.cha.mod;
-    tel.mindShield.willBonus = tel.mindShield.active ? tel.pRating.value : 0;
-    tel.mindShield.checkPenalty = tel.mindShield.active ? -tel.pRating.value : 0;
+    tel.saveDC = 5 + tel.effectiveP + tel.telepathLevel + this.abilities.cha.mod;
+
+    // Feats this subsystem reads by internalId, the way the order engine reads its budget feats.
+    const feats = this.parent.itemTypes.feat;
+    const has = id => feats.some(f => f.system.internalId === id);
+    tel.adaptiveMind = has(TELEPATHY_FEATS.adaptiveMind);
+    tel.synergist = has(TELEPATHY_FEATS.synergist);
+    tel.meditation = has(TELEPATHY_FEATS.meditation);
+    tel.combatTelepath = has(TELEPATHY_FEATS.combatTelepath);
+    tel.mindshredder = has(TELEPATHY_FEATS.mindshredder);
+    // Ability Focus is per-Discipline and may be taken more than once.
+    tel.abilityFocus = feats
+      .filter(f => f.system.internalId === TELEPATHY_FEATS.abilityFocus)
+      .map(f => f.system.choice?.value?.trim().toLowerCase())
+      .filter(Boolean);
+
+    tel.mindShield.willBonus = tel.mindShield.active ? tel.effectiveP : 0;
+    tel.mindShield.checkPenalty = tel.mindShield.active ? -tel.effectiveP : 0;
+    // Mental Fortress protects only while the shield is up, and never against your own effort.
+    tel.mindShield.dr = tel.mindShield.active && has(TELEPATHY_FEATS.mentalFortress)
+      ? MENTAL_FORTRESS_DR : 0;
+
+    // The three traits are a straight function of the P-Rating, so they are derived, not stored.
+    // They read the standing rating: borrowing P-Rating for one ability does not develop a
+    // trait the telepath does not have.
+    tel.traits = {
+      accidentalScan: tel.ratedP >= 1,
+      dangerSense: tel.ratedP >= DANGER_SENSE_P_RATING,
+      mindShield: tel.ratedP >= 1
+    };
+
+    this.#prepareTelepathicAbilities();
 
     // Influence adds score ÷ 5 to Diplomacy and Intimidate; we expose the best score's bonus.
     const best = this.parent.itemTypes.influence
       .reduce((max, i) => Math.max(max, i.system.value), 0);
     this.influence.socialBonus = Math.floor(best / B5.INFLUENCE_SOCIAL_DIVISOR);
+  }
+
+  /**
+   * Finish the telepathic ability Items here rather than in their own `prepareDerivedData`:
+   * every one of these values reads the P-Rating, and item-derived data runs a cycle behind
+   * the actor's. Subtyped skill Items are finished the same way, for the same reason.
+   */
+  #prepareTelepathicAbilities() {
+    const tel = this.telepathy;
+    for (const item of this.parent.itemTypes.telepathicAbility) {
+      const ability = item.system;
+
+      // The band widens with the P-Rating: Surface Scan is Close, and Medium from P10.
+      ability.effectiveRange = ability.range.upgrades
+        .filter(u => u.pRating <= tel.effectiveP)
+        .reduce((band, u) => u.band || band, ability.range.band);
+
+      const state = reach(tel.effectiveP, ability.power);
+      ability.mentalEffortDice = state.dice;
+      ability.mentalEffortDie = mentalEffortDie(this.parent, ability.discipline);
+      ability.outOfReach = state.outOfReach;
+      ability.needsEffort = !state.free && !state.outOfReach;
+      ability.maintained = tel.maintaining.includes(item.id);
+    }
   }
 
   /* -------------------------------------------- */

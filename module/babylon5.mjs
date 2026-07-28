@@ -20,6 +20,7 @@ import B5NpcSheet from "./sheets/npc-sheet.mjs";
 import B5CraftSheet from "./sheets/craft-sheet.mjs";
 import B5ItemSheet from "./sheets/item-sheet.mjs";
 
+import B5TelepathyTests from "./tests/telepathy-tests.mjs";
 import { registerHandlebars, preloadTemplates } from "./helpers/handlebars.mjs";
 
 Hooks.once("init", () => {
@@ -82,6 +83,17 @@ function registerSheets() {
     types: Object.keys(CONFIG.Item.dataModels), makeDefault: true, label: "B5.Sheet.Item"
   });
 }
+
+/**
+ * The telepathy card carries a button that rolls the subject's Will save. It lives in chat
+ * rather than on the sheet because the roll belongs to whoever is being read, not to the
+ * telepath — the button acts on the reader's current targets.
+ */
+Hooks.on("renderChatMessageHTML", (message, html) => {
+  const button = html.querySelector("[data-action=telepathyResist]");
+  if (!button) return;
+  button.addEventListener("click", () => B5TelepathyTests.rollResistance(message));
+});
 
 Hooks.once("ready", () => {
   console.log("Babylon 5 2e | Ready");

@@ -1,0 +1,55 @@
+{{!-- Telepathic ability card: the mental effort it cost, the check, and the save it provokes. --}}
+<div class="b5-order-card b5-telepathy-card">
+  <div class="b5-order-head">
+    <span class="b5-order-name">{{name}}</span>
+    <span class="b5-order-type">{{discipline}} · P{{power}} · {{range}}</span>
+  </div>
+
+  {{#if variation}}<div class="b5-order-line">{{localize "B5.Telepathy.variation"}}: {{variation}}</div>{{/if}}
+  {{#if subjects}}
+    <div class="b5-order-line">{{localize "B5.Telepathy.subjects"}}: {{subjects}}</div>
+  {{/if}}
+
+  {{#if effort}}
+    <div class="b5-telepathy-effort">
+      {{#if effort.lethal}}
+        {{localize "B5.Telepathy.effortLethal"}}: <strong>{{effort.amount}}</strong>
+      {{else}}
+        {{localize "B5.Telepathy.effort"}} {{effort.dice}}d{{effort.die}} =
+        <strong>{{effort.amount}}</strong> {{localize "B5.Field.nonlethal"}}
+      {{/if}}
+      · P +{{effort.dice}}
+    </div>
+  {{/if}}
+
+  {{#if knockedOut}}
+    <div class="b5-order-result fail">{{localize "B5.Telepathy.knockedOut"}}</div>
+  {{else}}
+    <div class="b5-order-line b5-telepathy-parts">
+      {{#each parts}}{{label}} {{b5Signed value}}{{#unless @last}} · {{/unless}}{{/each}}
+    </div>
+
+    <div class="b5-order-result {{#if success}}ok{{else}}fail{{/if}}">
+      {{total}} {{localize "B5.Order.versus"}} {{dc}} —
+      {{#if success}}{{localize "B5.Order.success"}}{{else}}{{localize "B5.Order.failure"}}{{/if}}
+    </div>
+
+    {{#unless success}}
+      <div class="b5-order-effect">{{localize "B5.Telepathy.failedCheckHint"}}</div>
+    {{/unless}}
+
+    {{#if maintained}}
+      <div class="b5-order-effect">{{localize "B5.Telepathy.nowMaintaining"}}</div>
+    {{/if}}
+
+    {{#if saveDC}}
+      <div class="b5-telepathy-save">
+        <span>{{localize "B5.Telepathy.willSave"}} <strong>{{saveDC}}</strong></span>
+        <button type="button" class="b5-order-button" data-action="telepathyResist">
+          <i class="fa-solid fa-brain"></i> {{localize "B5.Telepathy.rollResistance"}}
+        </button>
+      </div>
+      <div class="b5-order-foot">{{localize "B5.Telepathy.saveHint"}}</div>
+    {{/if}}
+  {{/if}}
+</div>

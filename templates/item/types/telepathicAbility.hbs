@@ -12,11 +12,29 @@
     <label data-tooltip="B5.Tooltip.power">{{localize "B5.Field.power"}}
       <input type="number" name="system.power" value="{{system.power}}">
     </label>
-    <label>{{localize "B5.Field.action"}}
-      <input type="text" name="system.action" value="{{system.action}}">
+    <label data-tooltip="B5.Tooltip.abilityDc">{{localize "B5.Field.dc"}}
+      <input type="number" name="system.dc" value="{{system.dc}}">
     </label>
     <label>{{localize "B5.Field.range"}}
-      <input type="text" name="system.range" value="{{system.range}}">
+      <select name="system.range.band">
+        {{#each config.telepathyRanges as |r|}}
+          <option value="{{r}}" {{#if (b5Eq r ../system.range.band)}}selected{{/if}}>
+            {{localize (concat "B5.Range." r)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Field.action"}}
+      <select name="system.action">
+        {{#each config.telepathyActions as |a|}}
+          <option value="{{a}}" {{#if (b5Eq a ../system.action)}}selected{{/if}}>
+            {{localize (concat "B5.Action." a)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
+    <label>{{localize "B5.Field.actionNote"}}
+      <input type="text" name="system.actionNote" value="{{system.actionNote}}">
     </label>
     <label>{{localize "B5.Field.duration"}}
       <input type="text" name="system.duration" value="{{system.duration}}">
@@ -33,4 +51,46 @@
       {{localize "B5.Field.multiSubject"}}
     </label>
   </div>
+
+  {{!-- Range upgrades and variations are authored in the compendium source, not on the sheet:
+        they are arrays, and array-valued inputs corrupt on expandObject. --}}
+  {{#if system.range.upgrades.length}}
+    <h4 class="b5-arc">{{localize "B5.Field.rangeUpgrades"}}</h4>
+    <ul class="b5-item-list">
+      {{#each system.range.upgrades as |upgrade|}}
+        <li>
+          <span class="b5-item-name">P{{upgrade.pRating}}+</span>
+          <span class="b5-item-meta">{{localize (concat "B5.Range." upgrade.band)}}</span>
+        </li>
+      {{/each}}
+    </ul>
+  {{/if}}
+
+  {{#if system.variations.length}}
+    <h4 class="b5-arc">{{localize "B5.Telepathy.variations"}}</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>{{localize "B5.Field.name"}}</th>
+          <th>{{localize "B5.Field.dc"}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each system.variations as |variation|}}
+          <tr>
+            <th class="b5-row-label">{{variation.name}}</th>
+            <td>
+              {{#if (b5Eq variation.dcMode "absolute")}}
+                {{variation.dc}}
+              {{else}}
+                {{b5Signed variation.dc}}
+              {{/if}}
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+
+  <p class="b5-hint">{{localize "B5.Hint.abilityVariations"}}</p>
 </div>

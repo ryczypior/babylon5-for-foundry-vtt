@@ -54,7 +54,7 @@ export default class B5Actor extends Actor {
       formula: "1d20",
       modifier: save.total,
       situational: options.situational ?? 0,
-      flavour: game.i18n.format("B5.Roll.SaveCheck", {
+      flavour: options.flavour ?? game.i18n.format("B5.Roll.SaveCheck", {
         save: game.i18n.localize(`B5.Save.${saveKey}`)
       })
     });

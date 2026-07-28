@@ -223,24 +223,52 @@ export class TelepathicAbilityData extends TypeDataModel {
   static defineSchema() {
     return {
       ...common(),
-      discipline: str("scan"),
+      discipline: str("scanning"),
       power: int(1),                         // required P-Rating to use for free
-      action: str(),
-      range: str(),
+      dc: int(10),                           // base Telepathy check DC
+      action: str("standard"),               // free | standard | full | special
+      actionNote: str(),                     // "10 min per hour of memory", "min 1 minute"
+      range: new fields.SchemaField({
+        band: str("close"),                  // self | touch | close | medium | long
+        /** Higher P-Ratings widen the band: Surface Scan is Close, Medium at P10. */
+        upgrades: new fields.ArrayField(
+          new fields.SchemaField({ pRating: int(), band: str() }), { initial: [] }
+        )
+      }),
       duration: str(),
       concentration: bool(false),
       saveType: str("will"),
       multiSubject: bool(false),
+      /**
+       * Alternative uses of the same ability. An `absolute` variation replaces the base DC, a
+       * `delta` one adds to it — both forms are printed, so both are modelled.
+       */
       variations: new fields.ArrayField(
-        new fields.SchemaField({ name: str(), power: int(), description: html() }),
+        new fields.SchemaField({
+          name: str(),
+          dcMode: str("delta"),              // delta | absolute
+          dc: int(),
+          description: html()
+        }),
         { initial: [] }
       )
     };
   }
 
-  /** Mental effort: (power − P-Rating) d4 nonlethal, capped at 6 dice. */
-  get mentalEffortDice() {
-    const p = this.parent.actor?.system?.telepathy?.pRating?.value ?? 0;
-    return Math.min(Math.max(0, this.power - p), B5.MAX_MENTAL_EFFORT_DICE);
+  /**
+   * @override — only what does not depend on the owner.
+   *
+   * Whether this ability is within reach, what the mental effort costs and how far it reaches
+   * are all functions of the telepath's current P-Rating, and item-derived data is prepared
+   * *before* the actor's — reading `effectiveP` here would get the previous cycle's value, which
+   * is exactly wrong the moment mental effort moves it. `CharacterData.#prepareTelepathy()`
+   * fills these in instead; the nulls are what an unowned item shows.
+   */
+  prepareDerivedData() {
+    this.effectiveRange = this.range.band;
+    this.mentalEffortDice = null;
+    this.mentalEffortDie = null;
+    this.outOfReach = false;
+    this.needsEffort = false;
   }
 }

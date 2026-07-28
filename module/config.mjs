@@ -225,10 +225,13 @@ B5.influenceCategories = ["political", "military", "criminal", "corporate", "med
 /*  Telepathy (book pp. 120–131)                */
 /* -------------------------------------------- */
 
-B5.MAX_MENTAL_EFFORT_DICE = 6;
-B5.MENTAL_EFFORT_DIE = "1d4";
-B5.MENTAL_EFFORT_DIE_FOCUSED = "1d3";
-B5.telepathyDisciplines = ["scan", "manipulation", "communication", "perception", "assault"];
+/** The five Disciplines (book p. 118). Mechanics live in `module/system/telepathy.mjs`. */
+B5.telepathyDisciplines = ["scanning", "blocking", "communication", "biokinetics", "sensing"];
+
+/** Ability range bands; `touch` is worth a check bonus on an ability that could reach further. */
+B5.telepathyRanges = ["self", "touch", "close", "medium", "long"];
+
+B5.telepathyActions = ["free", "standard", "full", "special"];
 
 /* -------------------------------------------- */
 /*  Craft (book pp. 180–233)                    */

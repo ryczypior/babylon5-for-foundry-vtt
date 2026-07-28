@@ -624,6 +624,40 @@
 
   .b5-prereq { font-size: 0.75rem; color: var(--b5-text-muted); text-align: left; }
 
+  /* ---------- telepathy ---------- */
+
+  .b5-telepathy-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+
+    .b5-vital-sub button {
+      width: auto;
+      padding: 0 0.2rem;
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+    }
+  }
+
+  // A suppressed telepath is still a telepath; the badge says the rating is not available.
+  .b5-vital.b5-suppressed .b5-vital-value {
+    color: $b5-danger;
+    text-decoration: line-through;
+  }
+
+  // Beyond P-Rating + 6 an ability can never be used, so it is dimmed rather than hidden.
+  tr.b5-out-of-reach td { opacity: 0.45; }
+  tr.b5-maintained-row th, tr.b5-maintained-row td { background: rgba(143, 131, 216, 0.12); }
+
+  .b5-trait-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
   /* ---------- craft damage ---------- */
 
   // Foundry's own row striping washes an unchecked box out on every other row.
@@ -823,4 +857,52 @@
 
   .b5-hint { font-size: 0.75rem; font-style: italic; opacity: 0.8; }
   .b5-warning-inline { color: #b3452f; font-size: 0.75rem; }
+}
+
+// Telepathy card. Extends .b5-order-card, so only the extra parts live here.
+.b5-telepathy-card {
+
+  .b5-telepathy-effort {
+    margin: 0.2rem 0;
+    padding: 0.15rem 0.4rem;
+    border-left: 2px solid rgba(179, 69, 47, 0.6);
+    font-size: 0.78rem;
+  }
+
+  .b5-telepathy-parts { font-size: 0.72rem; opacity: 0.8; }
+
+  .b5-telepathy-save {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+
+    .b5-order-button {
+      width: auto;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: none;
+      border: 1px solid currentColor;
+      border-radius: 3px;
+      color: inherit;
+      cursor: pointer;
+
+      &:hover { background: rgba(143, 131, 216, 0.18); }
+    }
+  }
+
+  .b5-telepathy-saves {
+    list-style: none;
+    margin: 0.2rem 0 0;
+    padding: 0;
+    font-size: 0.78rem;
+
+    li { padding: 0.1rem 0; }
+    li.ok { color: #b3452f; }     // the subject was affected — bad news for them
+    li.fail { color: #3f7d4e; }   // the subject resisted
+  }
 }
