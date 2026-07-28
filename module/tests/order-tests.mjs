@@ -3,6 +3,7 @@ import {
   ORDERS, SKILL_STATIONS, ORDER_BUDGET_FEATS, STEALTH_LOSS_PER_ORDER,
   availableOrders, bandAfterMove, isSoloCraft, skillKeyOf
 } from "../system/orders.mjs";
+import { ACTIVE_CHAFF_INTERCEPT, weaponQualities } from "../system/gunnery.mjs";
 
 const { DialogV2 } = foundry.applications.api;
 
@@ -42,11 +43,17 @@ export default class B5OrderTests {
     return this.orderBudget(craft) - (craft.system.combat.ordersUsed ?? 0);
   }
 
-  /** Start of a new turn: the order allowance and the Stealth penalty both reset. */
+  /**
+   * Start of a new turn: the allowance, the once-per-round record, the Stealth penalty and the
+   * designated interceptors all reset. Everything a turn owns is cleared here, so a caller that
+   * is not the sheet does not get a half-reset.
+   */
   static async resetTurn(craft) {
     await craft.update({
       "system.combat.ordersUsed": 0,
-      "system.combat.stealthPenalty": 0
+      "system.combat.ordersIssued": [],
+      "system.combat.stealthPenalty": 0,
+      "system.combat.interceptors": { designated: [], used: [], chaff: 0, penalty: 0 }
     });
   }
 
@@ -223,7 +230,41 @@ export default class B5OrderTests {
       updates["system.combat.band"] = bandAfterMove(craft.system.combat.band, steps);
     }
 
+    if (key === "fireInterceptors") Object.assign(updates, this.#designateInterceptors(craft, { success, asResponse }));
+
     await craft.update(updates);
+  }
+
+  /**
+   * *Fire Interceptors!* has no target number of its own — the check is made per incoming
+   * barrage, against that barrage's highest attack roll. All the order does is designate the
+   * mounts, which the barrage engine then offers to the craft being shot at.
+   *
+   * A failed order still designates them; it only makes every later check harder.
+   */
+  static #designateInterceptors(craft, { success, asResponse }) {
+    const designated = craft.itemTypes.craftWeapon
+      .filter(weapon => !weapon.system.destroyed
+        && weaponQualities(weapon).intercept > 0)
+      .map(weapon => weapon.id);
+
+    const chaff = craft.itemTypes.craftFeature.some(feature =>
+      !feature.system.destroyed && /active chaff/i.test(feature.name))
+      ? ACTIVE_CHAFF_INTERCEPT : 0;
+
+    if (!designated.length && !chaff) {
+      ui.notifications.warn(game.i18n.localize("B5.Warning.noInterceptors"));
+      return {};
+    }
+
+    return {
+      "system.combat.interceptors": {
+        designated,
+        used: [],
+        chaff,
+        penalty: success === false ? (asResponse ? -6 : -4) : 0
+      }
+    };
   }
 
   static async #postCard(craft, data) {

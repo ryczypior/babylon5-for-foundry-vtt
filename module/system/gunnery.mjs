@@ -163,6 +163,33 @@ export function totalOffence(hits = []) {
   return ordered[0] + ordered.slice(1).reduce((sum, value) => sum + Math.floor(value / 2), 0);
 }
 
+/** Active Chaff intercepts this much automatically, for the rest of the round. */
+export const ACTIVE_CHAFF_INTERCEPT = 10;
+
+/**
+ * The interceptor systems *Fire Interceptors!* designated and that have not fired yet this
+ * round, best first. One system may be spent per incoming barrage.
+ */
+export function interceptorsReady(craft) {
+  const { designated, used } = craft.system.combat.interceptors;
+  return designated
+    .filter(id => !used.includes(id))
+    .map(id => craft.items.get(id))
+    .filter(item => item && !item.system.destroyed)
+    .map(item => ({ id: item.id, name: item.name, value: weaponQualities(item).intercept }))
+    .filter(entry => entry.value > 0)
+    .sort((a, b) => b.value - a.value);
+}
+
+/**
+ * How much of a barrage interceptors can touch at all. Beam weapons ignore them, so the cap is
+ * the Total Offence the barrage would have had without its beams — which also means a barrage
+ * of nothing but beams cannot be intercepted at all.
+ */
+export function interceptableOffence(hits) {
+  return totalOffence(hits.filter(hit => !hit.beam));
+}
+
 /**
  * Everything between the barrage and the structural spaces: interception first, then the
  * shielding divisor, then Armour (book p. 195 and the summary on p. 196).

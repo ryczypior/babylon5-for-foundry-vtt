@@ -187,10 +187,9 @@ export default class B5CraftSheet extends B5ActorSheet {
     if (items.length) await this.actor.updateEmbeddedDocuments("Item", items);
   }
 
-  /** New turn: the order allowance and the Stealth these orders cost both reset. */
+  /** New turn — `resetTurn` clears everything a turn owns. */
   static async #onResetOrders() {
     await B5OrderTests.resetTurn(this.actor);
-    await this.actor.update({ "system.combat.ordersIssued": [] });
   }
 
   static async #onClearStation(event, target) {

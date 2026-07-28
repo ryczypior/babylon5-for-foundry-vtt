@@ -860,5 +860,11 @@
   "B5.InfluenceDc.averageAid": "Average aid",
   "B5.InfluenceDc.considerableAid": "Considerable aid",
   "B5.InfluenceDc.majorAid": "Major aid",
-  "B5.InfluenceDc.epicAid": "Epic aid"
+  "B5.InfluenceDc.epicAid": "Epic aid",
+  "B5.Barrage.activeChaff": "Active Chaff",
+  "B5.Barrage.beamsIgnoreInterceptors": "Nothing to intercept — beam weapons ignore interceptors.",
+  "B5.Barrage.interceptedHint": "blank = roll the target's designated interceptors",
+  "B5.Barrage.interceptMissed": "missed",
+  "B5.Barrage.interceptorsReady": "{target} has interceptors designated: {detail}. Leave the field blank to roll them.",
+  "B5.Warning.noInterceptors": "No working Interceptor mount and no Active Chaff to designate."
 }

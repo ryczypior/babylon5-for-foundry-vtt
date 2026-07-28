@@ -71,6 +71,22 @@ export default class CraftData extends foundry.abstract.TypeDataModel {
         ordersIssued: new fields.ArrayField(str(), { initial: [] }),
         /** Executing orders gives the craft away: −5 Stealth each, cleared every turn. */
         stealthPenalty: int(),
+
+        /**
+         * What *Fire Interceptors!* designated this round. The order does not roll against a
+         * target number of its own — the check happens per incoming barrage, against that
+         * barrage's highest attack roll — so all the order does is set this up.
+         */
+        interceptors: new fields.SchemaField({
+          /** Item ids of the designated Interceptor-trait mounts. */
+          designated: new fields.ArrayField(str(), { initial: [] }),
+          /** Each system fires once per round. */
+          used: new fields.ArrayField(str(), { initial: [] }),
+          /** Active Chaff intercepts this much automatically, no check. */
+          chaff: int(),
+          /** −4 when the order itself failed, −6 as a response. */
+          penalty: int()
+        }),
         drifting: bool(false),
         destroyed: bool(false)
       })

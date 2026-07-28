@@ -860,5 +860,11 @@
   "B5.InfluenceDc.averageAid": "Przeciętna pomoc",
   "B5.InfluenceDc.considerableAid": "Znaczna pomoc",
   "B5.InfluenceDc.majorAid": "Poważna pomoc",
-  "B5.InfluenceDc.epicAid": "Epokowa pomoc"
+  "B5.InfluenceDc.epicAid": "Epokowa pomoc",
+  "B5.Barrage.activeChaff": "Aktywne dipole",
+  "B5.Barrage.beamsIgnoreInterceptors": "Nie ma czego przechwycić — wiązki ignorują przechwytywacze.",
+  "B5.Barrage.interceptedHint": "puste = rzut desygnowanymi przechwytywaczami celu",
+  "B5.Barrage.interceptMissed": "chybił",
+  "B5.Barrage.interceptorsReady": "Jednostka {target} ma desygnowane przechwytywacze: {detail}. Zostaw pole puste, by nimi rzucić.",
+  "B5.Warning.noInterceptors": "Brak sprawnego stanowiska przechwytującego i aktywnych dipoli do desygnowania."
 }

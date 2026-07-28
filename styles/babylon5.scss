@@ -1046,3 +1046,14 @@
     }
   }
 }
+
+// The interception line on a barrage card, when the target's Fire Interceptors! order answers.
+.b5-barrage-card .b5-barrage-interception {
+  margin: 0.2rem 0;
+  padding: 0.15rem 0.4rem;
+  border-left: 2px solid rgba(143, 131, 216, 0.6);
+  font-size: 0.76rem;
+
+  .ok { color: #3f7d4e; font-weight: 700; }
+  .fail { color: #b3452f; }
+}

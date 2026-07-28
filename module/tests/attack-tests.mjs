@@ -3,9 +3,9 @@ import B5OrderTests from "./order-tests.mjs";
 import { isSoloCraft } from "../system/orders.mjs";
 import {
   IMPAIRMENT_CHECKS, IMPAIRMENT_DC, RAPID_FIRE_PENALTY,
-  allocateCraftDamage, areasNeedingImpairment, resolveMitigation, shieldDivisor,
-  targetingComputerBonus, totalOffence, weaponInArc, weaponInRange, weaponQualities,
-  weaponsNeedingImpairment
+  allocateCraftDamage, areasNeedingImpairment, interceptableOffence, interceptorsReady,
+  resolveMitigation, shieldDivisor, targetingComputerBonus, totalOffence, weaponInArc,
+  weaponInRange, weaponQualities, weaponsNeedingImpairment
 } from "../system/gunnery.mjs";
 
 const { DialogV2 } = foundry.applications.api;
@@ -87,6 +87,15 @@ export default class B5AttackTests {
       .find(actor => actor?.type === "craft" && actor.id !== craft.id);
     const candidates = game.actors.filter(a => a.type === "craft" && a.id !== craft.id);
 
+    // What the target has waiting from its own Fire Interceptors! order, so the number in the
+    // field is not typed from memory. The check itself happens during resolution.
+    const ready = targeted ? interceptorsReady(targeted) : [];
+    const chaff = targeted?.system.combat.interceptors.chaff ?? 0;
+    const readyInterception = [
+      ...ready.map(entry => `${entry.name} ${entry.value}`),
+      ...(chaff ? [`${game.i18n.localize("B5.Barrage.activeChaff")} ${chaff}`] : [])
+    ].join(", ");
+
     const targetOptions = [`<option value="">${game.i18n.localize("B5.Barrage.noTarget")}</option>`]
       .concat(candidates.map(a => `<option value="${a.id}" ${a.id === targeted?.id ? "selected" : ""}>`
         + `${a.name} — ${game.i18n.localize("B5.Field.dv")} ${a.system.attributes.dv.total}, `
@@ -137,8 +146,11 @@ export default class B5AttackTests {
       ${targeting ? `<div class="form-group"><label>
         <input type="checkbox" name="lockedOn" checked>
         ${game.i18n.format("B5.Barrage.lockedOn", { bonus: targeting })}</label></div>` : ""}
+      ${readyInterception ? `<p class="b5-hint">${game.i18n.format("B5.Barrage.interceptorsReady", {
+        target: targeted?.name ?? "", detail: readyInterception })}</p>` : ""}
       <div class="form-group"><label>${game.i18n.localize("B5.Barrage.intercepted")}</label>
-        <input type="number" name="intercepted" value="0"></div>
+        <input type="number" name="intercepted" value="0"
+               placeholder="${game.i18n.localize("B5.Barrage.interceptedHint")}"></div>
       <div class="form-group"><label>${game.i18n.localize("B5.Field.misc")}</label>
         <input type="number" name="modifier" value="0"></div>`;
 
@@ -223,7 +235,17 @@ export default class B5AttackTests {
 
     // Electro-Pulse hits carry no Offence at all; they threaten a control space instead.
     const hits = shots.filter(s => s.hit && !s.quality.electroPulse);
-    const offence = totalOffence(hits.map(s => ({ offence: s.weapon.system.effectiveOffence, crit: s.crit })));
+    const contributions = hits.map(s => ({
+      offence: s.weapon.system.effectiveOffence, crit: s.crit, beam: !!s.quality.beam
+    }));
+    const offence = totalOffence(contributions);
+
+    // The target's own Fire Interceptors! order, resolved here because this is the moment its
+    // DC exists — the barrage's highest attack roll. A number typed into the dialog wins.
+    const interception = (target && !intercepted && offence > 0)
+      ? await this.#rollInterception(target, contributions, hits)
+      : null;
+    if (interception) intercepted = interception.applied;
 
     const divisor = target ? shieldDivisor(target) : 1;
     const armour = target?.system.attributes.armour.value ?? 0;
@@ -240,7 +262,7 @@ export default class B5AttackTests {
     const beamArmour = beams.reduce((sum, b) => sum + b.total, 0);
 
     const report = {
-      craft, target, shots, hits, mitigation, beams, beamArmour,
+      craft, target, shots, hits, mitigation, beams, beamArmour, interception,
       gunner, targeting: lockedOn ? targeting : 0, modifier, globalMod, dv: targetDv,
       electroPulse: shots.filter(s => s.hit && s.quality.electroPulse)
     };
@@ -260,6 +282,55 @@ export default class B5AttackTests {
       beamArmour, electroPulse: report.electroPulse.length
     });
     return report;
+  }
+
+  /**
+   * Resolve the target's interception against this barrage (book p. 195).
+   *
+   * Active Chaff needs no check and lasts the round, so it is never spent. One designated
+   * interceptor system may fire per barrage, against a DC equal to the barrage's highest attack
+   * roll, and it is spent whether or not it connects. Beam weapons ignore interceptors, so the
+   * whole thing is capped at the Total Offence the barrage would have had without its beams —
+   * a barrage of nothing but beams cannot be intercepted at all.
+   */
+  static async #rollInterception(target, contributions, hits) {
+    const state = target.system.combat.interceptors;
+    const ready = interceptorsReady(target);
+    if (!ready.length && !state.chaff) return null;
+
+    const ceiling = interceptableOffence(contributions);
+    if (!ceiling) return { applied: 0, ceiling: 0, beamsOnly: true, chaff: 0, system: null };
+
+    const system = ready[0];
+    let roll = null;
+    let success = null;
+    let dc = null;
+    let executor = null;
+
+    if (system) {
+      dc = Math.max(...hits.map(shot => shot.roll.total));
+      executor = B5OrderTests.resolveExecutor(target, {
+        skill: { skill: "operations", subtype: "gunnery" }
+      });
+      roll = await new Roll("1d20 + @bonus", { bonus: executor.bonus + state.penalty }).evaluate();
+      success = roll.total >= dc;
+
+      // Spent whether or not it connected — each system fires once per round.
+      await target.update({ "system.combat.interceptors.used": [...state.used, system.id] });
+    }
+
+    return {
+      applied: Math.min(ceiling, state.chaff + (success ? system.value : 0)),
+      ceiling,
+      chaff: state.chaff,
+      penalty: state.penalty,
+      system: system ? { name: system.name, value: system.value } : null,
+      dc,
+      executor: executor?.label ?? null,
+      total: roll?.total ?? null,
+      success,
+      beamsOnly: false
+    };
   }
 
   /**
@@ -409,6 +480,7 @@ export default class B5AttackTests {
         anyHit: report.hits.length > 0,
         offence: mitigation.offence,
         intercepted: mitigation.intercepted,
+        interception: report.interception,
         divisor: mitigation.divisor,
         shielded: mitigation.divisor > 1,
         afterShielding: mitigation.afterShielding,

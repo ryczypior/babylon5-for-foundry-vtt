@@ -56,6 +56,28 @@
       {{/if}}
     </div>
 
+    {{#if interception}}
+      <div class="b5-barrage-interception">
+        {{#if interception.beamsOnly}}
+          {{localize "B5.Barrage.beamsIgnoreInterceptors"}}
+        {{else}}
+          {{#if interception.chaff}}
+            {{localize "B5.Barrage.activeChaff"}} −{{interception.chaff}}{{#if interception.system}} · {{/if}}
+          {{/if}}
+          {{#if interception.system}}
+            {{interception.system.name}} ({{interception.executor}})
+            {{interception.total}} {{localize "B5.Order.versus"}} {{interception.dc}} —
+            {{#if interception.success}}
+              <span class="ok">−{{interception.system.value}}</span>
+            {{else}}
+              <span class="fail">{{localize "B5.Barrage.interceptMissed"}}</span>
+            {{/if}}
+            {{#if interception.penalty}} ({{interception.penalty}}){{/if}}
+          {{/if}}
+        {{/if}}
+      </div>
+    {{/if}}
+
     {{#unless damage}}
       {{#if hasTarget}}<div class="b5-order-result ok">{{localize "B5.Barrage.absorbed"}}</div>{{/if}}
     {{/unless}}
