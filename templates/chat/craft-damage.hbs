@@ -1,0 +1,65 @@
+{{!-- Damage card: where the 2d6 cascade put the damage, and what it cost the craft. --}}
+<div class="b5-order-card b5-damage-card">
+  <div class="b5-order-head">
+    <span class="b5-order-name">{{localize "B5.Damage.title"}}</span>
+    <span class="b5-order-type">{{craft.name}}</span>
+  </div>
+
+  {{#if damage}}
+    <div class="b5-order-line">
+      {{localize "B5.Barrage.damage"}}: <strong>{{damage}}</strong>
+      {{localize "B5.Damage.spacesUnit"}}
+    </div>
+
+    <ul class="b5-damage-steps">
+      {{#each steps}}
+        <li>
+          <span class="b5-damage-area">{{label}}</span>
+          <span class="b5-damage-amount">{{amount}}</span>
+          {{#if destroyed}}<span class="b5-chip b5-destroyed">{{localize "B5.Damage.areaDestroyed"}}</span>{{/if}}
+          {{#if feature}}<span class="b5-damage-note">{{feature}}</span>{{/if}}
+          {{#if weapons}}
+            <span class="b5-damage-note">
+              {{#each weapons}}{{name}} −{{amount}}{{#if destroyed}} ✕{{/if}}{{#unless @last}}, {{/unless}}{{/each}}
+            </span>
+          {{/if}}
+        </li>
+      {{/each}}
+    </ul>
+  {{/if}}
+
+  {{#if armourLoss}}
+    <div class="b5-order-effect">
+      {{localize "B5.Field.armour"}} −{{armourLoss}}
+      {{#if beamArmour}}({{localize "B5.Barrage.beamArmour"}} {{beamArmour}}){{/if}}
+      → {{armour}}
+    </div>
+  {{/if}}
+
+  {{#if pulseLost}}
+    <div class="b5-order-effect">{{localize "B5.Damage.electroPulseLoss"}}: −{{pulseLost}}</div>
+  {{/if}}
+
+  {{#if impairment}}
+    <div class="b5-damage-impairment">
+      <span class="b5-damage-label">{{localize "B5.Damage.impairmentChecks"}} (DC {{impairmentDc}})</span>
+      {{#each impairment}}
+        <div class="{{#if success}}ok{{else}}fail{{/if}}">
+          {{label}} — {{total}} {{localize "B5.Order.versus"}} {{dc}}:
+          {{#if success}}{{localize "B5.Damage.held"}}{{else}}{{localize "B5.Damage.impaired"}}{{/if}}
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  <div class="b5-damage-state">
+    {{#each spaces}}
+      <span class="b5-damage-pool {{#if impaired}}impaired{{/if}}">
+        {{label}} {{value}}/{{max}}
+      </span>
+    {{/each}}
+  </div>
+
+  {{#if drifting}}<div class="b5-order-result fail">{{localize "B5.Field.drifting"}}</div>{{/if}}
+  {{#if destroyed}}<div class="b5-order-result fail">{{localize "B5.Field.destroyed"}}</div>{{/if}}
+</div>

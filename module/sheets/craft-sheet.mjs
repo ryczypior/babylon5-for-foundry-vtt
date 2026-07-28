@@ -1,6 +1,8 @@
 import B5ActorSheet from "./actor-sheet.mjs";
 import { B5 } from "../config.mjs";
 import B5OrderTests from "../tests/order-tests.mjs";
+import B5AttackTests from "../tests/attack-tests.mjs";
+import { weaponInRange } from "../system/gunnery.mjs";
 
 const PATH = "systems/babylon5/templates/actor/craft";
 
@@ -18,7 +20,9 @@ export default class B5CraftSheet extends B5ActorSheet {
       clearStation: B5CraftSheet.#onClearStation,
       openStation: B5CraftSheet.#onOpenStation,
       issueOrder: B5CraftSheet.#onIssueOrder,
-      resetOrders: B5CraftSheet.#onResetOrders
+      resetOrders: B5CraftSheet.#onResetOrders,
+      fireBarrage: B5CraftSheet.#onFireBarrage,
+      repairSpaces: B5CraftSheet.#onRepairSpaces
     }
   };
 
@@ -50,10 +54,18 @@ export default class B5CraftSheet extends B5ActorSheet {
       active: t.id === this.activeTab
     }));
 
-    // Weapons grouped by firing arc, because that is how they are fired and destroyed.
+    // Weapons grouped by firing arc, because that is how they are fired and destroyed. Each
+    // one carries whether it can reach the current range band, which is what greys it out.
+    const band = this.actor.system.combat.band;
+    const weapons = this.actor.itemTypes.craftWeapon.map(item => ({
+      item,
+      inRange: weaponInRange(item, band),
+      firable: !item.system.destroyed && weaponInRange(item, band)
+    }));
     context.weaponsByArc = Object.fromEntries(
-      B5.craftArcs.map(arc => [arc, this.actor.itemTypes.craftWeapon.filter(w => w.system.arc === arc)])
+      B5.craftArcs.map(arc => [arc, weapons.filter(w => w.item.system.arc === arc)])
     );
+    context.canFire = weapons.some(w => w.firable);
     context.features = this.actor.itemTypes.craftFeature;
     context.spacesRemaining = this.actor.system.spacesRemaining;
     context.spacesTotal = this.actor.system.spacesTotal;
@@ -140,6 +152,39 @@ export default class B5CraftSheet extends B5ActorSheet {
 
   static async #onIssueOrder() {
     await B5OrderTests.promptOrder(this.actor);
+  }
+
+  static async #onFireBarrage() {
+    await B5AttackTests.promptBarrage(this.actor);
+  }
+
+  /**
+   * Put the craft back together: every space to its maximum, every impairment cleared and every
+   * mount restored. Repair between sessions is a narrative matter in this system, so the sheet
+   * offers the whole thing at once rather than trying to model a repair schedule.
+   */
+  static async #onRepairSpaces() {
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
+      window: { title: game.i18n.localize("B5.Damage.repairTitle") },
+      content: `<p>${game.i18n.format("B5.Damage.repairConfirm", { name: this.actor.name })}</p>`
+    });
+    if (!confirmed) return;
+
+    const updates = { "system.attributes.armour.value": this.actor.system.attributes.armour.max };
+    for (const [key, pool] of Object.entries(this.actor.system.spaces)) {
+      updates[`system.spaces.${key}.value`] = pool.max;
+      updates[`system.spaces.${key}.impaired`] = false;
+    }
+    updates["system.combat.drifting"] = false;
+    await this.actor.update(updates);
+
+    const items = [
+      ...this.actor.itemTypes.craftWeapon.map(w => ({
+        _id: w.id, "system.spacesLost": 0, "system.impaired": false, "system.destroyed": false
+      })),
+      ...this.actor.itemTypes.craftFeature.map(f => ({ _id: f.id, "system.destroyed": false }))
+    ];
+    if (items.length) await this.actor.updateEmbeddedDocuments("Item", items);
   }
 
   /** New turn: the order allowance and the Stealth these orders cost both reset. */

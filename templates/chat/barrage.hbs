@@ -1,0 +1,80 @@
+{{!-- Barrage card: one line per attack roll, then the Total Offence arithmetic. --}}
+<div class="b5-order-card b5-barrage-card">
+  <div class="b5-order-head">
+    <span class="b5-order-name">{{localize "B5.Barrage.fire"}}</span>
+    {{#if targetName}}<span class="b5-order-type">→ {{targetName}}</span>{{/if}}
+  </div>
+
+  <div class="b5-order-line">
+    {{executor}} — {{localize "B5.Field.attackBonus"}} {{b5Signed bonus}}
+    {{#if targeting}} · {{localize "B5.Barrage.lock"}} {{b5Signed targeting}}{{/if}}
+    {{#if globalMod}} · {{localize "B5.Space.control"}} {{b5Signed globalMod}}{{/if}}
+    {{#if modifier}} · {{localize "B5.Field.misc"}} {{b5Signed modifier}}{{/if}}
+    · {{localize "B5.Field.dv"}} {{dv}}
+  </div>
+
+  <table class="b5-barrage-shots">
+    <tbody>
+      {{#each shots}}
+        <tr class="{{#if hit}}hit{{else}}miss{{/if}}">
+          <td class="b5-barrage-name">
+            {{name}}{{#if repeated}} <span class="b5-chip">{{repeated}}</span>{{/if}}
+          </td>
+          <td class="b5-total">{{total}}</td>
+          <td>
+            {{#if crit}}
+              <span class="b5-crit">{{localize "B5.Barrage.critical"}} ({{confirmation}})</span>
+            {{else if hit}}
+              {{#if electroPulse}}
+                {{localize "B5.Barrage.electroPulseHit"}}
+              {{else}}
+                {{localize "B5.Field.offence"}} {{offence}}
+              {{/if}}
+            {{else}}
+              {{localize "B5.Barrage.miss"}}
+            {{/if}}
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  {{#if anyHit}}
+    <div class="b5-barrage-maths">
+      <div><span>{{localize "B5.Barrage.totalOffence"}}</span><strong>{{offence}}</strong></div>
+      {{#if intercepted}}
+        <div><span>{{localize "B5.Barrage.intercepted"}}</span><strong>−{{intercepted}}</strong></div>
+      {{/if}}
+      {{#if shielded}}
+        <div><span>{{localize "B5.Barrage.shielding"}} ÷{{divisor}}</span><strong>{{afterShielding}}</strong></div>
+      {{/if}}
+      {{#if hasTarget}}
+        <div><span>{{localize "B5.Field.armour"}}</span><strong>−{{armour}}</strong></div>
+        <div class="b5-barrage-damage">
+          <span>{{localize "B5.Barrage.damage"}}</span><strong>{{damage}}</strong>
+        </div>
+      {{/if}}
+    </div>
+
+    {{#unless damage}}
+      {{#if hasTarget}}<div class="b5-order-result ok">{{localize "B5.Barrage.absorbed"}}</div>{{/if}}
+    {{/unless}}
+
+    {{#if beams}}
+      <div class="b5-order-effect">
+        {{localize "B5.Barrage.beamArmour"}}:
+        {{#each beams}}{{name}} {{dice}} = {{total}}{{#unless @last}}, {{/unless}}{{/each}}
+        → −{{beamArmour}} {{localize "B5.Field.armour"}}
+      </div>
+    {{/if}}
+    {{#if electroPulse}}
+      <div class="b5-order-effect">{{localize "B5.Barrage.electroPulseNote"}}</div>
+    {{/if}}
+  {{else}}
+    <div class="b5-order-result fail">{{localize "B5.Barrage.allMissed"}}</div>
+  {{/if}}
+
+  {{#unless hasTarget}}
+    <div class="b5-order-foot">{{localize "B5.Barrage.noTargetHint"}}</div>
+  {{/unless}}
+</div>

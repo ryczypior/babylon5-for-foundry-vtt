@@ -2,21 +2,30 @@
 <section class="b5-tab-panel {{#if isActiveTab}}active{{/if}}" data-tab="damage">
 
   <div class="b5-card">
-    <h3>{{localize "B5.Section.structuralSpaces"}}</h3>
-    <table>
+    <h3>
+      {{localize "B5.Section.structuralSpaces"}}
+      <button type="button" class="b5-add" data-action="repairSpaces" data-tooltip="B5.Tooltip.repairSpaces">
+        <i class="fa-solid fa-wrench"></i>
+      </button>
+    </h3>
+    <table class="b5-craft-spaces">
       <thead>
         <tr>
           <th>{{localize "B5.Field.spaceType"}}</th>
           <th>{{localize "B5.Field.remaining"}}</th>
           <th>{{localize "B5.Field.max"}}</th>
+          <th>{{localize "B5.Damage.impaired"}}</th>
         </tr>
       </thead>
       <tbody>
         {{#each system.spaces as |space key|}}
-          <tr>
+          <tr class="{{#if space.impaired}}b5-impaired-row{{/if}}">
             <th class="b5-row-label">{{localize (concat "B5.Space." key)}}</th>
             <td><input type="number" name="system.spaces.{{key}}.value" value="{{space.value}}"></td>
             <td><input type="number" name="system.spaces.{{key}}.max" value="{{space.max}}"></td>
+            <td class="b5-center">
+              <input type="checkbox" name="system.spaces.{{key}}.impaired" {{checked space.impaired}}>
+            </td>
           </tr>
         {{/each}}
       </tbody>
@@ -25,6 +34,7 @@
           <th>{{localize "B5.Field.total"}}</th>
           <td class="b5-total">{{spacesRemaining}}</td>
           <td class="b5-total">{{spacesTotal}}</td>
+          <td></td>
         </tr>
       </tfoot>
     </table>
@@ -35,7 +45,7 @@
     <h3>{{localize "B5.Section.combatState"}}</h3>
     <div class="b5-grid-3">
       <label class="b5-inline-toggle">
-        <input type="checkbox" name="system.combat.drifting" {{checked system.combat.drifting}}>
+        <input type="checkbox" name="system.combat.drifting" {{checked source.combat.drifting}}>
         {{localize "B5.Field.drifting"}}
       </label>
       <label>{{localize "B5.Field.ordersUsed"}}
@@ -45,5 +55,27 @@
         <input type="number" name="system.combat.initiative" value="{{system.combat.initiative}}">
       </label>
     </div>
+
+    {{!-- The consequences the rules attach to a damaged area, computed rather than remembered. --}}
+    <ul class="b5-status-list">
+      {{#if system.status.drifting}}
+        <li class="b5-status-bad">{{localize "B5.Status.drifting"}}</li>
+      {{/if}}
+      {{#if system.status.controlDestroyed}}
+        <li class="b5-status-bad">{{localize "B5.Status.controlDestroyed"}}</li>
+      {{else if system.spaces.control.impaired}}
+        <li class="b5-status-warn">{{localize "B5.Status.controlImpaired"}}</li>
+      {{/if}}
+      {{#if system.status.crewPenalty}}
+        <li class="b5-status-warn">
+          {{localize "B5.Status.crewLosses"}} ({{b5Signed system.status.crewPenalty}})
+        </li>
+      {{/if}}
+      <li>
+        {{localize "B5.Field.handling"}} <strong>{{b5Signed system.attributes.effectiveHandling}}</strong> ·
+        {{localize "B5.Field.sensors"}} <strong>{{b5Signed system.attributes.effectiveSensors}}</strong> ·
+        {{localize "B5.Field.dv"}} <strong>{{system.attributes.dv.total}}</strong>
+      </li>
+    </ul>
   </div>
 </section>

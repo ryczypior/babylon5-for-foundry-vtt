@@ -236,6 +236,26 @@ B5.telepathyDisciplines = ["scan", "manipulation", "communication", "perception"
 
 B5.craftTypes = ["spacecraft", "aircraft", "surfaceVehicle"];
 
+/**
+ * Craft are measured on the **superscale** table (book p. 228), not the personal one in
+ * `B5.sizes` — a Huge spacecraft is −4, not −2.
+ *
+ * The source is not self-consistent: several printed stat blocks use ±1 for Small and Large
+ * where this table prints ±2, and the printed Defence Values follow the stat blocks. Printed DV
+ * is authoritative per craft, so `attributes.dv.misc` stays available to reconcile the two.
+ */
+B5.superscaleSizes = {
+  fine:        16,
+  diminutive:   8,
+  tiny:         4,
+  small:        2,
+  medium:       0,
+  large:       -2,
+  huge:        -4,
+  gargantuan:  -8,
+  colossal:   -16
+};
+
 B5.craftArcs = ["fore", "aft", "port", "starboard", "turret"];
 
 /** Movement is abstracted into three range bands (book p. 186). */

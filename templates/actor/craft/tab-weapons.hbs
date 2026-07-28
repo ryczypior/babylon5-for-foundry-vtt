@@ -9,6 +9,17 @@
       </button>
     </h3>
 
+    <div class="b5-order-bar">
+      <button type="button" class="b5-order-button" data-action="fireBarrage"
+              {{#unless canFire}}disabled{{/unless}}>
+        <i class="fa-solid fa-crosshairs"></i> {{localize "B5.Barrage.fire"}}
+      </button>
+      <span class="b5-budget-part">
+        {{localize "B5.Field.band"}}
+        <strong>{{localize (concat "B5.Range." system.combat.band)}}</strong>
+      </span>
+    </div>
+
     {{#each weaponsByArc as |weapons arc|}}
       <h4 class="b5-arc">{{localize (concat "B5.Arc." arc)}}</h4>
       <table>
@@ -23,14 +34,35 @@
           </tr>
         </thead>
         <tbody>
-          {{#each weapons as |item|}}
-            <tr data-item-id="{{item.id}}" class="{{#if item.system.destroyed}}b5-destroyed-row{{/if}}">
-              <td class="b5-item-name" data-action="editItem">{{item.name}}</td>
-              <td>{{localize (concat "B5.Range." item.system.range)}}</td>
-              <td class="b5-total">{{item.system.offence}}</td>
-              <td>{{#each item.system.qualities}}{{this}} {{/each}}</td>
-              <td>{{item.system.weaponSpaces}}</td>
+          {{#each weapons as |entry|}}
+            <tr data-item-id="{{entry.item.id}}"
+                class="{{#if entry.item.system.destroyed}}b5-destroyed-row{{/if}}{{#unless entry.inRange}} b5-out-of-range{{/unless}}">
+              <td class="b5-item-name" data-action="editItem">
+                {{entry.item.name}}
+                {{#if entry.item.system.impaired}}
+                  <span class="b5-chip b5-impaired">{{localize "B5.Damage.impaired"}}</span>
+                {{/if}}
+              </td>
+              <td>{{localize (concat "B5.Range." entry.item.system.range)}}</td>
+              <td class="b5-total">
+                {{entry.item.system.effectiveOffence}}
+                {{#if entry.item.system.impaired}}
+                  <span class="b5-strike">{{entry.item.system.offence}}</span>
+                {{/if}}
+              </td>
+              <td>{{#each entry.item.system.qualities}}{{this}} {{/each}}</td>
+              <td>
+                {{#if entry.item.system.spacesLost}}
+                  <span class="b5-warning-inline">{{entry.item.system.spacesLeft}}</span>/{{entry.item.system.totalSpaces}}
+                {{else}}
+                  {{entry.item.system.totalSpaces}}
+                {{/if}}
+              </td>
               <td class="b5-row-actions">
+                <button type="button" data-action="toggleItem" data-field="impaired"
+                        data-tooltip="B5.Tooltip.weaponImpaired">
+                  <i class="fa-solid fa-bolt"></i>
+                </button>
                 <button type="button" data-action="toggleItem" data-field="destroyed">
                   <i class="fa-solid fa-explosion"></i>
                 </button>

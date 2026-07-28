@@ -13,7 +13,9 @@ export default class CraftData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     const spaceField = () => new fields.SchemaField({
       value: int(),      // remaining
-      max: int()
+      max: int(),
+      /** Set when the area lost some but not all of its spaces and failed its DC 25 check. */
+      impaired: bool(false)
     });
 
     return {
@@ -80,22 +82,49 @@ export default class CraftData extends foundry.abstract.TypeDataModel {
   /** @override */
   prepareDerivedData() {
     const a = this.attributes;
-    a.dv.sizeMod = B5.sizes[this.details.size]?.mod ?? 0;
-    a.dv.total = a.dv.base + a.dv.sizeMod + a.dv.handlingMod + a.dv.misc;
+    const spaces = this.spaces;
 
-    // Total structural spaces left drives the impairment check DC (25 + 1 per 10 spaces).
-    this.spacesRemaining = Object.values(this.spaces).reduce((sum, s) => sum + s.value, 0);
-    this.spacesTotal = Object.values(this.spaces).reduce((sum, s) => sum + s.max, 0);
+    /* Damaged areas (book p. 197). An area with no spaces at all was never fitted and cannot
+       be destroyed; only one that had spaces and lost them all counts. */
+    const gone = key => spaces[key].max > 0 && spaces[key].value <= 0;
+    const engineDestroyed = gone("engine");
+    const controlDestroyed = gone("control");
+    const crewDestroyed = gone("crew");
+    const drifting = this.combat.drifting || engineDestroyed || controlDestroyed;
+
+    this.status = {
+      engineDestroyed,
+      controlDestroyed,
+      crewDestroyed,
+      drifting,
+      // Control damage is the one status that touches every roll the craft makes.
+      checkModifier: controlDestroyed ? -4 : (spaces.control.impaired ? -2 : 0),
+      crewPenalty: crewDestroyed ? -4 : (spaces.crew.impaired ? -2 : 0)
+    };
+
+    // A drifting craft is treated as Handling −5 whatever it started with.
+    const handlingPenalty = (spaces.engine.impaired ? 2 : 0) + (spaces.control.impaired ? 2 : 0);
+    a.effectiveHandling = drifting ? -5 : a.handling - handlingPenalty;
+
+    // Superscale, not the personal size table: a Huge spacecraft is −4, not −2.
+    a.dv.sizeMod = B5.superscaleSizes[this.details.size] ?? 0;
+    const handlingMod = drifting ? -5 : a.dv.handlingMod - handlingPenalty;
+    a.dv.total = a.dv.base + a.dv.sizeMod + handlingMod + a.dv.misc;
+
+    a.effectiveSensors = a.sensors - (controlDestroyed ? 6 : (spaces.control.impaired ? 4 : 0));
+
+    // Crew casualties cost the ship's own rolls, which is what an unmanned station falls back to.
+    this.crew.effectiveBab = this.crew.bab + this.status.crewPenalty;
+    this.crew.effectiveTraining = this.crew.training + this.status.crewPenalty;
+
+    // Total structural spaces left drives the impairment check bonus (+1 per 10 remaining).
+    this.spacesRemaining = Object.values(spaces).reduce((sum, s) => sum + s.value, 0);
+    this.spacesTotal = Object.values(spaces).reduce((sum, s) => sum + s.max, 0);
 
     // Every order executed this round costs 5 Stealth — this is what Lock Weapons rolls against.
-    this.attributes.effectiveStealth = Math.max(0, this.attributes.stealth - this.combat.stealthPenalty);
-    this.combat.destroyed = this.attributes.armour.value <= 0 && this.attributes.armour.max > 0;
-  }
+    a.effectiveStealth = Math.max(0, a.stealth - this.combat.stealthPenalty);
 
-  /** Total Offence = highest weapon Offence + half of every other hit (book p. 194). */
-  static totalOffence(offences = []) {
-    if (!offences.length) return 0;
-    const sorted = [...offences].sort((a, b) => b - a);
-    return sorted[0] + sorted.slice(1).reduce((sum, o) => sum + Math.floor(o / 2), 0);
+    this.combat.drifting = drifting;
+    this.combat.destroyed = a.armour.value <= 0 && a.armour.max > 0;
   }
 }

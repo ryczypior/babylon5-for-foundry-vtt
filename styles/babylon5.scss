@@ -623,6 +623,39 @@
   .b5-warning-inline { color: $b5-danger; }
 
   .b5-prereq { font-size: 0.75rem; color: var(--b5-text-muted); text-align: left; }
+
+  /* ---------- craft damage ---------- */
+
+  // Foundry's own row striping washes an unchecked box out on every other row.
+  .b5-craft-spaces input[type="checkbox"] {
+    outline: 1px solid var(--b5-line);
+    outline-offset: 1px;
+  }
+
+  // A weapon that cannot reach the current range band is still listed, just dimmed.
+  tr.b5-out-of-range td { opacity: 0.55; }
+
+  tr.b5-impaired-row th, tr.b5-impaired-row td { background: rgba(179, 69, 47, 0.08); }
+
+  .b5-chip.b5-impaired { border-color: $b5-danger; color: $b5-danger; }
+
+  .b5-strike {
+    margin-left: 0.3rem;
+    font-size: 0.7rem;
+    text-decoration: line-through;
+    color: var(--b5-text-muted);
+  }
+
+  .b5-status-list {
+    list-style: none;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    font-size: 0.75rem;
+
+    li { padding: 0.1rem 0; }
+    li.b5-status-bad { color: $b5-danger; }
+    li.b5-status-warn { color: var(--b5-accent-bright); }
+  }
 }
 
 // Order resolution cards in chat — outside the sheet wrapper, so scoped to their own class.
@@ -674,4 +707,120 @@
     border-radius: 8px;
     opacity: 0.8;
   }
+}
+
+// Barrage and damage cards. They extend .b5-order-card, so only the extra parts live here.
+.b5-barrage-card {
+
+  .b5-barrage-shots {
+    width: 100%;
+    margin: 0.3rem 0;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+
+    td {
+      padding: 0.1rem 0.2rem;
+      border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+    }
+
+    tr.miss { opacity: 0.55; }
+    .b5-barrage-name { width: 55%; }
+    .b5-total { text-align: right; font-weight: 700; }
+    .b5-crit { color: #3f7d4e; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
+  }
+
+  .b5-barrage-maths {
+    margin: 0.3rem 0;
+    padding: 0.25rem 0.4rem;
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    border-radius: 3px;
+    font-size: 0.78rem;
+
+    div { display: flex; justify-content: space-between; }
+    .b5-barrage-damage {
+      margin-top: 0.15rem;
+      padding-top: 0.15rem;
+      border-top: 1px solid rgba(128, 128, 128, 0.25);
+      font-weight: 700;
+    }
+  }
+}
+
+.b5-damage-card {
+
+  .b5-damage-steps {
+    list-style: none;
+    margin: 0.3rem 0;
+    padding: 0;
+    font-size: 0.78rem;
+
+    li {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.3rem;
+      padding: 0.1rem 0;
+      border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+    }
+
+    .b5-damage-area { flex: 1 1 auto; }
+    .b5-damage-amount { font-weight: 700; }
+    .b5-damage-note { flex: 1 1 100%; font-size: 0.72rem; opacity: 0.75; }
+  }
+
+  .b5-damage-impairment {
+    margin: 0.3rem 0;
+    font-size: 0.76rem;
+
+    .b5-damage-label { text-transform: uppercase; font-size: 0.65rem; opacity: 0.7; }
+    .ok { color: #3f7d4e; }
+    .fail { color: #b3452f; }
+  }
+
+  .b5-damage-state {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+
+    .b5-damage-pool {
+      padding: 0 0.3rem;
+      border: 1px solid rgba(128, 128, 128, 0.35);
+      border-radius: 8px;
+    }
+    .b5-damage-pool.impaired { border-color: #b3452f; color: #b3452f; }
+  }
+}
+
+// The barrage dialog lives outside the sheet, so its weapon picker is scoped to .b5-dialog.
+.b5-dialog {
+
+  .b5-barrage-weapons {
+    max-height: 15rem;
+    overflow-y: auto;
+    margin: 0.4rem 0;
+  }
+
+  .b5-barrage-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.15rem 0;
+
+    &.out-of-range { opacity: 0.5; }
+
+    .b5-barrage-name { font-weight: 600; }
+    .b5-barrage-meta { font-size: 0.75rem; opacity: 0.75; text-align: right; }
+    .b5-barrage-note {
+      grid-column: 2 / -1;
+      font-size: 0.72rem;
+      font-style: italic;
+      opacity: 0.7;
+    }
+  }
+
+  .b5-hint { font-size: 0.75rem; font-style: italic; opacity: 0.8; }
+  .b5-warning-inline { color: #b3452f; font-size: 0.75rem; }
 }

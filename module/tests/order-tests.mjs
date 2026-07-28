@@ -79,7 +79,8 @@ export default class B5OrderTests {
     }
     return {
       actor: null,
-      bonus: craft.system.crew.training ?? 0,
+      // Casualties in the crew spaces cost the ship its own Training bonus (book p. 197).
+      bonus: craft.system.crew.effectiveTraining ?? craft.system.crew.training ?? 0,
       role: null,
       label: game.i18n.localize("B5.Order.byCrew")
     };
