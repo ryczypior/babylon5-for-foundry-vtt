@@ -21,6 +21,7 @@ import B5CraftSheet from "./sheets/craft-sheet.mjs";
 import B5ItemSheet from "./sheets/item-sheet.mjs";
 
 import B5TelepathyTests from "./tests/telepathy-tests.mjs";
+import B5WeaponTests from "./tests/weapon-tests.mjs";
 import { registerHandlebars, preloadTemplates } from "./helpers/handlebars.mjs";
 
 Hooks.once("init", () => {
@@ -85,14 +86,18 @@ function registerSheets() {
 }
 
 /**
- * The telepathy card carries a button that rolls the subject's Will save. It lives in chat
- * rather than on the sheet because the roll belongs to whoever is being read, not to the
- * telepath — the button acts on the reader's current targets.
+ * Two cards carry buttons that act on the *reader's* current targets rather than on the actor
+ * who posted them: the telepathy card rolls the subject's Will save, and the weapon card spends
+ * its damage through the target's DR. Both belong in chat for that reason.
  */
 Hooks.on("renderChatMessageHTML", (message, html) => {
-  const button = html.querySelector("[data-action=telepathyResist]");
-  if (!button) return;
-  button.addEventListener("click", () => B5TelepathyTests.rollResistance(message));
+  const handlers = {
+    telepathyResist: () => B5TelepathyTests.rollResistance(message),
+    weaponApplyDamage: () => B5WeaponTests.applyDamage(message)
+  };
+  for (const [action, handler] of Object.entries(handlers)) {
+    html.querySelector(`[data-action=${action}]`)?.addEventListener("click", handler);
+  }
 });
 
 Hooks.once("ready", () => {

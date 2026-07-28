@@ -109,6 +109,9 @@
             <td>{{item.system.ap}}</td>
             <td>{{#if item.system.ammo.usesAmmo}}{{item.system.ammo.current}}/{{item.system.ammo.capacity}}{{else}}—{{/if}}</td>
             <td class="b5-row-actions">
+              <button type="button" data-action="attackWithWeapon" data-tooltip="B5.Tooltip.attackWithWeapon">
+                <i class="fa-solid fa-hand-fist"></i>
+              </button>
               <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
             </td>
           </tr>

@@ -1,0 +1,76 @@
+{{!-- Weapon attack card: one row per attack roll, then the damage it rolled. --}}
+<div class="b5-order-card b5-weapon-card">
+  <div class="b5-order-head">
+    <span class="b5-order-name">{{name}}</span>
+    <span class="b5-order-type">{{line}} · {{action}}</span>
+  </div>
+
+  {{#if parts}}
+    <div class="b5-order-line b5-weapon-parts">
+      {{#each parts}}{{label}} {{b5Signed value}}{{#unless @last}} · {{/unless}}{{/each}}
+    </div>
+  {{/if}}
+
+  {{#if dryBurst}}
+    <div class="b5-order-result fail">{{localize "B5.Weapon.dryBurst"}}</div>
+  {{/if}}
+
+  <table class="b5-weapon-attacks">
+    <tbody>
+      {{#each attacks}}
+        <tr class="{{#if miss}}miss{{/if}}">
+          <td class="b5-weapon-step">
+            {{#if step}}{{b5Signed step}}{{else}}—{{/if}}
+          </td>
+          <td class="b5-total">{{total}}</td>
+          <td>
+            {{#if crit}}
+              <span class="b5-crit">{{localize "B5.Barrage.critical"}} ×{{multiplier}} ({{confirmation}})</span>
+            {{else if unconfirmed}}
+              {{localize "B5.Weapon.notConfirmed"}} ({{confirmation}})
+            {{else if miss}}
+              {{localize "B5.Barrage.miss"}}
+            {{else if hit}}
+              {{localize "B5.Weapon.hit"}}
+            {{else}}
+              {{localize "B5.Weapon.undecided"}}
+              {{#if threatened}} · {{localize "B5.Weapon.threat"}}{{/if}}
+            {{/if}}
+          </td>
+          <td class="b5-weapon-damage">
+            {{#if damage}}<strong>{{damage}}</strong>{{/if}}
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  {{#if damageParts}}
+    <div class="b5-order-line b5-weapon-parts">
+      {{localize "B5.Field.damage"}}:
+      {{#each damageParts}}{{label}} {{b5Signed value}}{{#unless @last}} · {{/unless}}{{/each}}
+    </div>
+  {{/if}}
+
+  {{#if anyDamage}}
+    <div class="b5-weapon-total">
+      <span>
+        {{localize "B5.Field.damage"}} <strong>{{damage}}</strong>
+        {{#if nonlethal}}({{localize "B5.Field.nonlethal"}}){{/if}}
+        {{#if ap}}· {{localize "B5.Field.ap"}} {{ap}}{{/if}}
+      </span>
+      <button type="button" class="b5-order-button" data-action="weaponApplyDamage">
+        <i class="fa-solid fa-heart-crack"></i> {{localize "B5.Weapon.applyDamage"}}
+      </button>
+    </div>
+    <div class="b5-order-foot">{{localize "B5.Weapon.applyHint"}}</div>
+  {{/if}}
+
+  {{#if undecided}}
+    <div class="b5-order-foot">{{localize "B5.Weapon.noDvHint"}}</div>
+  {{/if}}
+
+  {{#if ammo}}
+    <div class="b5-order-foot">{{localize "B5.Field.ammo"}}: {{ammo.current}} / {{ammo.capacity}}</div>
+  {{/if}}
+</div>

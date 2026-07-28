@@ -956,3 +956,60 @@
     strong { font-size: 1.05rem; margin-left: 0.3rem; }
   }
 }
+
+// Weapon attack card. Extends .b5-order-card, so only the extra parts live here.
+.b5-weapon-card {
+
+  .b5-weapon-parts { font-size: 0.72rem; opacity: 0.8; }
+
+  .b5-weapon-attacks {
+    width: 100%;
+    margin: 0.3rem 0;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+
+    td {
+      padding: 0.1rem 0.2rem;
+      border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+    }
+
+    tr.miss { opacity: 0.55; }
+    .b5-weapon-step { width: 2.5rem; opacity: 0.6; font-variant-numeric: tabular-nums; }
+    .b5-total { width: 2.5rem; text-align: right; font-weight: 700; }
+    .b5-weapon-damage { width: 3rem; text-align: right; }
+    .b5-crit { color: #3f7d4e; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
+  }
+
+  .b5-weapon-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    margin-top: 0.3rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid rgba(128, 128, 128, 0.25);
+    font-size: 0.82rem;
+
+    .b5-order-button {
+      width: auto;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: none;
+      border: 1px solid currentColor;
+      border-radius: 3px;
+      color: inherit;
+      cursor: pointer;
+
+      &:hover { background: rgba(143, 131, 216, 0.18); }
+    }
+  }
+
+  .b5-weapon-applied {
+    list-style: none;
+    margin: 0.2rem 0 0;
+    padding: 0;
+    font-size: 0.78rem;
+  }
+}
