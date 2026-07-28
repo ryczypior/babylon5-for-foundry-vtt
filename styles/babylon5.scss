@@ -344,8 +344,24 @@
       white-space: nowrap;
     }
 
-    input { width: 100%; max-width: 4.5rem; text-align: center; }
-    input[type="checkbox"] { width: auto; }
+    // Foundry v13 stripes table rows (--table-row-color-even / --table-row-color-odd) and its
+    // default field background disappears against one of the two, so every other row's inputs
+    // read as bare text. Give them a surface of their own instead of inheriting the stripe.
+    input, select {
+      width: 100%;
+      max-width: 4.5rem;
+      text-align: center;
+      background: var(--b5-panel-strong);
+      border: 1px solid var(--b5-line);
+      border-radius: $b5-radius;
+    }
+    input[type="checkbox"] {
+      width: auto;
+      background: none;
+      border: none;
+      outline: 1px solid var(--b5-line);
+      outline-offset: 1px;
+    }
 
     // The label column takes the slack; numeric cells stay on one line. Do NOT set an
     // explicit width on every `td` — with a wide label column the numeric cells then
@@ -659,12 +675,6 @@
   }
 
   /* ---------- craft damage ---------- */
-
-  // Foundry's own row striping washes an unchecked box out on every other row.
-  .b5-craft-spaces input[type="checkbox"] {
-    outline: 1px solid var(--b5-line);
-    outline-offset: 1px;
-  }
 
   // A weapon that cannot reach the current range band is still listed, just dimmed.
   tr.b5-out-of-range td { opacity: 0.55; }

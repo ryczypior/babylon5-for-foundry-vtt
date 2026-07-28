@@ -2,7 +2,7 @@ import { B5 } from "../config.mjs";
 import { partsTotal } from "../system/roll-modifiers.mjs";
 import { liveTotal, modifierFooter, modifierGroups, readModifierParts } from "./roll-dialog.mjs";
 import {
-  BURN_MULTIPLIER, GENERAL_DCS, burnToClose, influenceDice
+  AID_BONUS, AID_DC, BURN_MULTIPLIER, GENERAL_DCS, burnToClose, influenceDice
 } from "../system/influence.mjs";
 import {
   PRESSURE_STEP, halveScore, pressureLegality, rangerRestriction, resolveLink, specialParts
@@ -192,6 +192,47 @@ export default class B5InfluenceTests {
       </div>`
     });
     return { spent, value: item.system.value, result: boosted };
+  }
+
+  /**
+   * Aid another character's Influence attempt (book p. 113): the helper makes a check of the
+   * *same kind* against a flat DC 10, and a success is worth +2 to the character being helped.
+   *
+   * It is the helper's own roll, on the helper's own entry, which is why this lives beside the
+   * check rather than inside it — the character being helped just ticks the preset the card
+   * tells them they have earned.
+   */
+  static async aid(actor, itemId) {
+    const item = actor.items.get(itemId);
+    if (item?.type !== "influence" || !actor.isOwner) return null;
+
+    const dice = influenceDice(actor, item, B5.INFLUENCE_DICE);
+    const modifier = item.system.value + item.system.repeatPenalty;
+    const roll = await new Roll(`${dice} + @modifier`, { modifier }).evaluate();
+    const success = roll.total >= AID_DC;
+
+    // Aiding is an attempt like any other, so it counts against the week.
+    await item.update({ "system.usesThisWeek": item.system.usesThisWeek + 1 });
+
+    const data = {
+      speaker: ChatMessage.getSpeaker({ actor }),
+      content: `<div class="b5-order-card b5-influence-card">
+        <div class="b5-order-head">
+          <span class="b5-order-name">${item.name}</span>
+          <span class="b5-order-type">${game.i18n.localize("B5.Influence.aiding")}</span>
+        </div>
+        <div class="b5-order-result ${success ? "ok" : "fail"}">
+          ${roll.total} ${game.i18n.localize("B5.Order.versus")} ${AID_DC} —
+          ${game.i18n.localize(success ? "B5.Influence.aidGranted" : "B5.Influence.aidFailed")}
+        </div>
+        <div class="b5-order-foot">${game.i18n.localize("B5.Influence.aidHint")}</div>
+      </div>`,
+      rolls: [roll],
+      sound: CONFIG.sounds.dice
+    };
+    ChatMessage.applyRollMode(data, game.settings.get("core", "rollMode"));
+    await ChatMessage.create(data);
+    return { roll, success, bonus: success ? AID_BONUS : 0 };
   }
 
   /* -------------------------------------------- */

@@ -215,6 +215,10 @@ export class InfluenceData extends TypeDataModel {
 
   prepareDerivedData() {
     this.value = Math.max(0, this.base - this.burned + this.misc);
+    // The unsoftened figure; `CharacterData.#prepareInfluence()` replaces it on an owned entry,
+    // because which class features apply is the actor's business and not knowable here.
+    this.repeatPenaltyPerUse = B5.INFLUENCE_REPEAT_PENALTY;
+    this.repeatSoftenedBy = null;
     this.repeatPenalty = this.usesThisWeek * B5.INFLUENCE_REPEAT_PENALTY;
   }
 }

@@ -3,6 +3,7 @@ import { int, num, str, bool, html, bonusBlock, attackBlock } from "../fields.mj
 import {
   DANGER_SENSE_P_RATING, MENTAL_FORTRESS_DR, TELEPATHY_FEATS, mentalEffortDie, reach
 } from "../../system/telepathy.mjs";
+import { repeatPenaltyPerUse } from "../../system/influence.mjs";
 
 const fields = foundry.data.fields;
 
@@ -629,10 +630,26 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
 
     this.#prepareTelepathicAbilities();
 
+    this.#prepareInfluence();
+
     // Influence adds score ÷ 5 to Diplomacy and Intimidate; we expose the best score's bonus.
     const best = this.parent.itemTypes.influence
       .reduce((max, i) => Math.max(max, i.system.value), 0);
     this.influence.socialBonus = Math.floor(best / B5.INFLUENCE_SOCIAL_DIVISOR);
+  }
+
+  /**
+   * The repeat penalty depends on the character's *classes* — Diplomat 3 softens it to −3 for
+   * every Influence, Fence and Psi Cop for their own — so it is finished here rather than in the
+   * Item, whose derived data runs a cycle behind the actor's.
+   */
+  #prepareInfluence() {
+    for (const item of this.parent.itemTypes.influence) {
+      const { penalty, source } = repeatPenaltyPerUse(this.parent, item, B5.INFLUENCE_REPEAT_PENALTY);
+      item.system.repeatPenaltyPerUse = penalty;
+      item.system.repeatSoftenedBy = source;
+      item.system.repeatPenalty = item.system.usesThisWeek * penalty;
+    }
   }
 
   /**

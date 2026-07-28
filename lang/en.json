@@ -900,5 +900,12 @@
   "B5.Warning.unrelatedFaction": "Pressure needs a target of the same race or the same type; check the faction's printed Pressures line.",
   "B5.Warning.rangerMinbariSocialOnly": "Ranger Influence pressures Minbari Social only, until Heart of Izil'zha widens it to all Minbari factions.",
   "B5.Warning.anyPoliticalOnly": "The Interstellar Alliance and the Vorlons pressure any Political faction, and nothing else.",
-  "B5.Warning.pressureChainBroken": "The previous faction refused — there is nothing to carry into another link."
+  "B5.Warning.pressureChainBroken": "The previous faction refused — there is nothing to carry into another link.",
+  "B5.Influence.aiding": "aiding another's attempt",
+  "B5.Influence.aidGranted": "the help is worth +2",
+  "B5.Influence.aidFailed": "no help",
+  "B5.Influence.aidHint": "A helper makes a check of the same kind against DC 10; a success adds +2 to the attempt being helped, and counts against the week like any other.",
+  "B5.Influence.perUse": "per use",
+  "B5.Tooltip.aid": "Aid another character's attempt with this Influence: DC 10 for +2",
+  "B5.Tooltip.repeatSoftened": "A class feature softens the repeat penalty for this Influence"
 }

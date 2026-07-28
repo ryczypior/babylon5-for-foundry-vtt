@@ -34,8 +34,16 @@
             <td>{{item.system.burned}}</td>
             <td class="b5-total">{{item.system.value}}</td>
             <td>{{item.system.usesThisWeek}}{{#if item.system.repeatPenalty}}
-              <span class="b5-warning-inline">({{item.system.repeatPenalty}})</span>{{/if}}</td>
+              <span class="b5-warning-inline">({{item.system.repeatPenalty}})</span>{{/if}}
+              {{#if item.system.repeatSoftenedBy}}
+                <span class="b5-chip" data-tooltip="B5.Tooltip.repeatSoftened">
+                  {{item.system.repeatPenaltyPerUse}}/{{localize "B5.Influence.perUse"}}
+                </span>
+              {{/if}}</td>
             <td class="b5-row-actions">
+              <button type="button" data-action="aidInfluence" data-tooltip="B5.Tooltip.aid">
+                <i class="fa-solid fa-hands-holding"></i>
+              </button>
               <button type="button" data-action="pressureFaction" data-tooltip="B5.Tooltip.pressure">
                 <i class="fa-solid fa-arrow-right-arrow-left"></i>
               </button>

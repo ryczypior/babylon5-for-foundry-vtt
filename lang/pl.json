@@ -900,5 +900,12 @@
   "B5.Warning.unrelatedFaction": "Nacisk wymaga celu tej samej rasy albo tego samego typu; sprawdź drukowaną linię „Pressures” frakcji.",
   "B5.Warning.rangerMinbariSocialOnly": "Wpływy Rangerów naciskają tylko Minbari Towarzyskich, dopóki Serce Izil'zha nie rozszerzy tego na wszystkie frakcje Minbari.",
   "B5.Warning.anyPoliticalOnly": "Sojusz Międzygwiezdny i Vorlonowie naciskają dowolną frakcję polityczną i nic poza tym.",
-  "B5.Warning.pressureChainBroken": "Poprzednia frakcja odmówiła — nie ma czego przenieść do kolejnego ogniwa."
+  "B5.Warning.pressureChainBroken": "Poprzednia frakcja odmówiła — nie ma czego przenieść do kolejnego ogniwa.",
+  "B5.Influence.aiding": "pomoc w cudzej próbie",
+  "B5.Influence.aidGranted": "pomoc jest warta +2",
+  "B5.Influence.aidFailed": "bez pomocy",
+  "B5.Influence.aidHint": "Pomagający wykonuje test tego samego rodzaju przeciw ST 10; sukces dodaje +2 do wspieranej próby i liczy się do tygodnia jak każdy inny.",
+  "B5.Influence.perUse": "za użycie",
+  "B5.Tooltip.aid": "Wesprzyj cudzą próbę tymi wpływami: ST 10 za +2",
+  "B5.Tooltip.repeatSoftened": "Cecha klasowa łagodzi karę za powtórzenie dla tych wpływów"
 }

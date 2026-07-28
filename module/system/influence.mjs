@@ -60,6 +60,56 @@ export const AID_DC = 10;
 export const AID_BONUS = 2;
 
 /**
+ * Class features that soften the −4 for repeating a request inside a week (book p. 108).
+ *
+ * `scope` is what the feature covers: `any` Influence, or one identified the way
+ * `isRangerInfluence` identifies the Ranger's. The prestige classes are not shipped yet; their
+ * entries are here so they work the day they are.
+ */
+export const REPEAT_SOFTENERS = [
+  { classKey: "diplomat", level: 3, penalty: -3, scope: "any", key: "strongInfluence" },
+  { classKey: "diplomat", level: 9, penalty: -2, scope: "any", key: "powerfulInfluence" },
+  { classKey: "fence", level: 1, penalty: -3, scope: "criminal", key: "webOfContacts" },
+  { classKey: "fence", level: 5, penalty: -2, scope: "criminal", key: "greaterWebOfContacts" },
+  { classKey: "psiCop", level: 4, penalty: -3, scope: "psiCorps", key: "corpsIsMother" },
+  { classKey: "psiCop", level: 8, penalty: -2, scope: "psiCorps", key: "corpsIsFather" }
+];
+
+/** Which softeners a given Influence entry falls under. */
+function inScope(item, scope) {
+  if (scope === "any") return true;
+  const id = (item.system.internalId ?? "").trim().toLowerCase();
+  const text = `${item.name} ${item.system.faction ?? ""}`.toLowerCase();
+  if (scope === "criminal") return id === "criminal" || /criminal/.test(text);
+  if (scope === "psiCorps") return id === "psi-corps" || /psi\s*corps/.test(text);
+  return false;
+}
+
+/**
+ * The per-attempt repeat penalty for this entry, softened by whichever class feature applies.
+ * The best (least bad) one wins; they do not stack.
+ *
+ * Reads the actor's classes, so it belongs to the actor's own prepare step — an Item's derived
+ * data runs a cycle behind.
+ */
+export function repeatPenaltyPerUse(actor, item, fallback) {
+  let penalty = fallback;
+  let source = null;
+
+  for (const softener of REPEAT_SOFTENERS) {
+    if (!inScope(item, softener.scope)) continue;
+    const levels = actor.itemTypes.class
+      .filter(cls => cls.system.classKey === softener.classKey)
+      .reduce((sum, cls) => sum + cls.system.levels, 0);
+    if (levels >= softener.level && softener.penalty > penalty) {
+      penalty = softener.penalty;
+      source = softener.key;
+    }
+  }
+  return { penalty, source };
+}
+
+/**
  * How many points closing a shortfall would cost, and what the result would become.
  * A character can never burn more than the score he still has.
  *
