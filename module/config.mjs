@@ -80,8 +80,16 @@ B5.classes = {
   trader:    { initialHp: 5, additionalHp: 2, skillPoints: 6, bab: "average", fort: "poor",    ref: "poor",    will: "good", defence: "average", credits: "6d6*100" },
   workerBlue:      { initialHp: 5, additionalHp: 1, skillPoints: 6, bab: "poor", fort: "good", ref: "poor", will: "poor", defence: "poor", credits: "2d6*100" },
   workerPerforming:{ initialHp: 5, additionalHp: 1, skillPoints: 6, bab: "poor", fort: "poor", ref: "good", will: "poor", defence: "poor", credits: "3d6*100" },
-  workerWhite:     { initialHp: 5, additionalHp: 1, skillPoints: 6, bab: "poor", fort: "poor", ref: "poor", will: "good", defence: "poor", credits: "4d6*100" }
+  workerWhite:     { initialHp: 5, additionalHp: 1, skillPoints: 6, bab: "poor", fort: "poor", ref: "poor", will: "good", defence: "poor", credits: "4d6*100" },
+
+  // Prestige classes (book pp. 253–258). No Initial HP: a character never takes one at 1st
+  // character level, and the Fence stops at five.
+  fence:  { initialHp: 0, additionalHp: 2, skillPoints: 4, bab: "average", fort: "good",    ref: "average", will: "poor", defence: "average", prestige: true, maxLevel: 5 },
+  psiCop: { initialHp: 0, additionalHp: 2, skillPoints: 6, bab: "good",    fort: "average", ref: "average", will: "good", defence: "good",    prestige: true, maxLevel: 10 }
 };
+
+/** Psi Cop levels stack with telepath levels for everything a telepathic ability depends on. */
+B5.telepathClassKeys = ["telepath", "psiCop"];
 
 /* -------------------------------------------- */
 /*  Races (book pp. 22–33)                      */

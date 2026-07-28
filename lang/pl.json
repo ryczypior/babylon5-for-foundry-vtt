@@ -907,5 +907,10 @@
   "B5.Influence.aidHint": "Pomagający wykonuje test tego samego rodzaju przeciw ST 10; sukces dodaje +2 do wspieranej próby i liczy się do tygodnia jak każdy inny.",
   "B5.Influence.perUse": "za użycie",
   "B5.Tooltip.aid": "Wesprzyj cudzą próbę tymi wpływami: ST 10 za +2",
-  "B5.Tooltip.repeatSoftened": "Cecha klasowa łagodzi karę za powtórzenie dla tych wpływów"
+  "B5.Tooltip.repeatSoftened": "Cecha klasowa łagodzi karę za powtórzenie dla tych wpływów",
+  "B5.Field.maxLevel": "Maks. poziom",
+  "B5.Field.prestige": "Prestiżowa",
+  "B5.Tooltip.maxLevel": "Klasy prestiżowe kończą się przed dziesiątym poziomem — Paser ma pięć",
+  "B5.Tooltip.overMaxLevel": "Więcej poziomów, niż ta klasa dopuszcza",
+  "B5.Warning.overMaxLevelShort": "ponad limit"
 }

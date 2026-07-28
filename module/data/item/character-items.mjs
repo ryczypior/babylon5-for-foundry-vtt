@@ -46,6 +46,9 @@ export class ClassData extends TypeDataModel {
       ...common(),
       classKey: str(),                       // "soldier", "officer", …
       levels: int(1, { min: 0, max: B5.MAX_CLASS_LEVEL }),
+      /** Prestige classes stop short of ten — the Fence has five levels. */
+      maxLevel: int(B5.MAX_CLASS_LEVEL),
+      isPrestige: bool(false),
       takenAtFirstLevel: bool(false),        // decides whose Initial HP / Influence applies
       variant: str(),                        // officer branch, worker type
       tracks: new fields.SchemaField({

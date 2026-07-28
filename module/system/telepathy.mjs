@@ -58,6 +58,10 @@ export const TELEPATHY_FEATS = {
 
 export const MENTAL_FORTRESS_DR = 2;
 
+/** Psi Cop 4 (Superior Mental Fortress) raises what the Mental Fortress feat is worth. */
+export const SUPERIOR_MENTAL_FORTRESS_DR = 3;
+export const SUPERIOR_MENTAL_FORTRESS_LEVEL = 4;
+
 /* -------------------------------------------- */
 /*  Reach                                       */
 /* -------------------------------------------- */

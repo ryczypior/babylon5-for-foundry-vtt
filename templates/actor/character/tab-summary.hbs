@@ -70,7 +70,17 @@
         {{#each itemsByType.class as |item|}}
           <li data-item-id="{{item.id}}">
             <span class="b5-item-name" data-action="editItem">{{item.name}}</span>
-            <span class="b5-item-meta">{{localize "B5.Field.level"}} {{item.system.levels}}</span>
+            <span class="b5-item-meta">
+              {{localize "B5.Field.level"}} {{item.system.levels}}{{#if item.system.isPrestige}}/{{item.system.maxLevel}}{{/if}}
+            </span>
+            {{#if item.system.isPrestige}}
+              <span class="b5-chip">{{localize "B5.Field.prestige"}}</span>
+            {{/if}}
+            {{#if item.system.overMaxLevel}}
+              <span class="b5-chip b5-impaired" data-tooltip="B5.Tooltip.overMaxLevel">
+                {{localize "B5.Warning.overMaxLevelShort"}}
+              </span>
+            {{/if}}
             {{#if item.system.takenAtFirstLevel}}<span class="b5-chip">{{localize "B5.Field.firstLevel"}}</span>{{/if}}
             <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
           </li>

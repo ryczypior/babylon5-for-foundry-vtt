@@ -1,7 +1,8 @@
 import { B5 } from "../../config.mjs";
 import { int, num, str, bool, html, bonusBlock, attackBlock } from "../fields.mjs";
 import {
-  DANGER_SENSE_P_RATING, MENTAL_FORTRESS_DR, TELEPATHY_FEATS, mentalEffortDie, reach
+  DANGER_SENSE_P_RATING, MENTAL_FORTRESS_DR, SUPERIOR_MENTAL_FORTRESS_DR,
+  SUPERIOR_MENTAL_FORTRESS_LEVEL, TELEPATHY_FEATS, mentalEffortDie, reach
 } from "../../system/telepathy.mjs";
 import { repeatPenaltyPerUse } from "../../system/influence.mjs";
 
@@ -391,6 +392,11 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
     const level = classes.reduce((sum, c) => sum + c.system.levels, 0);
     const prog = this.progression;
 
+    // Prestige classes stop short of ten — the Fence has five. Flagged rather than clamped, the
+    // way an overspent skill rank is: a GM may have a reason, and silently rewriting the number
+    // would hide it.
+    for (const cls of classes) cls.system.overMaxLevel = cls.system.levels > cls.system.maxLevel;
+
     prog.level = Math.max(level, 1);
     // Racial bonus feats (Human +1, Drazi Brawler, Narn Toughness, Pak'ma'ra Great Fortitude)
     // are granted on top of the level progression.
@@ -592,10 +598,9 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
     tel.ratedP = tel.pRating.suppressed ? 0 : tel.pRating.value;
     tel.effectiveP = tel.ratedP + (tel.pRating.suppressed ? 0 : tel.pRating.temp);
 
-    // Psi Cop levels stack with telepath levels here, but the prestige classes are not shipped
-    // yet — when they are, add their key to this filter rather than a second sum.
+    // Psi Cop levels stack with telepath levels for everything an ability depends on.
     tel.telepathLevel = this.parent.itemTypes.class
-      .filter(c => c.system.classKey === "telepath")
+      .filter(c => B5.telepathClassKeys.includes(c.system.classKey))
       .reduce((sum, c) => sum + c.system.levels, 0);
     tel.saveDC = 5 + tel.effectiveP + tel.telepathLevel + this.abilities.cha.mod;
 
@@ -616,8 +621,14 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
     tel.mindShield.willBonus = tel.mindShield.active ? tel.effectiveP : 0;
     tel.mindShield.checkPenalty = tel.mindShield.active ? -tel.effectiveP : 0;
     // Mental Fortress protects only while the shield is up, and never against your own effort.
+    // Psi Cop 4 (Superior Mental Fortress) raises what that feat is worth.
+    const psiCopLevels = this.parent.itemTypes.class
+      .filter(c => c.system.classKey === "psiCop")
+      .reduce((sum, c) => sum + c.system.levels, 0);
     tel.mindShield.dr = tel.mindShield.active && has(TELEPATHY_FEATS.mentalFortress)
-      ? MENTAL_FORTRESS_DR : 0;
+      ? (psiCopLevels >= SUPERIOR_MENTAL_FORTRESS_LEVEL
+        ? SUPERIOR_MENTAL_FORTRESS_DR : MENTAL_FORTRESS_DR)
+      : 0;
 
     // The three traits are a straight function of the P-Rating, so they are derived, not stored.
     // They read the standing rating: borrowing P-Rating for one ability does not develop a

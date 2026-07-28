@@ -5,7 +5,14 @@
       <input type="text" name="system.classKey" value="{{system.classKey}}">
     </label>
     <label>{{localize "B5.Field.levels"}}
-      <input type="number" min="0" max="10" name="system.levels" value="{{system.levels}}">
+      <input type="number" min="0" max="{{system.maxLevel}}" name="system.levels" value="{{system.levels}}">
+    </label>
+    <label data-tooltip="B5.Tooltip.maxLevel">{{localize "B5.Field.maxLevel"}}
+      <input type="number" name="system.maxLevel" value="{{system.maxLevel}}">
+    </label>
+    <label class="b5-inline-toggle">
+      <input type="checkbox" name="system.isPrestige" {{checked system.isPrestige}}>
+      {{localize "B5.Field.prestige"}}
     </label>
     <label>{{localize "B5.Field.variant"}}
       <input type="text" name="system.variant" value="{{system.variant}}">

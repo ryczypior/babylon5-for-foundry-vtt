@@ -907,5 +907,10 @@
   "B5.Influence.aidHint": "A helper makes a check of the same kind against DC 10; a success adds +2 to the attempt being helped, and counts against the week like any other.",
   "B5.Influence.perUse": "per use",
   "B5.Tooltip.aid": "Aid another character's attempt with this Influence: DC 10 for +2",
-  "B5.Tooltip.repeatSoftened": "A class feature softens the repeat penalty for this Influence"
+  "B5.Tooltip.repeatSoftened": "A class feature softens the repeat penalty for this Influence",
+  "B5.Field.maxLevel": "Max level",
+  "B5.Field.prestige": "Prestige",
+  "B5.Tooltip.maxLevel": "Prestige classes stop short of ten — the Fence has five levels",
+  "B5.Tooltip.overMaxLevel": "More levels than this class allows",
+  "B5.Warning.overMaxLevelShort": "over max"
 }
