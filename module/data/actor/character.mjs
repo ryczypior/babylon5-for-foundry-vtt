@@ -650,7 +650,9 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
         .filter(u => u.pRating <= tel.effectiveP)
         .reduce((band, u) => u.band || band, ability.range.band);
 
-      const state = reach(tel.effectiveP, ability.power);
+      // What a fresh use costs, priced against the standing rating — a boost bought for one
+      // ability never discounts the next one, so the figure on the sheet does not drift.
+      const state = reach(tel.ratedP, ability.power);
       ability.mentalEffortDice = state.dice;
       ability.mentalEffortDie = mentalEffortDie(this.parent, ability.discipline);
       ability.outOfReach = state.outOfReach;

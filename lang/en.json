@@ -755,5 +755,6 @@
   "B5.Tooltip.dangerSense": "P7+: a Telepathy check to avoid being surprised by a sentient being",
   "B5.Warning.abilityOutOfReach": "{ability} needs Power {power}; mental effort reaches only {ceiling}.",
   "B5.Warning.traitUnavailable": "{trait} is not available at this P-Rating.",
-  "B5.Warning.noSaveTargets": "Target the tokens that should resist first."
+  "B5.Warning.noSaveTargets": "Target the tokens that should resist first.",
+  "B5.Telepathy.dcOverrideHint": "blank = the ability's own DC"
 }

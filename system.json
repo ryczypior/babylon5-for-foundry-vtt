@@ -76,18 +76,34 @@
       "type": "Item",
       "system": "babylon5",
       "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "telepathy",
+      "label": "Telepathic Abilities",
+      "path": "packs/telepathy",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "telepathy-pl",
+      "label": "Zdolności telepatyczne (PL)",
+      "path": "packs/telepathy-pl",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
     }
   ],
   "packFolders": [
     {
       "name": "Babylon 5",
       "sorting": "m",
-      "packs": ["classes", "races", "feats", "equipment"],
+      "packs": ["classes", "races", "feats", "equipment", "telepathy"],
       "folders": [
         {
           "name": "Polski",
           "sorting": "m",
-          "packs": ["classes-pl", "races-pl", "feats-pl", "equipment-pl"]
+          "packs": ["classes-pl", "races-pl", "feats-pl", "equipment-pl", "telepathy-pl"]
         }
       ]
     }

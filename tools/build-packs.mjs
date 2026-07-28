@@ -21,35 +21,36 @@ const PACKS = [
   { source: "classes.json", en: "classes", pl: "classes-pl" },
   { source: "races.json", en: "races", pl: "races-pl" },
   { source: "feats.json", en: "feats", pl: "feats-pl" },
-  { source: "equipment.json", en: "equipment", pl: "equipment-pl" }
+  { source: "equipment.json", en: "equipment", pl: "equipment-pl" },
+  { source: "telepathy.json", en: "telepathy", pl: "telepathy-pl" }
 ];
 
-/** Strip the *Pl fields (English pack) or promote them (Polish pack). */
-function localise(entry, lang) {
-  const pick = (obj, key) => {
-    const plKey = `${key}Pl`;
-    const value = lang === "pl" && obj[plKey] ? obj[plKey] : obj[key];
-    return value;
-  };
+/**
+ * Strip every `<key>Pl` field (English pack) or promote it over its base key (Polish pack),
+ * recursively — class features, racial traits and ability variations all carry their own pair,
+ * and a nested list that grew a translated field would otherwise leak `namePl` into the pack.
+ */
+function localiseData(value, lang) {
+  if (Array.isArray(value)) return value.map(item => localiseData(item, lang));
+  if (value === null || typeof value !== "object") return value;
 
-  const system = { ...entry.system };
-  system.description = pick(system, "description");
-  delete system.descriptionPl;
-
-  for (const listKey of ["features", "traits"]) {
-    if (!Array.isArray(system[listKey])) continue;
-    system[listKey] = system[listKey].map(item => {
-      const out = { ...item, name: pick(item, "name"), description: pick(item, "description") };
-      delete out.namePl;
-      delete out.descriptionPl;
-      return out;
-    });
+  const out = {};
+  for (const [key, entry] of Object.entries(value)) {
+    if (key.endsWith("Pl")) continue;                    // reached through its base key
+    const translated = value[`${key}Pl`];
+    const chosen = lang === "pl" && translated ? translated : entry;
+    out[key] = localiseData(chosen, lang);
   }
+  return out;
+}
+
+function localise(entry, lang) {
+  const system = localiseData(entry.system, lang);
 
   return {
     _id: entry._id,
     _key: `!items!${entry._id}`,
-    name: pick(entry, "name"),
+    name: lang === "pl" && entry.namePl ? entry.namePl : entry.name,
     type: entry.type,
     img: entry.img ?? "icons/svg/item-bag.svg",
     system,

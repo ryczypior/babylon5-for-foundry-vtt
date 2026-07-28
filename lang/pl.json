@@ -755,5 +755,6 @@
   "B5.Tooltip.dangerSense": "P7+: test Telepatii pozwalający uniknąć zaskoczenia przez istotę rozumną",
   "B5.Warning.abilityOutOfReach": "Zdolność „{ability}” wymaga Mocy {power}; wysiłek umysłowy sięga tylko {ceiling}.",
   "B5.Warning.traitUnavailable": "Cecha „{trait}” jest niedostępna przy tym P-Ratingu.",
-  "B5.Warning.noSaveTargets": "Najpierw oznacz żetony, które mają się opierać."
+  "B5.Warning.noSaveTargets": "Najpierw oznacz żetony, które mają się opierać.",
+  "B5.Telepathy.dcOverrideHint": "puste = własne ST zdolności"
 }

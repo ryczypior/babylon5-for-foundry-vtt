@@ -82,6 +82,8 @@ export default class B5TelepathyTests {
         ${game.i18n.localize("B5.Telepathy.crossSpecies")}</label></div>
       ${ability.needsEffort ? `<div class="form-group"><label>
         <input type="checkbox" name="lethal"> ${game.i18n.localize("B5.Telepathy.takeLethal")}</label></div>` : ""}
+      <div class="form-group"><label>${game.i18n.localize("B5.Order.dcOverride")}</label>
+        <input type="number" name="dc" placeholder="${game.i18n.localize("B5.Telepathy.dcOverrideHint")}"></div>
       <div class="form-group"><label>${game.i18n.localize("B5.Field.misc")}</label>
         <input type="number" name="misc" value="0"></div>`;
 
@@ -103,6 +105,7 @@ export default class B5TelepathyTests {
       touching: !!result.touching,
       crossSpecies: !!result.crossSpecies,
       lethal: !!result.lethal,
+      dcOverride: Number.isNumeric(result.dc) && result.dc !== null ? Number(result.dc) : null,
       misc: Number(result.misc) || 0
     });
   }
@@ -113,24 +116,28 @@ export default class B5TelepathyTests {
 
   static async useAbility(actor, itemId, {
     variationIndex = null, subjects = 1, touching = false, crossSpecies = false,
-    lethal = false, misc = 0
+    lethal = false, dcOverride = null, misc = 0
   } = {}) {
     const item = actor.items.get(itemId);
     if (item?.type !== "telepathicAbility") return null;
 
     // Extra subjects raise the Power the ability demands before anything else is decided.
     const power = requiredPower(item, subjects);
-    const state = reach(actor.system.telepathy.effectiveP, power);
+
+    // Priced against the standing rating, never against a rating a previous ability borrowed:
+    // mental effort buys one use, so each use pays for itself.
+    const state = reach(actor.system.telepathy.ratedP, power);
     if (state.outOfReach) {
       ui.notifications.warn(game.i18n.format("B5.Warning.abilityOutOfReach", {
-        ability: item.name, power, ceiling: actor.system.telepathy.effectiveP + 6
+        ability: item.name, power, ceiling: actor.system.telepathy.ratedP + 6
       }));
       return null;
     }
 
     const effort = state.dice > 0
       ? await this.#applyMentalEffort(actor, item, { dice: state.dice, lethal })
-      : null;
+      // No effort means no boost — the save DC must not inherit the last ability's.
+      : await this.#clearBoost(actor);
 
     // The boost only holds while the telepath stays conscious.
     if (effort?.unconscious) {
@@ -140,7 +147,11 @@ export default class B5TelepathyTests {
 
     const secondAbility = actor.system.telepathy.maintaining.length > 0;
     const variation = variationIndex === null ? null : item.system.variations[variationIndex] ?? null;
-    const { dc, parts: dcParts } = checkDc(actor, item, { variation, secondAbility });
+    const computed = checkDc(actor, item, { variation, secondAbility });
+    // Reflect Attack and its like set their DC from the opposing telepath's result, so the
+    // dialog takes a number when the table already knows it.
+    const dc = dcOverride ?? computed.dc;
+    const dcParts = computed.parts;
 
     const parts = checkParts(actor, item, { touching, subjects, crossSpecies, misc });
     const modifier = partsTotal(parts);
@@ -155,7 +166,9 @@ export default class B5TelepathyTests {
 
     const report = {
       item, roll, dc, dcParts, parts, modifier, success, effort, variation, subjects,
-      saveDC: actor.system.telepathy.saveDC
+      // Self and area abilities have no subject to resist — Mind Mirror, Psychometry and
+      // Sense Telepathy carry no save type, so their cards carry no save block.
+      saveDC: item.system.saveType ? actor.system.telepathy.saveDC : null
     };
     await this.#postCard(actor, item, report);
     return report;
@@ -222,6 +235,11 @@ export default class B5TelepathyTests {
   /** The mental-effort boost lasts the round; this is the "round is over" button. */
   static async clearMentalEffort(actor) {
     await actor.update({ "system.telepathy.pRating.temp": 0 });
+  }
+
+  static async #clearBoost(actor) {
+    if (actor.system.telepathy.pRating.temp) await this.clearMentalEffort(actor);
+    return null;
   }
 
   /* -------------------------------------------- */
