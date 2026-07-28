@@ -866,5 +866,6 @@
   "B5.Barrage.interceptedHint": "blank = roll the target's designated interceptors",
   "B5.Barrage.interceptMissed": "missed",
   "B5.Barrage.interceptorsReady": "{target} has interceptors designated: {detail}. Leave the field blank to roll them.",
-  "B5.Warning.noInterceptors": "No working Interceptor mount and no Active Chaff to designate."
+  "B5.Warning.noInterceptors": "No working Interceptor mount and no Active Chaff to designate.",
+  "B5.Influence.heartOfIzilzha": "Heart of Izil'zha — Ranger Influence rolls 3d6"
 }

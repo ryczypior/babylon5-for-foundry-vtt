@@ -22,6 +22,39 @@ export const GENERAL_DCS = {
 /** Each point burned adds this much to the result — and is gone from the score for good. */
 export const BURN_MULTIPLIER = 2;
 
+/**
+ * *Heart of Izil'zha*, the Ranger's 10th-level feature, rolls 3d6 instead of 2d6 — but only on
+ * checks that use **Ranger Influence**. The feature also lets that Influence pressure every
+ * Minbari faction rather than only Minbari Social; pressuring (book p. 113) is not modelled, so
+ * that half stays in the class feature's own text.
+ */
+export const RANGER_DICE = "3d6";
+export const RANGER_CLASS_KEY = "ranger";
+export const HEART_OF_IZILZHA_LEVEL = 10;
+
+/**
+ * Whether an Influence entry is the Ranger one. There is no Influence compendium, so entries are
+ * hand-entered: the stable `internalId` is checked first and the faction and name are matched
+ * loosely after it, the same convention the rest of the system uses for authored data.
+ */
+export function isRangerInfluence(item) {
+  const id = (item.system.internalId ?? "").trim().toLowerCase();
+  if (id) return id === "ranger" || id === "anlashok";
+  const text = `${item.name} ${item.system.faction ?? ""}`.toLowerCase();
+  return /ranger|anla'?\s?shok/.test(text);
+}
+
+/** The dice this character rolls for this Influence entry. */
+export function influenceDice(actor, item, fallback) {
+  const rangerLevels = actor.itemTypes.class
+    .filter(cls => cls.system.classKey === RANGER_CLASS_KEY)
+    .reduce((sum, cls) => sum + cls.system.levels, 0);
+
+  return rangerLevels >= HEART_OF_IZILZHA_LEVEL && isRangerInfluence(item)
+    ? RANGER_DICE
+    : fallback;
+}
+
 /** Aiding another's Influence check: the same kind of check against a flat DC for +2. */
 export const AID_DC = 10;
 export const AID_BONUS = 2;

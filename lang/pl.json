@@ -866,5 +866,6 @@
   "B5.Barrage.interceptedHint": "puste = rzut desygnowanymi przechwytywaczami celu",
   "B5.Barrage.interceptMissed": "chybił",
   "B5.Barrage.interceptorsReady": "Jednostka {target} ma desygnowane przechwytywacze: {detail}. Zostaw pole puste, by nimi rzucić.",
-  "B5.Warning.noInterceptors": "Brak sprawnego stanowiska przechwytującego i aktywnych dipoli do desygnowania."
+  "B5.Warning.noInterceptors": "Brak sprawnego stanowiska przechwytującego i aktywnych dipoli do desygnowania.",
+  "B5.Influence.heartOfIzilzha": "Serce Izil'zha — wpływy Rangerów rzucają 3k6"
 }

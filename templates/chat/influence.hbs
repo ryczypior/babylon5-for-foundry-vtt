@@ -2,7 +2,9 @@
 <div class="b5-order-card b5-influence-card">
   <div class="b5-order-head">
     <span class="b5-order-name">{{name}}</span>
-    <span class="b5-order-type">{{category}} · {{localize "B5.Field.score"}} {{score}}</span>
+    <span class="b5-order-type">
+      {{category}} · {{localize "B5.Field.score"}} {{score}} · {{dice}}
+    </span>
   </div>
 
   {{#if parts}}
@@ -14,6 +16,9 @@
     <div class="b5-order-line b5-influence-parts">
       {{localize "B5.Field.usesThisWeek"}} {{uses}} ({{repeatPenalty}})
     </div>
+  {{/if}}
+  {{#if upgraded}}
+    <div class="b5-order-line b5-influence-parts">{{localize "B5.Influence.heartOfIzilzha"}}</div>
   {{/if}}
 
   {{#if undecided}}

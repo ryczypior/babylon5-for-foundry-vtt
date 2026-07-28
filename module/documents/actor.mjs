@@ -1,5 +1,6 @@
 import { B5 } from "../config.mjs";
 import { promptRollModifiers } from "../tests/roll-dialog.mjs";
+import { influenceDice } from "../system/influence.mjs";
 
 /**
  * Base Actor document. Derived data lives in the type data models; this class holds the
@@ -103,7 +104,8 @@ export default class B5Actor extends Actor {
     if (item?.type !== "influence") return null;
     return this.#rollCheck({
       ...options,
-      formula: B5.INFLUENCE_DICE,
+      // Heart of Izil'zha upgrades Ranger Influence to 3d6.
+      formula: influenceDice(this, item, B5.INFLUENCE_DICE),
       modifier: item.system.value + item.system.repeatPenalty,
       kind: "influence",
       label: item.name,

@@ -1,7 +1,9 @@
 import { B5 } from "../config.mjs";
 import { partsTotal } from "../system/roll-modifiers.mjs";
 import { liveTotal, modifierFooter, modifierGroups, readModifierParts } from "./roll-dialog.mjs";
-import { BURN_MULTIPLIER, GENERAL_DCS, burnToClose } from "../system/influence.mjs";
+import {
+  BURN_MULTIPLIER, GENERAL_DCS, burnToClose, influenceDice
+} from "../system/influence.mjs";
 
 const { DialogV2 } = foundry.applications.api;
 
@@ -31,9 +33,11 @@ export default class B5InfluenceTests {
       .join("");
 
     const base = item.system.value + item.system.repeatPenalty;
+    const dice = influenceDice(actor, item, B5.INFLUENCE_DICE);
     const content = `
       <p class="b5-hint b5-modifier-head">
         ${item.name} — ${game.i18n.localize("B5.Field.score")} <strong>${item.system.value}</strong>
+        · ${dice}${dice === B5.INFLUENCE_DICE ? "" : ` (${game.i18n.localize("B5.Influence.heartOfIzilzha")})`}
         ${item.system.repeatPenalty
           ? ` · ${game.i18n.format("B5.Influence.repeat", {
             uses: item.system.usesThisWeek, penalty: item.system.repeatPenalty })}`
@@ -80,7 +84,8 @@ export default class B5InfluenceTests {
 
     const situational = partsTotal(parts);
     const modifier = item.system.value + item.system.repeatPenalty + situational;
-    const roll = await new Roll(`${B5.INFLUENCE_DICE} + @modifier`, { modifier }).evaluate();
+    const dice = influenceDice(actor, item, B5.INFLUENCE_DICE);
+    const roll = await new Roll(`${dice} + @modifier`, { modifier }).evaluate();
     const success = dc === null ? null : roll.total >= dc;
 
     // Every attempt counts against the week, which is what drives the −4 on the next one.
@@ -207,6 +212,8 @@ export default class B5InfluenceTests {
       "systems/babylon5/templates/chat/influence.hbs", {
         name: item.name,
         category: game.i18n.localize(`B5.InfluenceCategory.${item.system.category}`),
+        dice: roll.formula.split(" ")[0],
+        upgraded: !roll.formula.startsWith(B5.INFLUENCE_DICE),
         score: item.system.value,
         parts: parts.map(p => ({
           label: game.i18n.localize(p.labelKey ?? `B5.Modifier.${p.key}`), value: p.value

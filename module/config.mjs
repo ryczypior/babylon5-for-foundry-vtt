@@ -216,7 +216,6 @@ B5.conditions = [
 /** Influence checks roll 2d6 — not d20. The score is per faction and never refreshes. */
 B5.INFLUENCE_DICE = "2d6";
 B5.INFLUENCE_REPEAT_PENALTY = -4;
-B5.INFLUENCE_BURN_MULTIPLIER = 2;
 B5.INFLUENCE_SOCIAL_DIVISOR = 5;
 
 B5.influenceCategories = ["political", "military", "criminal", "corporate", "media", "religious", "local", "social"];
