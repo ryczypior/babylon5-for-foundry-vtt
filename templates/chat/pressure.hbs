@@ -1,0 +1,45 @@
+{{!-- Pressure chain: one link per faction leaned on, each carrying the last result minus five. --}}
+<div class="b5-order-card b5-pressure-card">
+  <div class="b5-order-head">
+    <span class="b5-order-name">{{name}}</span>
+    <span class="b5-order-type">{{localize "B5.Pressure.chain"}}</span>
+  </div>
+
+  {{#if parts}}
+    <div class="b5-order-line b5-influence-parts">
+      {{#each parts}}{{label}} {{b5Signed value}}{{#unless @last}} · {{/unless}}{{/each}}
+    </div>
+  {{/if}}
+
+  <ol class="b5-pressure-steps">
+    {{#each steps}}
+      <li class="{{#if success}}ok{{else}}fail{{/if}}">
+        <span class="b5-pressure-target">{{label}}</span>
+        <span class="b5-pressure-result">{{result}}</span>
+        <span class="b5-pressure-versus">
+          {{localize "B5.Order.versus"}} {{dc}} · {{rolledLabel}}
+        </span>
+      </li>
+    {{/each}}
+  </ol>
+
+  {{#if link.final}}
+    <div class="b5-order-result {{#if link.success}}ok{{else}}fail{{/if}}">
+      {{link.result}} {{localize "B5.Order.versus"}} {{link.dc}} —
+      {{#if link.success}}{{localize "B5.Order.success"}}{{else}}{{localize "B5.Order.failure"}}{{/if}}
+    </div>
+  {{else if carries}}
+    <div class="b5-pressure-carry">
+      <span>{{localize "B5.Pressure.carries" carried=link.carried}}</span>
+      <button type="button" class="b5-order-button" data-action="pressureContinue">
+        <i class="fa-solid fa-arrow-right"></i> {{localize "B5.Pressure.passItOn"}}
+      </button>
+    </div>
+  {{else}}
+    <div class="b5-order-result fail">{{localize "B5.Pressure.refused"}}</div>
+  {{/if}}
+
+  {{#if advisory}}
+    <div class="b5-order-foot b5-warning-inline">{{advisoryText}}</div>
+  {{/if}}
+</div>

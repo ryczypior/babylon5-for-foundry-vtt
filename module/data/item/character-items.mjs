@@ -200,7 +200,10 @@ export class InfluenceData extends TypeDataModel {
     return {
       ...common(),
       faction: str(),
+      /** political | social | economic | military | specialised | general (book p. 110) */
       category: str("political"),
+      /** earth | centauri | narn | minbari | league | general — the other half of that table. */
+      race: str("general"),
       base: int(),
       burned: int(),                         // permanent reductions
       misc: int(),

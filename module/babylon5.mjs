@@ -95,7 +95,8 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
   const handlers = {
     telepathyResist: () => B5TelepathyTests.rollResistance(message),
     weaponApplyDamage: () => B5WeaponTests.applyDamage(message),
-    influenceBurn: () => B5InfluenceTests.burnFromCard(message)
+    influenceBurn: () => B5InfluenceTests.burnFromCard(message),
+    pressureContinue: () => B5InfluenceTests.continuePressure(message)
   };
   for (const [action, handler] of Object.entries(handlers)) {
     html.querySelector(`[data-action=${action}]`)?.addEventListener("click", handler);

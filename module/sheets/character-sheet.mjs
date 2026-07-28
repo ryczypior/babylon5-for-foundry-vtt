@@ -26,7 +26,8 @@ export default class B5CharacterSheet extends B5ActorSheet {
       attackWithWeapon: B5CharacterSheet.#onAttackWithWeapon,
       influenceCheck: B5CharacterSheet.#onInfluenceCheck,
       burnInfluence: B5CharacterSheet.#onBurnInfluence,
-      newScenario: B5CharacterSheet.#onNewScenario
+      newScenario: B5CharacterSheet.#onNewScenario,
+      pressureFaction: B5CharacterSheet.#onPressureFaction
     }
   };
 
@@ -215,5 +216,10 @@ export default class B5CharacterSheet extends B5ActorSheet {
 
   static async #onNewScenario() {
     await B5InfluenceTests.newScenario(this.actor);
+  }
+
+  static async #onPressureFaction(event, target) {
+    const id = target.closest("[data-item-id]")?.dataset.itemId;
+    if (id) await B5InfluenceTests.promptPressure(this.actor, id);
   }
 }

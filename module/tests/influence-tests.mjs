@@ -4,6 +4,9 @@ import { liveTotal, modifierFooter, modifierGroups, readModifierParts } from "./
 import {
   BURN_MULTIPLIER, GENERAL_DCS, burnToClose, influenceDice
 } from "../system/influence.mjs";
+import {
+  PRESSURE_STEP, halveScore, pressureLegality, rangerRestriction, resolveLink, specialParts
+} from "../system/pressure.mjs";
 
 const { DialogV2 } = foundry.applications.api;
 
@@ -191,6 +194,153 @@ export default class B5InfluenceTests {
     return { spent, value: item.system.value, result: boosted };
   }
 
+  /* -------------------------------------------- */
+  /*  Pressure                                    */
+  /* -------------------------------------------- */
+
+  /**
+   * Lean on another faction (book p. 113). Resolved **one link at a time**, because that is how
+   * it plays: this faction agrees, and only then does the question of who *they* lean on arise.
+   * The card for a link that carries pays it forward with a button.
+   *
+   * @param {number|null} carried  a result inherited from the previous link, already reduced
+   */
+  static async promptPressure(actor, itemId, { carried = null, chain = [] } = {}) {
+    const item = actor.items.get(itemId);
+    if (item?.type !== "influence" || !actor.isOwner) return null;
+
+    const raceOptions = B5.influenceRaces.map(r =>
+      `<option value="${r}">${game.i18n.localize(`B5.InfluenceRace.${r}`)}</option>`).join("");
+    const typeOptions = B5.influenceCategories.map(c =>
+      `<option value="${c}">${game.i18n.localize(`B5.InfluenceCategory.${c}`)}</option>`).join("");
+
+    const base = item.system.value + item.system.repeatPenalty;
+    const dice = influenceDice(actor, item, B5.INFLUENCE_DICE);
+
+    const content = `
+      <p class="b5-hint b5-modifier-head">
+        ${carried === null
+          ? game.i18n.format("B5.Pressure.opening", {
+            faction: item.name, score: item.system.value, dice })
+          : game.i18n.format("B5.Pressure.carrying", { result: carried, step: PRESSURE_STEP })}
+      </p>
+      <div class="form-group"><label>${game.i18n.localize("B5.Pressure.targetRace")}</label>
+        <select name="race">${raceOptions}</select></div>
+      <div class="form-group"><label>${game.i18n.localize("B5.Pressure.targetType")}</label>
+        <select name="category">${typeOptions}</select></div>
+      <div class="form-group"><label>${game.i18n.localize("B5.Pressure.targetName")}</label>
+        <input type="text" name="target" placeholder="${game.i18n.localize("B5.Pressure.targetHint")}"></div>
+
+      <fieldset class="b5-modifier-group">
+        <legend>${game.i18n.localize("B5.Pressure.special")}</legend>
+        <label class="b5-modifier-row"><input type="checkbox" name="socialToSocial">
+          <span class="b5-modifier-name">${game.i18n.localize("B5.Pressure.socialToSocial")}</span>
+          <span class="b5-modifier-value">−5</span></label>
+        <label class="b5-modifier-row"><input type="checkbox" name="greyCouncil">
+          <span class="b5-modifier-name">${game.i18n.localize("B5.Pressure.greyCouncil")}</span>
+          <span class="b5-modifier-value">½</span></label>
+        <label class="b5-modifier-row"><input type="checkbox" name="leagueSocial">
+          <span class="b5-modifier-name">${game.i18n.localize("B5.Pressure.leagueSocial")}</span>
+          <span class="b5-modifier-value">½</span></label>
+      </fieldset>
+
+      <div class="form-group"><label>${game.i18n.localize("B5.Pressure.finalDc")}</label>
+        <input type="number" name="dc" placeholder="${game.i18n.localize("B5.Pressure.finalDcHint")}"></div>
+      ${carried === null ? `<div class="form-group"><label>${game.i18n.localize("B5.Field.misc")}</label>
+        <input type="number" name="misc" value="0"></div>` : ""}`;
+
+    const result = await DialogV2.prompt({
+      window: { title: game.i18n.format("B5.Pressure.title", { faction: item.name }) },
+      classes: ["b5-dialog"],
+      content,
+      ok: {
+        label: game.i18n.localize("B5.Pressure.apply"),
+        callback: (event, button) =>
+          new foundry.applications.ux.FormDataExtended(button.form).object
+      },
+      rejectClose: false
+    });
+    if (!result) return null;
+
+    return this.pressure(actor, itemId, {
+      carried, chain,
+      race: result.race,
+      category: result.category,
+      target: result.target,
+      socialToSocial: !!result.socialToSocial,
+      greyCouncil: !!result.greyCouncil,
+      leagueSocial: !!result.leagueSocial,
+      dc: Number.isNumeric(result.dc) && result.dc !== null ? Number(result.dc) : null,
+      misc: Number(result.misc) || 0,
+      base, dice
+    });
+  }
+
+  /** Resolve one link and post it. */
+  static async pressure(actor, itemId, {
+    carried = null, chain = [], race = null, category = null, target = "",
+    socialToSocial = false, greyCouncil = false, leagueSocial = false,
+    dc = null, misc = 0
+  } = {}) {
+    const item = actor.items.get(itemId);
+    if (item?.type !== "influence") return null;
+
+    // A chain that already has links but nothing to carry is a broken chain — the previous
+    // faction refused. Rolling here would silently start a fresh one.
+    if (chain.length && carried === null) {
+      ui.notifications.warn(game.i18n.localize("B5.Warning.pressureChainBroken"));
+      return null;
+    }
+
+    // Legality is advisory in the same way a failed feat prerequisite is: it warns and proceeds.
+    const legality = pressureLegality(item, { race, category });
+    const ranger = rangerRestriction(item, actor, { race });
+    if (!legality.legal) {
+      ui.notifications.warn(game.i18n.localize(`B5.Warning.${legality.reason}`));
+      if (!legality.advisory) return null;
+    }
+    if (ranger) ui.notifications.warn(game.i18n.localize(`B5.Warning.${ranger}`));
+
+    let roll = null;
+    let result = carried;
+    const parts = [...specialParts({ socialToSocial })];
+    if (misc) parts.push({ key: "misc", value: misc, labelKey: "B5.Field.misc" });
+
+    if (carried === null) {
+      // The opening link is the only one that rolls.
+      const score = halveScore(item.system.value, { greyCouncil, leagueSocial });
+      const modifier = score + item.system.repeatPenalty + partsTotal(parts);
+      const dice = influenceDice(actor, item, B5.INFLUENCE_DICE);
+      roll = await new Roll(`${dice} + @modifier`, { modifier }).evaluate();
+      result = roll.total;
+      await item.update({ "system.usesThisWeek": item.system.usesThisWeek + 1 });
+      if (greyCouncil || leagueSocial) {
+        parts.unshift({ key: "halved", value: score - item.system.value, labelKey: "B5.Pressure.halved" });
+      }
+    } else if (partsTotal(parts)) {
+      result += partsTotal(parts);
+    }
+
+    const link = resolveLink(result, { dc });
+    const steps = [...chain, {
+      target: target || game.i18n.localize(`B5.InfluenceCategory.${category}`),
+      race, category, result: link.result, dc: link.dc,
+      success: link.success, final: link.final, rolled: roll !== null
+    }];
+
+    await this.#postPressureCard(actor, item, { link, steps, parts, roll, legality, ranger });
+    return { link, steps, roll };
+  }
+
+  /** Continue a chain from the card that carried it. */
+  static async continuePressure(message) {
+    const data = message.flags?.babylon5?.pressure;
+    if (!data) return null;
+    const actor = await fromUuid(data.actorUuid);
+    if (!actor?.isOwner) return null;
+    return this.promptPressure(actor, data.itemId, { carried: data.carried, chain: data.chain });
+  }
+
   /**
    * A new scenario clears the repeat counters. The book allows one attempt per scenario (or per
    * two weeks) without penalty, and nothing else about Influence ever refreshes.
@@ -206,6 +356,46 @@ export default class B5InfluenceTests {
   }
 
   /* -------------------------------------------- */
+
+  static async #postPressureCard(actor, item, { link, steps, parts, roll, legality, ranger }) {
+    const content = await foundry.applications.handlebars.renderTemplate(
+      "systems/babylon5/templates/chat/pressure.hbs", {
+        name: item.name,
+        steps: steps.map((s, index) => ({
+          ...s,
+          index: index + 1,
+          label: s.target,
+          rolledLabel: s.rolled ? game.i18n.localize("B5.Pressure.rolled")
+            : game.i18n.localize("B5.Pressure.inherited")
+        })),
+        parts: parts.map(p => ({
+          label: game.i18n.localize(p.labelKey ?? `B5.Modifier.${p.key}`), value: p.value
+        })),
+        link,
+        carries: link.carried !== null,
+        advisory: !legality.legal || !!ranger,
+        advisoryText: [
+          legality.legal ? null : game.i18n.localize(`B5.Warning.${legality.reason}`),
+          ranger ? game.i18n.localize(`B5.Warning.${ranger}`) : null
+        ].filter(Boolean).join(" ")
+      });
+
+    const data = {
+      speaker: ChatMessage.getSpeaker({ actor }),
+      content,
+      rolls: roll ? [roll] : [],
+      sound: roll ? CONFIG.sounds.dice : null,
+      flags: link.carried !== null ? {
+        babylon5: {
+          pressure: {
+            actorUuid: actor.uuid, itemId: item.id, carried: link.carried, chain: steps
+          }
+        }
+      } : {}
+    };
+    ChatMessage.applyRollMode(data, game.settings.get("core", "rollMode"));
+    await ChatMessage.create(data);
+  }
 
   static async #postCard(actor, item, { roll, dc, success, parts, burn }, rollMode) {
     const content = await foundry.applications.handlebars.renderTemplate(

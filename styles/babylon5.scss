@@ -1057,3 +1057,48 @@
   .ok { color: #3f7d4e; font-weight: 700; }
   .fail { color: #b3452f; }
 }
+
+// Pressure chain card: one numbered link per faction leaned on.
+.b5-pressure-card {
+
+  .b5-pressure-steps {
+    margin: 0.3rem 0;
+    padding-left: 1.4rem;
+    font-size: 0.78rem;
+
+    li { padding: 0.1rem 0; }
+    li.ok { color: inherit; }
+    li.fail { color: #b3452f; }
+
+    .b5-pressure-target { font-weight: 600; }
+    .b5-pressure-result { margin: 0 0.3rem; font-weight: 700; }
+    .b5-pressure-versus { opacity: 0.7; font-size: 0.72rem; }
+  }
+
+  .b5-pressure-carry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    margin-top: 0.3rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid rgba(128, 128, 128, 0.25);
+    font-size: 0.8rem;
+
+    .b5-order-button {
+      width: auto;
+      flex: 0 0 auto;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: none;
+      border: 1px solid currentColor;
+      border-radius: 3px;
+      color: inherit;
+      cursor: pointer;
+
+      &:hover { background: rgba(143, 131, 216, 0.18); }
+    }
+  }
+}

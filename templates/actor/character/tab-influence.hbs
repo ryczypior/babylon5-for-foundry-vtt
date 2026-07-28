@@ -36,6 +36,9 @@
             <td>{{item.system.usesThisWeek}}{{#if item.system.repeatPenalty}}
               <span class="b5-warning-inline">({{item.system.repeatPenalty}})</span>{{/if}}</td>
             <td class="b5-row-actions">
+              <button type="button" data-action="pressureFaction" data-tooltip="B5.Tooltip.pressure">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+              </button>
               <button type="button" data-action="burnInfluence" data-tooltip="B5.Tooltip.burnAction">
                 <i class="fa-solid fa-fire"></i>
               </button>

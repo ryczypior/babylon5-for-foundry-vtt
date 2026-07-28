@@ -13,6 +13,15 @@
         {{/each}}
       </select>
     </label>
+    <label data-tooltip="B5.Tooltip.influenceRace">{{localize "B5.Field.race"}}
+      <select name="system.race">
+        {{#each config.influenceRaces as |r|}}
+          <option value="{{r}}" {{#if (b5Eq r ../system.race)}}selected{{/if}}>
+            {{localize (concat "B5.InfluenceRace." r)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
     <label>{{localize "B5.Field.base"}}
       <input type="number" name="system.base" value="{{system.base}}">
     </label>

@@ -218,7 +218,18 @@ B5.INFLUENCE_DICE = "2d6";
 B5.INFLUENCE_REPEAT_PENALTY = -4;
 B5.INFLUENCE_SOCIAL_DIVISOR = 5;
 
-B5.influenceCategories = ["political", "military", "criminal", "corporate", "media", "religious", "local", "social"];
+/**
+ * The book divides Influence on two axes (book p. 110): a **race** and a **type**. There is no
+ * generic "Military Influence" — it is always some race's military. `specialised` covers the
+ * subfactions the book italicises (Psi Corps, the Rangers, Thenta Makur, a specific House or
+ * megacorporation) and `general` the ones that cross racial lines.
+ *
+ * Both axes matter mechanically: pressuring another faction is legal only between Influences of
+ * the same race *or* the same type (see `module/system/pressure.mjs`).
+ */
+B5.influenceCategories = ["political", "social", "economic", "military", "specialised", "general"];
+
+B5.influenceRaces = ["earth", "centauri", "narn", "minbari", "league", "general"];
 
 /* -------------------------------------------- */
 /*  Telepathy (book pp. 120–131)                */
