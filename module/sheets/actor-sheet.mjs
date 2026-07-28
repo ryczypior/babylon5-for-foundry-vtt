@@ -24,7 +24,6 @@ export default class B5ActorSheet extends HandlebarsApplicationMixin(ActorSheetV
       rollAttack: B5ActorSheet.#onRollAttack,
       rollInitiative: B5ActorSheet.#onRollInitiative,
       rollInfluence: B5ActorSheet.#onRollInfluence,
-      burnInfluence: B5ActorSheet.#onBurnInfluence,
       createItem: B5ActorSheet.#onCreateItem,
       editItem: B5ActorSheet.#onEditItem,
       deleteItem: B5ActorSheet.#onDeleteItem,
@@ -148,13 +147,6 @@ export default class B5ActorSheet extends HandlebarsApplicationMixin(ActorSheetV
   static async #onRollInfluence(event, target) {
     await this.actor.rollInfluence(target.closest("[data-item-id]")?.dataset.itemId,
       { prompt: event.shiftKey });
-  }
-
-  /** Burning Influence permanently lowers the score to add +2 per point to a failed check. */
-  static async #onBurnInfluence(event, target) {
-    const item = this.actor.items.get(target.closest("[data-item-id]")?.dataset.itemId);
-    if (!item) return;
-    await item.update({ "system.burned": item.system.burned + 1 });
   }
 
   static async #onCreateItem(event, target) {

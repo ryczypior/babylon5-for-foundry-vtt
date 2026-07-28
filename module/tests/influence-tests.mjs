@@ -1,0 +1,240 @@
+import { B5 } from "../config.mjs";
+import { partsTotal } from "../system/roll-modifiers.mjs";
+import { liveTotal, modifierFooter, modifierGroups, readModifierParts } from "./roll-dialog.mjs";
+import { BURN_MULTIPLIER, GENERAL_DCS, burnToClose } from "../system/influence.mjs";
+
+const { DialogV2 } = foundry.applications.api;
+
+/**
+ * Influence checks and the burn that follows a failed one (book pp. 106–119).
+ *
+ * The check is `score + 2d6` against a DC, and burning is the only way to spend Influence: after
+ * falling short, permanently give up N points to add 2N. The card works out exactly how many
+ * points would close the gap and offers that as one button, because the arithmetic is the whole
+ * decision and getting it wrong costs the character permanently.
+ *
+ * `B5Actor.rollInfluence` remains the plain roll for macros and the shift-click prompt; this is
+ * the flow the sheet uses, because it is the one that knows the DC.
+ */
+export default class B5InfluenceTests {
+
+  /* -------------------------------------------- */
+  /*  The check                                   */
+  /* -------------------------------------------- */
+
+  static async promptCheck(actor, itemId) {
+    const item = actor.items.get(itemId);
+    if (item?.type !== "influence" || !actor.isOwner) return null;
+
+    const dcOptions = Object.entries(GENERAL_DCS)
+      .map(([key, dc]) => `<option value="${dc}">${game.i18n.localize(`B5.InfluenceDc.${key}`)} — ${dc}</option>`)
+      .join("");
+
+    const base = item.system.value + item.system.repeatPenalty;
+    const content = `
+      <p class="b5-hint b5-modifier-head">
+        ${item.name} — ${game.i18n.localize("B5.Field.score")} <strong>${item.system.value}</strong>
+        ${item.system.repeatPenalty
+          ? ` · ${game.i18n.format("B5.Influence.repeat", {
+            uses: item.system.usesThisWeek, penalty: item.system.repeatPenalty })}`
+          : ""}
+      </p>
+      <div class="form-group"><label>${game.i18n.localize("B5.Influence.activity")}</label>
+        <select name="preset"><option value="">—</option>${dcOptions}</select></div>
+      <div class="form-group"><label>${game.i18n.localize("B5.Field.dc")}</label>
+        <input type="number" name="dc" placeholder="${game.i18n.localize("B5.Influence.dcHint")}"></div>
+      ${modifierGroups(actor, { kind: "influence" })}
+      ${modifierFooter(base)}`;
+
+    const result = await DialogV2.prompt({
+      window: { title: game.i18n.format("B5.Influence.checkWith", { faction: item.name }) },
+      classes: ["b5-dialog"],
+      content,
+      render: liveTotal(base),
+      ok: {
+        label: game.i18n.localize("B5.Roll.roll"),
+        callback: (event, button) => {
+          const form = button.form;
+          const data = new foundry.applications.ux.FormDataExtended(form).object;
+          data.parts = readModifierParts(form);
+          return data;
+        }
+      },
+      rejectClose: false
+    });
+    if (!result) return null;
+
+    // A typed DC wins over the table pick; either may be left blank for an undecided roll.
+    const dc = Number.isNumeric(result.dc) && result.dc !== null ? Number(result.dc)
+      : (result.preset ? Number(result.preset) : null);
+
+    return this.check(actor, itemId, {
+      dc, parts: result.parts ?? [], rollMode: result.rollMode
+    });
+  }
+
+  /** Roll it, count the attempt against the week, and post the card. */
+  static async check(actor, itemId, { dc = null, parts = [], rollMode = null } = {}) {
+    const item = actor.items.get(itemId);
+    if (item?.type !== "influence") return null;
+
+    const situational = partsTotal(parts);
+    const modifier = item.system.value + item.system.repeatPenalty + situational;
+    const roll = await new Roll(`${B5.INFLUENCE_DICE} + @modifier`, { modifier }).evaluate();
+    const success = dc === null ? null : roll.total >= dc;
+
+    // Every attempt counts against the week, which is what drives the −4 on the next one.
+    await item.update({ "system.usesThisWeek": item.system.usesThisWeek + 1 });
+
+    const burn = success === false
+      ? burnToClose(roll.total, dc, item.system.value)
+      : null;
+
+    await this.#postCard(actor, item, { roll, dc, success, parts, burn }, rollMode);
+    return { roll, dc, success, burn };
+  }
+
+  /* -------------------------------------------- */
+  /*  Burning                                     */
+  /* -------------------------------------------- */
+
+  /**
+   * Burn from the card: the points are already worked out, so this only confirms and applies.
+   * The score is reduced permanently — there is no refresh anywhere in this subsystem.
+   */
+  static async burnFromCard(message) {
+    const data = message.flags?.babylon5?.influence;
+    if (!data) return null;
+
+    const actor = await fromUuid(data.actorUuid);
+    const item = actor?.items.get(data.itemId);
+    if (!item) {
+      ui.notifications.warn(game.i18n.localize("B5.Warning.influenceGone"));
+      return null;
+    }
+    if (!item.isOwner) return null;
+
+    const confirmed = await DialogV2.confirm({
+      window: { title: game.i18n.localize("B5.Influence.burnTitle") },
+      content: `<p>${game.i18n.format("B5.Influence.burnConfirm", {
+        points: data.points, faction: item.name,
+        from: item.system.value, to: Math.max(0, item.system.value - data.points),
+        result: data.result, dc: data.dc
+      })}</p>`
+    });
+    if (!confirmed) return null;
+
+    return this.burn(actor, item.id, data.points, { result: data.result, dc: data.dc });
+  }
+
+  /** Ask how much to burn outside a check — a GM ruling, a favour called in. */
+  static async promptBurn(actor, itemId) {
+    const item = actor.items.get(itemId);
+    if (item?.type !== "influence" || !actor.isOwner) return null;
+    if (item.system.value <= 0) {
+      ui.notifications.warn(game.i18n.format("B5.Warning.nothingToBurn", { faction: item.name }));
+      return null;
+    }
+
+    const result = await DialogV2.prompt({
+      window: { title: game.i18n.localize("B5.Influence.burnTitle") },
+      classes: ["b5-dialog"],
+      content: `
+        <p class="b5-hint">${game.i18n.format("B5.Influence.burnHint",
+          { faction: item.name, score: item.system.value, multiplier: BURN_MULTIPLIER })}</p>
+        <div class="form-group"><label>${game.i18n.localize("B5.Influence.points")}</label>
+          <input type="number" name="points" value="1" min="1" max="${item.system.value}"></div>`,
+      ok: {
+        label: game.i18n.localize("B5.Influence.burn"),
+        callback: (event, button) =>
+          new foundry.applications.ux.FormDataExtended(button.form).object
+      },
+      rejectClose: false
+    });
+    if (!result) return null;
+
+    const points = Math.clamp(Number(result.points) || 0, 1, item.system.value);
+    return this.burn(actor, itemId, points);
+  }
+
+  /** Apply the burn. Permanent: it raises `burned`, which the score is derived against. */
+  static async burn(actor, itemId, points, { result = null, dc = null } = {}) {
+    const item = actor.items.get(itemId);
+    if (item?.type !== "influence" || points <= 0) return null;
+
+    const spent = Math.min(points, item.system.value);
+    const before = item.system.value;
+    await item.update({ "system.burned": item.system.burned + spent });
+
+    const boosted = result === null ? null : result + spent * BURN_MULTIPLIER;
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor }),
+      content: `<div class="b5-order-card b5-influence-card">
+        <div class="b5-order-head">
+          <span class="b5-order-name">${item.name}</span>
+          <span class="b5-order-type">${game.i18n.localize("B5.Influence.burned")}</span>
+        </div>
+        <div class="b5-order-line">${game.i18n.format("B5.Influence.burnResult", {
+          points: spent, from: before, to: item.system.value
+        })}</div>
+        ${boosted === null ? "" : `<div class="b5-order-result ${boosted >= dc ? "ok" : "fail"}">
+          ${game.i18n.format("B5.Influence.burnOutcome", { result: boosted, dc })} —
+          ${game.i18n.localize(boosted >= dc ? "B5.Order.success" : "B5.Order.failure")}</div>`}
+        <div class="b5-order-foot">${game.i18n.localize("B5.Influence.permanent")}</div>
+      </div>`
+    });
+    return { spent, value: item.system.value, result: boosted };
+  }
+
+  /**
+   * A new scenario clears the repeat counters. The book allows one attempt per scenario (or per
+   * two weeks) without penalty, and nothing else about Influence ever refreshes.
+   */
+  static async newScenario(actor) {
+    const updates = actor.itemTypes.influence
+      .filter(item => item.system.usesThisWeek)
+      .map(item => ({ _id: item.id, "system.usesThisWeek": 0 }));
+    if (!updates.length) return 0;
+    await actor.updateEmbeddedDocuments("Item", updates);
+    ui.notifications.info(game.i18n.format("B5.Influence.scenarioReset", { count: updates.length }));
+    return updates.length;
+  }
+
+  /* -------------------------------------------- */
+
+  static async #postCard(actor, item, { roll, dc, success, parts, burn }, rollMode) {
+    const content = await foundry.applications.handlebars.renderTemplate(
+      "systems/babylon5/templates/chat/influence.hbs", {
+        name: item.name,
+        category: game.i18n.localize(`B5.InfluenceCategory.${item.system.category}`),
+        score: item.system.value,
+        parts: parts.map(p => ({
+          label: game.i18n.localize(p.labelKey ?? `B5.Modifier.${p.key}`), value: p.value
+        })),
+        repeatPenalty: item.system.repeatPenalty,
+        uses: item.system.usesThisWeek,
+        total: roll.total,
+        dc,
+        undecided: dc === null,
+        success,
+        burn: burn?.needed ? { ...burn, boost: burn.points * BURN_MULTIPLIER } : null
+      });
+
+    const data = {
+      speaker: ChatMessage.getSpeaker({ actor }),
+      content,
+      rolls: [roll],
+      sound: CONFIG.sounds.dice,
+      flags: burn?.points ? {
+        babylon5: {
+          influence: {
+            actorUuid: actor.uuid, itemId: item.id,
+            points: burn.points, result: roll.total, dc
+          }
+        }
+      } : {}
+    };
+    ChatMessage.applyRollMode(data, rollMode ?? game.settings.get("core", "rollMode"));
+    await ChatMessage.create(data);
+  }
+}

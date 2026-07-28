@@ -1,0 +1,46 @@
+{{!-- Influence check: score + 2d6, never d20. A failure offers the burn that would close it. --}}
+<div class="b5-order-card b5-influence-card">
+  <div class="b5-order-head">
+    <span class="b5-order-name">{{name}}</span>
+    <span class="b5-order-type">{{category}} · {{localize "B5.Field.score"}} {{score}}</span>
+  </div>
+
+  {{#if parts}}
+    <div class="b5-order-line b5-influence-parts">
+      {{#each parts}}{{label}} {{b5Signed value}}{{#unless @last}} · {{/unless}}{{/each}}
+    </div>
+  {{/if}}
+  {{#if repeatPenalty}}
+    <div class="b5-order-line b5-influence-parts">
+      {{localize "B5.Field.usesThisWeek"}} {{uses}} ({{repeatPenalty}})
+    </div>
+  {{/if}}
+
+  {{#if undecided}}
+    <div class="b5-order-result undecided">
+      {{total}} — {{localize "B5.Influence.noDc"}}
+    </div>
+  {{else}}
+    <div class="b5-order-result {{#if success}}ok{{else}}fail{{/if}}">
+      {{total}} {{localize "B5.Order.versus"}} {{dc}} —
+      {{#if success}}{{localize "B5.Order.success"}}{{else}}{{localize "B5.Order.failure"}}{{/if}}
+    </div>
+  {{/if}}
+
+  {{#if burn}}
+    <div class="b5-influence-burn">
+      <span>
+        {{#if burn.enough}}
+          {{localize "B5.Influence.burnOffer" points=burn.points boost=burn.boost}}
+        {{else}}
+          {{localize "B5.Influence.burnShort" needed=burn.needed points=burn.points}}
+        {{/if}}
+      </span>
+      <button type="button" class="b5-order-button" data-action="influenceBurn">
+        <i class="fa-solid fa-fire"></i>
+        {{localize "B5.Influence.burn"}} {{burn.points}}
+      </button>
+    </div>
+    <div class="b5-order-foot">{{localize "B5.Influence.permanent"}}</div>
+  {{/if}}
+</div>

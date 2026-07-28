@@ -22,6 +22,7 @@ import B5ItemSheet from "./sheets/item-sheet.mjs";
 
 import B5TelepathyTests from "./tests/telepathy-tests.mjs";
 import B5WeaponTests from "./tests/weapon-tests.mjs";
+import B5InfluenceTests from "./tests/influence-tests.mjs";
 import { registerHandlebars, preloadTemplates } from "./helpers/handlebars.mjs";
 
 Hooks.once("init", () => {
@@ -93,7 +94,8 @@ function registerSheets() {
 Hooks.on("renderChatMessageHTML", (message, html) => {
   const handlers = {
     telepathyResist: () => B5TelepathyTests.rollResistance(message),
-    weaponApplyDamage: () => B5WeaponTests.applyDamage(message)
+    weaponApplyDamage: () => B5WeaponTests.applyDamage(message),
+    influenceBurn: () => B5InfluenceTests.burnFromCard(message)
   };
   for (const [action, handler] of Object.entries(handlers)) {
     html.querySelector(`[data-action=${action}]`)?.addEventListener("click", handler);

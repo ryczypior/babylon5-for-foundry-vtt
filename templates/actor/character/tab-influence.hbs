@@ -7,6 +7,9 @@
       <button type="button" class="b5-add" data-action="createItem" data-type="influence">
         <i class="fa-solid fa-plus"></i>
       </button>
+      <button type="button" class="b5-add" data-action="newScenario" data-tooltip="B5.Tooltip.newScenario">
+        <i class="fa-solid fa-rotate-left"></i>
+      </button>
     </h3>
 
     <table class="b5-influence">
@@ -24,7 +27,8 @@
       <tbody>
         {{#each itemsByType.influence as |item|}}
           <tr data-item-id="{{item.id}}">
-            <td class="b5-item-name b5-clickable" data-action="rollInfluence" data-tooltip="B5.Tooltip.rollShift">{{item.name}}</td>
+            <td class="b5-item-name b5-clickable" data-action="influenceCheck"
+                data-tooltip="B5.Tooltip.influenceCheck">{{item.name}}</td>
             <td>{{localize (concat "B5.InfluenceCategory." item.system.category)}}</td>
             <td>{{item.system.base}}</td>
             <td>{{item.system.burned}}</td>

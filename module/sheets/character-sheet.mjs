@@ -3,6 +3,7 @@ import { B5 } from "../config.mjs";
 import { checkFeatPrerequisites } from "../system/prerequisites.mjs";
 import B5TelepathyTests from "../tests/telepathy-tests.mjs";
 import B5WeaponTests from "../tests/weapon-tests.mjs";
+import B5InfluenceTests from "../tests/influence-tests.mjs";
 import { DISCIPLINES } from "../system/telepathy.mjs";
 
 const PATH = "systems/babylon5/templates/actor/character";
@@ -22,7 +23,10 @@ export default class B5CharacterSheet extends B5ActorSheet {
       cancelAbility: B5CharacterSheet.#onCancelAbility,
       rollTrait: B5CharacterSheet.#onRollTrait,
       clearMentalEffort: B5CharacterSheet.#onClearMentalEffort,
-      attackWithWeapon: B5CharacterSheet.#onAttackWithWeapon
+      attackWithWeapon: B5CharacterSheet.#onAttackWithWeapon,
+      influenceCheck: B5CharacterSheet.#onInfluenceCheck,
+      burnInfluence: B5CharacterSheet.#onBurnInfluence,
+      newScenario: B5CharacterSheet.#onNewScenario
     }
   };
 
@@ -193,5 +197,23 @@ export default class B5CharacterSheet extends B5ActorSheet {
   static async #onAttackWithWeapon(event, target) {
     const id = target.closest("[data-item-id]")?.dataset.itemId;
     if (id) await B5WeaponTests.promptAttack(this.actor, id);
+  }
+
+  /**
+   * @override — the Influence check knows about DCs and about burning, so the sheet uses it
+   * instead of the generic roll. `actor.rollInfluence` stays the plain path for macros.
+   */
+  static async #onInfluenceCheck(event, target) {
+    const id = target.closest("[data-item-id]")?.dataset.itemId;
+    if (id) await B5InfluenceTests.promptCheck(this.actor, id);
+  }
+
+  static async #onBurnInfluence(event, target) {
+    const id = target.closest("[data-item-id]")?.dataset.itemId;
+    if (id) await B5InfluenceTests.promptBurn(this.actor, id);
+  }
+
+  static async #onNewScenario() {
+    await B5InfluenceTests.newScenario(this.actor);
   }
 }

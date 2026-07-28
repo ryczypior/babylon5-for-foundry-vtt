@@ -1013,3 +1013,36 @@
     font-size: 0.78rem;
   }
 }
+
+// Influence card. The burn offer is the only interactive part.
+.b5-influence-card {
+
+  .b5-influence-parts { font-size: 0.72rem; opacity: 0.8; }
+
+  .b5-influence-burn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    margin-top: 0.3rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid rgba(128, 128, 128, 0.25);
+    font-size: 0.8rem;
+
+    .b5-order-button {
+      width: auto;
+      flex: 0 0 auto;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: none;
+      border: 1px solid #b3452f;
+      border-radius: 3px;
+      color: #b3452f;
+      cursor: pointer;
+
+      &:hover { background: rgba(179, 69, 47, 0.15); }
+    }
+  }
+}
