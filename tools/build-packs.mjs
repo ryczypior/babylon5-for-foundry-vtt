@@ -16,14 +16,18 @@ import { ClassicLevel } from "classic-level";
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const sourceDir = path.join(root, "packs", "_source");
 
-/** source file → the two packs it produces */
+/** source file → the two packs it produces. `document` defaults to Item. */
 const PACKS = [
   { source: "classes.json", en: "classes", pl: "classes-pl" },
   { source: "races.json", en: "races", pl: "races-pl" },
   { source: "feats.json", en: "feats", pl: "feats-pl" },
   { source: "equipment.json", en: "equipment", pl: "equipment-pl" },
-  { source: "telepathy.json", en: "telepathy", pl: "telepathy-pl" }
+  { source: "telepathy.json", en: "telepathy", pl: "telepathy-pl" },
+  { source: "craft.json", en: "craft", pl: "craft-pl", document: "Actor" }
 ];
+
+/** The LevelDB key prefix each document type is stored under. */
+const KEY_PREFIX = { Item: "!items!", Actor: "!actors!" };
 
 /**
  * Strip every `<key>Pl` field (English pack) or promote it over its base key (Polish pack),
@@ -44,30 +48,62 @@ function localiseData(value, lang) {
   return out;
 }
 
-function localise(entry, lang) {
-  const system = localiseData(entry.system, lang);
+const stats = () => ({
+  systemId: "babylon5",
+  systemVersion: JSON.parse(fs.readFileSync(path.join(root, "system.json"), "utf8")).version,
+  coreVersion: "13.351",
+  createdTime: 0,
+  modifiedTime: 0,
+  lastModifiedBy: null
+});
 
-  return {
+function localise(entry, lang, document = "Item") {
+  const base = {
     _id: entry._id,
-    _key: `!items!${entry._id}`,
+    _key: `${KEY_PREFIX[document]}${entry._id}`,
     name: lang === "pl" && entry.namePl ? entry.namePl : entry.name,
     type: entry.type,
     img: entry.img ?? "icons/svg/item-bag.svg",
-    system,
+    system: localiseData(entry.system, lang),
     effects: [],
     folder: null,
     sort: 0,
     ownership: { default: 0 },
     flags: {},
-    _stats: {
-      systemId: "babylon5",
-      systemVersion: JSON.parse(fs.readFileSync(path.join(root, "system.json"), "utf8")).version,
-      coreVersion: "13.351",
-      createdTime: 0,
-      modifiedTime: 0,
-      lastModifiedBy: null
-    }
+    _stats: stats()
   };
+
+  if (document !== "Actor") return base;
+  return {
+    ...base,
+    prototypeToken: { name: base.name, actorLink: false, disposition: -1 },
+    // The parent stores its embedded documents as a list of **ids**; the documents themselves
+    // are separate records (see `embeddedItems`).
+    items: (entry.items ?? []).map(item => item._id)
+  };
+}
+
+/**
+ * An Actor's embedded documents get **keys of their own** in a v13 pack —
+ * `!actors.items!<actorId>.<itemId>` — *and* the parent lists their ids. Doing only one of the
+ * two builds a pack that opens and indexes perfectly and simply has no weapons on any craft,
+ * which is a quiet enough failure to be worth this comment.
+ */
+function embeddedItems(entry, lang) {
+  return (entry.items ?? []).map(item => ({
+    _id: item._id,
+    _key: `!actors.items!${entry._id}.${item._id}`,
+    name: lang === "pl" && item.namePl ? item.namePl : item.name,
+    type: item.type,
+    img: item.img ?? "icons/svg/item-bag.svg",
+    system: localiseData(item.system, lang),
+    effects: [],
+    folder: null,
+    sort: 0,
+    ownership: { default: 0 },
+    flags: {},
+    _stats: stats()
+  }));
 }
 
 async function writePack(packName, entries) {
@@ -87,9 +123,14 @@ async function writePack(packName, entries) {
 
 for (const pack of PACKS) {
   const source = JSON.parse(fs.readFileSync(path.join(sourceDir, pack.source), "utf8"));
+  const document = pack.document ?? "Item";
+  const build = lang => [
+    ...source.map(e => localise(e, lang, document)),
+    ...(document === "Actor" ? source.flatMap(e => embeddedItems(e, lang)) : [])
+  ];
   console.log(`${pack.source}:`);
-  await writePack(pack.en, source.map(e => localise(e, "en")));
-  await writePack(pack.pl, source.map(e => localise(e, "pl")));
+  await writePack(pack.en, build("en"));
+  await writePack(pack.pl, build("pl"));
 }
 
 console.log("Packs built.");

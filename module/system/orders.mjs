@@ -131,7 +131,16 @@ export function availableOrders(craft, { asResponse = false } = {}) {
   }).map(([key, order]) => ({ key, ...order }));
 }
 
-/** A solo craft is one with no crew stations beyond a pilot — fighters and shuttles. */
+/** Hulls too big to be flown by one person, whatever a stat block leaves blank. */
+const CREWED_SIZES = ["large", "huge", "gargantuan", "colossal"];
+
+/**
+ * A solo craft is one flown by a single person — fighters and shuttles. The complement decides
+ * it, but a stat block that never had a complement typed in must not turn a warcruiser into a
+ * fighter: a hangar or a Large-or-bigger hull rules it out on its own.
+ */
 export function isSoloCraft(craft) {
+  if (craft.system.spaces?.hangar?.max > 0) return false;
+  if (CREWED_SIZES.includes(craft.system.details.size)) return false;
   return (craft.system.crew.complement ?? 1) <= 1;
 }
