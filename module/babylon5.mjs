@@ -23,6 +23,7 @@ import B5ItemSheet from "./sheets/item-sheet.mjs";
 import B5TelepathyTests from "./tests/telepathy-tests.mjs";
 import B5WeaponTests from "./tests/weapon-tests.mjs";
 import B5InfluenceTests from "./tests/influence-tests.mjs";
+import B5MarketTests from "./tests/market-tests.mjs";
 import { registerHandlebars, preloadTemplates } from "./helpers/handlebars.mjs";
 
 Hooks.once("init", () => {
@@ -96,7 +97,9 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     telepathyResist: () => B5TelepathyTests.rollResistance(message),
     weaponApplyDamage: () => B5WeaponTests.applyDamage(message),
     influenceBurn: () => B5InfluenceTests.burnFromCard(message),
-    pressureContinue: () => B5InfluenceTests.continuePressure(message)
+    influenceGrant: () => B5InfluenceTests.grantFromCard(message),
+    pressureContinue: () => B5InfluenceTests.continuePressure(message),
+    marketPay: () => B5MarketTests.payFromCard(message)
   };
   for (const [action, handler] of Object.entries(handlers)) {
     html.querySelector(`[data-action=${action}]`)?.addEventListener("click", handler);

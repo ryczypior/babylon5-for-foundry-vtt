@@ -36,6 +36,18 @@
     </div>
   {{/if}}
 
+  {{!-- A row that pays out (§A.17). Influence does not replace money: the credits go into the
+        character's own cash, and whether the sum was a grant or a loan is the row's text to say. --}}
+  {{#if grant}}
+    <div class="b5-influence-burn">
+      <span>{{localize "B5.Influence.grantOffer" credits=grant}}</span>
+      <button type="button" class="b5-order-button" data-action="influenceGrant">
+        <i class="fa-solid fa-coins"></i>
+        {{grant}}
+      </button>
+    </div>
+  {{/if}}
+
   {{#if burn}}
     <div class="b5-influence-burn">
       <span>

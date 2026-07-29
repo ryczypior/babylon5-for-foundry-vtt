@@ -1,6 +1,25 @@
 <section class="b5-item-body">
   {{> (lookup . "bodyTemplate")}}
 
+  {{!-- Restricted and illegal goods have to come through a fence, at 200 % or 300 % of list
+        (equipment chapter §1.4–1.5). Shown for every physical type, because every one of them
+        carries a legality. --}}
+  {{#if market}}
+    <div class="b5-card">
+      <h3>{{localize "B5.Market.section"}}</h3>
+      <p class="b5-hint">{{localize "B5.Market.band"
+        standard=market.price.standard floor=market.price.floor}}</p>
+      {{#if market.owned}}
+        <button type="button" class="b5-order-button" data-action="sourceOnMarket">
+          <i class="fa-solid fa-money-bill-transfer"></i>
+          {{localize "B5.Market.source"}}
+        </button>
+      {{else}}
+        <p class="b5-hint">{{localize "B5.Hint.marketUnowned"}}</p>
+      {{/if}}
+    </div>
+  {{/if}}
+
   <div class="b5-card">
     <h3>{{localize "B5.Section.description"}}</h3>
     <prose-mirror name="system.description" value="{{source.description}}">

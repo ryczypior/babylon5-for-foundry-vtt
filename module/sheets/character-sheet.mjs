@@ -4,6 +4,7 @@ import { checkFeatPrerequisites } from "../system/prerequisites.mjs";
 import B5TelepathyTests from "../tests/telepathy-tests.mjs";
 import B5WeaponTests from "../tests/weapon-tests.mjs";
 import B5InfluenceTests from "../tests/influence-tests.mjs";
+import B5MarketTests from "../tests/market-tests.mjs";
 import { DISCIPLINES } from "../system/telepathy.mjs";
 
 const PATH = "systems/babylon5/templates/actor/character";
@@ -28,7 +29,8 @@ export default class B5CharacterSheet extends B5ActorSheet {
       burnInfluence: B5CharacterSheet.#onBurnInfluence,
       newScenario: B5CharacterSheet.#onNewScenario,
       pressureFaction: B5CharacterSheet.#onPressureFaction,
-      aidInfluence: B5CharacterSheet.#onAidInfluence
+      aidInfluence: B5CharacterSheet.#onAidInfluence,
+      sourceOnMarket: B5CharacterSheet.#onSourceOnMarket
     }
   };
 
@@ -227,5 +229,11 @@ export default class B5CharacterSheet extends B5ActorSheet {
   static async #onAidInfluence(event, target) {
     const id = target.closest("[data-item-id]")?.dataset.itemId;
     if (id) await B5InfluenceTests.aid(this.actor, id);
+  }
+
+  /** Source a restricted or illegal item through a fence (equipment chapter §1.4). */
+  static async #onSourceOnMarket(event, target) {
+    const id = target.closest("[data-item-id]")?.dataset.itemId;
+    if (id) await B5MarketTests.promptSourcing(this.actor, id);
   }
 }

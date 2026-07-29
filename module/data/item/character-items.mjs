@@ -224,9 +224,13 @@ export class InfluenceData extends TypeDataModel {
        *
        * Authored in the compendium source rather than on the sheet, like the telepathic
        * abilities' variations: array-valued inputs corrupt on `expandObject`.
+       *
+       * `credits` is the cash a row pays out (book §A.17) — the Political and Economic tables
+       * literally grant money, and a successful draw offers to bank it. 0 where the row buys
+       * something other than credits.
        */
       resources: new fields.ArrayField(
-        new fields.SchemaField({ dc: int(10), description: str() }),
+        new fields.SchemaField({ dc: int(10), description: str(), credits: int() }),
         { initial: [] }
       )
     };

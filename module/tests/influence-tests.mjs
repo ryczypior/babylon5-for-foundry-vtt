@@ -8,6 +8,7 @@ import {
 import {
   PRESSURE_STEP, halveScore, pressureLegality, rangerRestriction, resolveLink, specialParts
 } from "../system/pressure.mjs";
+import { marketRequests } from "../system/market.mjs";
 
 const { DialogV2 } = foundry.applications.api;
 
@@ -38,8 +39,10 @@ export default class B5InfluenceTests {
   /**
    * @param {number|null} dc       a DC decided before the dialog opened (a resource row clicked)
    * @param {string} request       what is being asked for, printed on the card
+   * @param {number} credits       cash the request pays out, offered on the card if it lands
    */
-  static async promptCheck(actor, itemId, { dc: presetDc = null, request = "" } = {}) {
+  static async promptCheck(actor, itemId,
+    { dc: presetDc = null, request = "", credits: presetCredits = 0 } = {}) {
     const item = actor.items.get(itemId);
     if (item?.type !== "influence" || !actor.isOwner) return null;
 
@@ -54,7 +57,8 @@ export default class B5InfluenceTests {
       });
       const key = outlookKey(outlook);
       const marker = key ? game.i18n.localize(key) : `${outlook.needed}+`;
-      return `<option value="${resource.dc}" data-request="${escapeHTML(resource.description)}">`
+      return `<option value="${resource.dc}" data-request="${escapeHTML(resource.description)}"`
+        + ` data-credits="${resource.credits ?? 0}">`
         + `${escapeHTML(resource.description)} — ${resource.dc} (${marker})</option>`;
     }).join("");
 
@@ -63,9 +67,19 @@ export default class B5InfluenceTests {
       return `<option value="${dc}" data-request="${escapeHTML(label)}">${label} — ${dc}</option>`;
     }).join("");
 
-    const dcOptions = ownOptions
-      ? `<optgroup label="${escapeHTML(item.name)}">${ownOptions}</optgroup>`
-        + `<optgroup label="${game.i18n.localize("B5.Influence.generalList")}">${generalOptions}</optgroup>`
+    // The §A.17 uses this Influence opens up — the black market, a trade contact.
+    const marketOptions = marketRequests(item).map(row => {
+      const label = game.i18n.localize(row.labelKey);
+      return `<option value="${row.dc}" data-request="${escapeHTML(label)}">${label} — ${row.dc}</option>`;
+    }).join("");
+
+    const group = (labelKey, options, literal = false) =>
+      `<optgroup label="${literal ? escapeHTML(labelKey) : game.i18n.localize(labelKey)}">${options}</optgroup>`;
+
+    const dcOptions = ownOptions || marketOptions
+      ? (ownOptions ? group(item.name, ownOptions, true) : "")
+        + (marketOptions ? group("B5.Market.list", marketOptions) : "")
+        + group("B5.Influence.generalList", generalOptions)
       : generalOptions;
 
     const content = `
@@ -99,8 +113,10 @@ export default class B5InfluenceTests {
           const form = button.form;
           const data = new foundry.applications.ux.FormDataExtended(form).object;
           data.parts = readModifierParts(form);
-          // What was picked, not just its DC — the card names the request.
-          data.request = form.elements.preset?.selectedOptions?.[0]?.dataset.request ?? "";
+          // What was picked, not just its DC — the card names the request and banks its cash.
+          const picked = form.elements.preset?.selectedOptions?.[0];
+          data.request = picked?.dataset.request ?? "";
+          data.credits = Number(picked?.dataset.credits ?? 0);
           return data;
         }
       },
@@ -114,7 +130,8 @@ export default class B5InfluenceTests {
 
     return this.check(actor, itemId, {
       dc, parts: result.parts ?? [], rollMode: result.rollMode,
-      request: result.request || request
+      request: result.request || request,
+      credits: result.credits || presetCredits
     });
   }
 
@@ -127,11 +144,14 @@ export default class B5InfluenceTests {
     const item = actor.items.get(itemId);
     const resource = item?.system.resources?.[index];
     if (!resource) return null;
-    return this.promptCheck(actor, itemId, { dc: resource.dc, request: resource.description });
+    return this.promptCheck(actor, itemId, {
+      dc: resource.dc, request: resource.description, credits: resource.credits
+    });
   }
 
   /** Roll it, count the attempt against the week, and post the card. */
-  static async check(actor, itemId, { dc = null, parts = [], rollMode = null, request = "" } = {}) {
+  static async check(actor, itemId,
+    { dc = null, parts = [], rollMode = null, request = "", credits = 0 } = {}) {
     const item = actor.items.get(itemId);
     if (item?.type !== "influence") return null;
 
@@ -148,8 +168,45 @@ export default class B5InfluenceTests {
       ? burnToClose(roll.total, dc, item.system.value)
       : null;
 
-    await this.#postCard(actor, item, { roll, dc, success, parts, burn, request }, rollMode);
-    return { roll, dc, success, burn };
+    // A row that pays out only pays on a request that landed (book §A.17).
+    const grant = success && credits > 0 ? credits : 0;
+
+    await this.#postCard(actor, item, { roll, dc, success, parts, burn, request, grant }, rollMode);
+    return { roll, dc, success, burn, grant };
+  }
+
+  /* -------------------------------------------- */
+  /*  Cash grants (§A.17)                         */
+  /* -------------------------------------------- */
+
+  /**
+   * Bank what a resource row paid out. **Influence does not replace money** — the credits go into
+   * the character's own cash, and nothing here tracks whether the sum was a grant, a loan or a
+   * Ranger's stipend to be returned, because only the row's text says which.
+   */
+  static async grantFromCard(message) {
+    const data = message.flags?.babylon5?.influence;
+    if (!data?.grant) return null;
+
+    const actor = await fromUuid(data.actorUuid);
+    if (!actor?.isOwner) return null;
+
+    const before = actor.system.wealth.credits;
+    await actor.update({ "system.wealth.credits": before + data.grant });
+
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor }),
+      content: `<div class="b5-order-card b5-influence-card">
+        <div class="b5-order-head">
+          <span class="b5-order-name">${data.faction ?? actor.name}</span>
+          <span class="b5-order-type">${game.i18n.localize("B5.Influence.granted")}</span>
+        </div>
+        <div class="b5-order-result ok">${game.i18n.format("B5.Influence.grantResult", {
+          credits: data.grant, from: before, to: before + data.grant
+        })}</div>
+      </div>`
+    });
+    return { credits: data.grant, total: before + data.grant };
   }
 
   /* -------------------------------------------- */
@@ -488,7 +545,7 @@ export default class B5InfluenceTests {
     await ChatMessage.create(data);
   }
 
-  static async #postCard(actor, item, { roll, dc, success, parts, burn, request }, rollMode) {
+  static async #postCard(actor, item, { roll, dc, success, parts, burn, request, grant }, rollMode) {
     const content = await foundry.applications.handlebars.renderTemplate(
       "systems/babylon5/templates/chat/influence.hbs", {
         name: item.name,
@@ -506,22 +563,27 @@ export default class B5InfluenceTests {
         dc,
         undecided: dc === null,
         success,
+        grant,
         burn: burn?.needed ? { ...burn, boost: burn.points * BURN_MULTIPLIER } : null
       });
+
+    // One flag block feeds both buttons a card can carry: the burn on a failure, the payout on a
+    // success. They are mutually exclusive by construction — a check is one or the other.
+    const flags = burn?.points || grant ? {
+      babylon5: {
+        influence: {
+          actorUuid: actor.uuid, itemId: item.id, faction: item.name,
+          points: burn?.points ?? 0, result: roll.total, dc, grant
+        }
+      }
+    } : {};
 
     const data = {
       speaker: ChatMessage.getSpeaker({ actor }),
       content,
       rolls: [roll],
       sound: CONFIG.sounds.dice,
-      flags: burn?.points ? {
-        babylon5: {
-          influence: {
-            actorUuid: actor.uuid, itemId: item.id,
-            points: burn.points, result: roll.total, dc
-          }
-        }
-      } : {}
+      flags
     };
     ChatMessage.applyRollMode(data, rollMode ?? game.settings.get("core", "rollMode"));
     await ChatMessage.create(data);

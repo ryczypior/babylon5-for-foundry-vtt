@@ -1,6 +1,8 @@
 import { B5 } from "../config.mjs";
 import B5InfluenceTests from "../tests/influence-tests.mjs";
+import B5MarketTests from "../tests/market-tests.mjs";
 import { influenceDice, outlookKey, resourceList, resourceOutlook } from "../system/influence.mjs";
+import { BLACK_MARKET_LEGALITIES, blackMarketPrice } from "../system/market.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
@@ -18,7 +20,8 @@ export default class B5ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2)
     form: { submitOnChange: true, closeOnSubmit: false },
     actions: {
       editImage: B5ItemSheet.#onEditImage,
-      drawResource: B5ItemSheet.#onDrawResource
+      drawResource: B5ItemSheet.#onDrawResource,
+      sourceOnMarket: B5ItemSheet.#onSourceOnMarket
     }
   };
 
@@ -48,8 +51,22 @@ export default class B5ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2)
     };
 
     if (this.item.type === "influence") this.#prepareResources(context);
+    if (B5.physicalItemTypes.includes(this.item.type)) this.#prepareMarket(context);
 
     return context;
+  }
+
+  /**
+   * The black-market price band, for an item that needs a fence at all. Legal goods get no block:
+   * they buy at list price and there is nothing to say.
+   */
+  #prepareMarket(context) {
+    const legality = this.item.system.legality;
+    if (!BLACK_MARKET_LEGALITIES.includes(legality)) return;
+    context.market = {
+      owned: !!this.item.actor,
+      price: blackMarketPrice(this.item.system.cost, legality)
+    };
   }
 
   /**
@@ -77,6 +94,13 @@ export default class B5ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2)
     const actor = this.item.actor;
     if (!actor?.isOwner) return;
     await B5InfluenceTests.drawResource(actor, this.item.id, Number(target.dataset.index));
+  }
+
+  /** Source this item through a fence — only an owned item has a buyer. */
+  static async #onSourceOnMarket() {
+    const actor = this.item.actor;
+    if (!actor?.isOwner) return;
+    await B5MarketTests.promptSourcing(actor, this.item.id);
   }
 
   static async #onEditImage(event, target) {

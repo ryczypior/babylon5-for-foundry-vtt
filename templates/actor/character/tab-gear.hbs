@@ -71,6 +71,13 @@
             <td>{{item.system.weight}}</td>
             <td>{{localize (concat "B5.Legality." item.system.legality)}}</td>
             <td class="b5-row-actions">
+              {{!-- Restricted and illegal goods need a fence; legal ones buy at list price. --}}
+              {{#unless (b5Eq item.system.legality "unrestricted")}}
+                <button type="button" data-action="sourceOnMarket"
+                        data-tooltip="B5.Tooltip.blackMarket">
+                  <i class="fa-solid fa-money-bill-transfer"></i>
+                </button>
+              {{/unless}}
               <button type="button" data-action="deleteItem"><i class="fa-solid fa-trash"></i></button>
             </td>
           </tr>

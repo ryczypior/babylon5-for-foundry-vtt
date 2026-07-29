@@ -53,6 +53,9 @@ export const PRESETS = [
   { key: "unfavourable",    value: -2,  kinds: ["skill"] },
   { key: "blindedSkill",    value: -4,  kinds: ["skill"] },
   { key: "fascinated",      value: -4,  kinds: ["skill"] },
+  // Earned, not assumed: a successful Economic or Local Influence check at DC 15 lends this to
+  // the check that finds a supplier or a buyer (book §A.17). Ticked once it has been earned.
+  { key: "influenceTrade",  value: 5,   kinds: ["skill"] },
 
   /* ── saves ───────────────────────────────────────────────── */
   { key: "cover",           value: 2,   kinds: ["save"], saves: ["ref"] },

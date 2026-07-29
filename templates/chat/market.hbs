@@ -1,0 +1,57 @@
+{{!-- Black market: finding a fence is a check, the price is arithmetic off the list price.
+      Both are printed, because the price is what the player actually decides on. --}}
+<div class="b5-order-card b5-influence-card">
+  <div class="b5-order-head">
+    <span class="b5-order-name">{{name}}</span>
+    <span class="b5-order-type">
+      {{legality}} · {{localize "B5.Market.listPrice" cost=cost}}
+    </span>
+  </div>
+
+  {{#if ownRace}}
+    {{!-- Own race's equipment in own territory: list price, no roll at all. --}}
+    <div class="b5-order-result ok">{{localize "B5.Market.ownRaceResult"}}</div>
+  {{else}}
+    <div class="b5-order-line b5-influence-parts">
+      {{route}} — {{routeLabel}} · {{localize "B5.Field.dc"}} {{dc}} · {{dice}}
+    </div>
+    {{#if parts}}
+      <div class="b5-order-line b5-influence-parts">
+        {{#each parts}}{{label}} {{b5Signed value}}{{#unless @last}} · {{/unless}}{{/each}}
+      </div>
+    {{/if}}
+    <div class="b5-order-result {{#if success}}ok{{else}}fail{{/if}}">
+      {{total}} {{localize "B5.Order.versus"}} {{dc}} —
+      {{#if success}}{{localize "B5.Market.fenceFound"}}{{else}}{{localize "B5.Market.noFence"}}{{/if}}
+    </div>
+  {{/if}}
+
+  <div class="b5-order-line">{{localize "B5.Market.band" standard=price.standard floor=price.floor}}</div>
+
+  {{#if pay}}
+    <div class="b5-influence-burn">
+      <span>{{localize "B5.Market.payOffer" price=pay}}</span>
+      <button type="button" class="b5-order-button" data-action="marketPay">
+        <i class="fa-solid fa-coins"></i>
+        {{pay}}
+      </button>
+    </div>
+  {{/if}}
+
+  {{#if burn}}
+    <div class="b5-influence-burn">
+      <span>
+        {{#if burn.enough}}
+          {{localize "B5.Influence.burnOffer" points=burn.points boost=burn.boost}}
+        {{else}}
+          {{localize "B5.Influence.burnShort" needed=burn.needed points=burn.points}}
+        {{/if}}
+      </span>
+      <button type="button" class="b5-order-button" data-action="influenceBurn">
+        <i class="fa-solid fa-fire"></i>
+        {{localize "B5.Influence.burn"}} {{burn.points}}
+      </button>
+    </div>
+    <div class="b5-order-foot">{{localize "B5.Influence.permanent"}}</div>
+  {{/if}}
+</div>
