@@ -34,14 +34,21 @@ export function declarations() {
   });
 }
 
-export function manifest(version) {
+/**
+ * @param {string} version    the module's own version, kept in step with the system's
+ * @param {object} core       the system's `compatibility`, so both agree on the tested build
+ */
+export function manifest(version, core = { minimum: "13", verified: "13" }) {
   return {
     id: MODULE_ID,
     title: MODULE_TITLE,
     description: "Compendium packs for the Babylon 5 2nd Edition system. Built locally from"
       + " packs/_source; not distributed with the system.",
     version,
-    compatibility: { minimum: "13" },
+    // ⚠ `verified` is what stops Foundry reporting "compatibility unknown" on the module. Without
+    // it there is nothing to compare against the running build, so the badge is unknown even
+    // though `minimum` is satisfied. It tracks the system's own verified build.
+    compatibility: { minimum: core.minimum, verified: core.verified },
     // No `compatibility` on the relationship: that field bounds the **system's own** version, not
     // core's, so a `minimum: "13"` there asks for babylon5 13.x and makes the module unavailable —
     // it then cannot be enabled at all, silently.

@@ -17,7 +17,8 @@ import { PACKS } from "./packs.mjs";
 import { MODULE_ID, MODULE_TITLE, declarations, manifest } from "./content-module.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const version = JSON.parse(fs.readFileSync(path.join(root, "system.json"), "utf8")).version;
+const system = JSON.parse(fs.readFileSync(path.join(root, "system.json"), "utf8"));
+const version = system.version;
 const outDir = path.resolve(process.argv[2] ?? path.join(root, "packs", "_dist"));
 const archiveName = `${MODULE_ID}-${version}.zip`;
 
@@ -133,7 +134,7 @@ const moduleDir = path.join(staging, MODULE_ID);
 fs.mkdirSync(moduleDir, { recursive: true });
 
 fs.writeFileSync(path.join(moduleDir, "module.json"),
-  `${JSON.stringify(manifest(version), null, 2)}\n`);
+  `${JSON.stringify(manifest(version, system.compatibility), null, 2)}\n`);
 
 const notes = readme(entryCounts());
 fs.writeFileSync(path.join(moduleDir, "readme.md"), notes);

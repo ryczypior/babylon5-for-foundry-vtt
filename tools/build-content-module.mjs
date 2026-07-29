@@ -36,13 +36,14 @@ function dataPath() {
   return value;
 }
 
-const version = JSON.parse(fs.readFileSync(path.join(root, "system.json"), "utf8")).version;
+const system = JSON.parse(fs.readFileSync(path.join(root, "system.json"), "utf8"));
+const version = system.version;
 const moduleDir = path.join(dataPath(), "modules", MODULE_ID);
 const packs = declarations();
 
 fs.mkdirSync(path.join(moduleDir, "packs"), { recursive: true });
 fs.writeFileSync(path.join(moduleDir, "module.json"),
-  `${JSON.stringify(manifest(version), null, 2)}\n`);
+  `${JSON.stringify(manifest(version, system.compatibility), null, 2)}\n`);
 
 let linked = 0;
 const missing = [];
