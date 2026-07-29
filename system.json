@@ -63,7 +63,7 @@
   "socket": false,
   "url": "https://github.com/ryczypior/babylon5-for-foundry-vtt",
   "manifest": "https://github.com/ryczypior/babylon5-for-foundry-vtt/releases/latest/download/system.json",
-  "download": "https://github.com/ryczypior/babylon5-for-foundry-vtt/releases/download/v0.2.0/babylon5.zip",
+  "download": "https://github.com/ryczypior/babylon5-for-foundry-vtt/releases/latest/download/babylon5.zip",
   "readme": "https://github.com/ryczypior/babylon5-for-foundry-vtt/blob/main/README.md",
   "changelog": "https://github.com/ryczypior/babylon5-for-foundry-vtt/blob/main/CHANGELOG.md",
   "bugs": "https://github.com/ryczypior/babylon5-for-foundry-vtt/issues"
