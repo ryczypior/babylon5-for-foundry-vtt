@@ -12,20 +12,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ClassicLevel } from "classic-level";
+import { PACKS } from "./packs.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const sourceDir = path.join(root, "packs", "_source");
-
-/** source file → the two packs it produces. `document` defaults to Item. */
-const PACKS = [
-  { source: "classes.json", en: "classes", pl: "classes-pl" },
-  { source: "races.json", en: "races", pl: "races-pl" },
-  { source: "feats.json", en: "feats", pl: "feats-pl" },
-  { source: "equipment.json", en: "equipment", pl: "equipment-pl" },
-  { source: "telepathy.json", en: "telepathy", pl: "telepathy-pl" },
-  { source: "influences.json", en: "influences", pl: "influences-pl" },
-  { source: "craft.json", en: "craft", pl: "craft-pl", document: "Actor" }
-];
 
 /** The LevelDB key prefix each document type is stored under. */
 const KEY_PREFIX = { Item: "!items!", Actor: "!actors!" };

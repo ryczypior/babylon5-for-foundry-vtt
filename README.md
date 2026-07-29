@@ -4,9 +4,9 @@ A game system for [Foundry Virtual Tabletop](https://foundryvtt.com/) implementi
 **Babylon 5 Roleplaying Game, 2nd Edition** (Mongoose Publishing, 2006) — a d20 System
 derivative. Sheets, compendia and rolls are available in **English and Polish**.
 
-> **Status: playable, still 0.1.0.** Every subsystem the rulebook names is implemented and has
-> been exercised against the book's own worked examples — see [What works](#what-works). What is
-> thin is table mileage, not coverage.
+> **Status: playable, 0.2.0.** Every subsystem the rulebook names is implemented and has been
+> exercised against the book's own worked examples — see [What works](#what-works). What is thin
+> is table mileage, not coverage.
 
 ## Requirements
 
@@ -15,15 +15,22 @@ schemas throughout, with no v12 compatibility layer.
 
 ## Installation
 
-Until a release manifest is published, install by hand:
+In Foundry's **Game Systems** tab, choose *Install System*, paste the manifest URL and install:
+
+```
+https://github.com/ryczypior/babylon5-for-foundry-vtt/releases/latest/download/system.json
+```
+
+Or install by hand — the repository root *is* the system directory, and the compiled stylesheet
+is committed, so there is no build step:
 
 ```bash
 cd ~/.local/share/FoundryVTT/Data/systems      # or your Foundry data directory
 git clone https://github.com/ryczypior/babylon5-for-foundry-vtt.git babylon5
 ```
 
-The directory **must** be named `babylon5`. The compiled stylesheet is committed, so no build
-step is needed to play.
+The directory **must** be named `babylon5`. The system installs with **no compendium content** —
+see [Compendium content](#compendium-content).
 
 ## What works
 
@@ -31,11 +38,11 @@ step is needed to play.
 |---|---|
 | **Actors** | `character`, `npc` and `craft` (spacecraft, aircraft and surface vehicles share one stat block) |
 | **Items** | 13 types: class, race, skill, feat, influence, telepathic ability, weapon, armour, ammunition, gear, weapon accessory, craft weapon, craft feature |
-| **Compendia** | 12 packs from 6 bilingual sources, **not distributed** — see [Compendium content](#compendium-content) |
+| **Compendia** | 14 packs from 7 bilingual sources, **not distributed** — see [Compendium content](#compendium-content) |
 | **Character** | racial modifiers, class skills, feat effects and prerequisites, the skill-point budget and rank caps, and both prestige classes |
 | **Personal combat** | weapon attacks off the right attack line, iteratives, bursts, criticals with their printed threat ranges, damage through the `damage − max(0, DR − AP)` pipeline |
 | **Telepathy** | P-Rating and reach, mental effort in nonlethal damage, the Telepathy check with its whole modifier stack, the Will save DC with a resistance button, maintained abilities and the traits |
-| **Influence** | checks on 2d6 against the printed DC list, burning worked out to the point, aiding another, and pressure chains across factions |
+| **Influence** | checks on 2d6, per-faction resource tables, burning worked out to the point, the black market and the trade bonus, aiding another, and pressure chains across factions |
 | **Space combat** | crew stations, the 47 orders, weapon fire (Total Offence → interception → shielding → Armour), the 2d6 damage cascade with impairment checks, and *Fire Interceptors!* feeding the barrage |
 | **Rolls** | everything above, plus a shift-click modifier prompt that pre-applies the conditions a character is already carrying |
 
@@ -62,19 +69,22 @@ Worth knowing before you file a bug:
 
 ## Compendium content
 
-The system reads its classes, races, feats, equipment, telepathic abilities and craft from
-compendium packs, and the code for building and loading them is here — but **the packs
-themselves are not published in this repository**, and neither is the rules digest they were
-built from.
+**No compendium content ships with the system.** Classes, races, feats, equipment, telepathic
+abilities, Influences and craft are all read from compendium packs, and the code that builds and
+loads them is here — the packs themselves are not part of this repository, and neither is the
+rules digest they were built from.
 
-The rulebook designates its mechanics as Open Game Content while reserving the setting
-material — alien species names, ship classes, organisations and so on — as Product Identity.
-Until that is properly cleared with the rights holders, that content stays out of the public
-repository. You can still build your own packs: put documents in `packs/_source/*.json`
-following the shape the build script expects and run `npm run pack`.
+The system manifest therefore declares **no packs at all**, rather than declaring packs it does
+not ship and leaving you with a row of empty compendia. Content is loaded as a separate module,
+which you can build yourself:
 
-Without packs, the system runs with empty compendia. Everything else — sheets, derived
-values, rolls, the order system — works normally.
+1. put documents in `packs/_source/*.json` in the shape the build script expects;
+2. `npm run pack` — builds one English and one Polish pack per source;
+3. `npm run content` — writes a local `babylon5-content` module into your Foundry data directory
+   that declares those packs and links them, then enable it in the world's module settings.
+
+Everything else — sheets, derived values, rolls, prerequisites, the order system — works normally
+with no content installed. Items and actors can be created by hand on any sheet.
 
 ## What is deliberately left to the table
 
@@ -99,6 +109,7 @@ npm install
 npm run build     # compile SCSS → styles/babylon5.css (commit the result)
 npm run watch     # SCSS watcher
 npm run pack      # rebuild the compendium packs from packs/_source/*.json
+npm run content   # write the local babylon5-content module that declares those packs
 npm run link      # symlink this repo into your Foundry data directory
 ```
 
@@ -116,7 +127,7 @@ module/system/   rules tables and pure functions, one file per subsystem
 module/tests/    the resolution engines that roll them ("tests" in the RPG sense)
 templates/       Handlebars templates for actors, items and chat cards
 styles/          SCSS source and the compiled stylesheet
-lang/            English and Polish translations (~910 keys each)
+lang/            English and Polish translations (~965 keys each)
 docs/design/     data-model and layout decisions
 packs/           compendium sources and built packs — local only, not published
 docs/rules/      the rulebook distilled into implementation notes — local only
@@ -125,7 +136,8 @@ docs/rules/      the rulebook distilled into implementation notes — local only
 Compendium sources carry both languages side by side (`name`/`namePl`,
 `description`/`descriptionPl`), and `npm run pack` emits one English and one Polish pack from
 each — Foundry has no built-in translation for pack contents. Those sources are not part of
-this repository; see [Compendium content](#compendium-content).
+this repository; see [Compendium content](#compendium-content). `npm run content` then makes the
+built packs loadable, by writing a module that declares them — the system manifest does not.
 
 Two things will bite you if you build your own packs:
 

@@ -2,7 +2,7 @@
   "id": "babylon5",
   "title": "Babylon 5 2nd Edition (Unofficial)",
   "description": "Unofficial system for the Babylon 5 Roleplaying Game, 2nd Edition (Mongoose Publishing, d20 System).",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "authors": [
     {
       "name": "Ryczypior",
@@ -10,140 +10,23 @@
       "discord": "Ryczypior"
     }
   ],
-  "esmodules": ["module/babylon5.mjs"],
-  "styles": ["styles/babylon5.css"],
-  "packs": [
-    {
-      "name": "classes",
-      "label": "Classes",
-      "path": "packs/classes",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "classes-pl",
-      "label": "Klasy (PL)",
-      "path": "packs/classes-pl",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "races",
-      "label": "Races",
-      "path": "packs/races",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "races-pl",
-      "label": "Rasy (PL)",
-      "path": "packs/races-pl",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "feats",
-      "label": "Feats",
-      "path": "packs/feats",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "feats-pl",
-      "label": "Atuty (PL)",
-      "path": "packs/feats-pl",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "equipment",
-      "label": "Equipment",
-      "path": "packs/equipment",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "equipment-pl",
-      "label": "Ekwipunek (PL)",
-      "path": "packs/equipment-pl",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "telepathy",
-      "label": "Telepathic Abilities",
-      "path": "packs/telepathy",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "telepathy-pl",
-      "label": "Zdolności telepatyczne (PL)",
-      "path": "packs/telepathy-pl",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "influences",
-      "label": "Influences",
-      "path": "packs/influences",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "influences-pl",
-      "label": "Wpływy (PL)",
-      "path": "packs/influences-pl",
-      "type": "Item",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "craft",
-      "label": "Craft",
-      "path": "packs/craft",
-      "type": "Actor",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    },
-    {
-      "name": "craft-pl",
-      "label": "Jednostki (PL)",
-      "path": "packs/craft-pl",
-      "type": "Actor",
-      "system": "babylon5",
-      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
-    }
+  "esmodules": [
+    "module/babylon5.mjs"
   ],
-  "packFolders": [
-    {
-      "name": "Babylon 5",
-      "sorting": "m",
-      "packs": ["classes", "races", "feats", "equipment", "telepathy", "influences", "craft"],
-      "folders": [
-        {
-          "name": "Polski",
-          "sorting": "m",
-          "packs": ["classes-pl", "races-pl", "feats-pl", "equipment-pl", "telepathy-pl",
-            "influences-pl", "craft-pl"]
-        }
-      ]
-    }
+  "styles": [
+    "styles/babylon5.css"
   ],
   "languages": [
-    { "lang": "en", "name": "English", "path": "lang/en.json" },
-    { "lang": "pl", "name": "Polski", "path": "lang/pl.json" }
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "pl",
+      "name": "Polski",
+      "path": "lang/pl.json"
+    }
   ],
   "documentTypes": {
     "Actor": {
@@ -175,8 +58,13 @@
   "primaryTokenAttribute": "attributes.hp",
   "compatibility": {
     "minimum": "13",
-    "verified": "13"
+    "verified": "13.351"
   },
   "socket": false,
-  "url": "https://github.com/ryczypior/babylon5-for-foundry-vtt"
+  "url": "https://github.com/ryczypior/babylon5-for-foundry-vtt",
+  "manifest": "https://github.com/ryczypior/babylon5-for-foundry-vtt/releases/latest/download/system.json",
+  "download": "https://github.com/ryczypior/babylon5-for-foundry-vtt/releases/download/v0.2.0/babylon5.zip",
+  "readme": "https://github.com/ryczypior/babylon5-for-foundry-vtt/blob/main/README.md",
+  "changelog": "https://github.com/ryczypior/babylon5-for-foundry-vtt/blob/main/CHANGELOG.md",
+  "bugs": "https://github.com/ryczypior/babylon5-for-foundry-vtt/issues"
 }
