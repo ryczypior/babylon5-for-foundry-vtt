@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.2.1 — 2026-07-29
+
+### Changed
+
+- **Compatibility now covers Foundry 13 and 14.** `compatibility.verified` moves to **14.365**,
+  which reads as *verified* on both generations — a manifest verified against 13.351 is reported as
+  untested the moment you open it on 14. `minimum` stays at 13 and no `maximum` is set, so a future
+  build is not blocked.
+
+### Verified
+
+The system was exercised on **14.365** as well as 13.351, with identical results: the same derived
+values on the same character (HP 14, BAB +3, DV 14 / flat-footed 11, DR 4, Fortitude +5, speed 25,
+ACP 2, initiative +3), all three actor sheets and all thirteen item sheets rendering, rolls through
+the same pipeline, damage through DR, the DialogV2 prompts with their live totals, the chat cards
+and their buttons — including a burn applied from a card, which is what proves the chat hook still
+fires — and all fourteen compendium packs loading with their printed counts.
+
+⚠ Foundry 14 **migrates compendium pack data in place** on first launch, and the migration is
+one-way: packs opened by 14 no longer load on 13. If you run both generations, keep a separate copy
+of the content for each.
+
 ## 0.2.0 — 2026-07-29
 
 **First published release.** 0.1.0 was the in-development version and was never tagged, so this

@@ -4,14 +4,17 @@ A game system for [Foundry Virtual Tabletop](https://foundryvtt.com/) implementi
 **Babylon 5 Roleplaying Game, 2nd Edition** (Mongoose Publishing, 2006) — a d20 System
 derivative. Sheets, compendia and rolls are available in **English and Polish**.
 
-> **Status: playable, 0.2.0.** Every subsystem the rulebook names is implemented and has been
+> **Status: playable, 0.2.1.** Every subsystem the rulebook names is implemented and has been
 > exercised against the book's own worked examples — see [What works](#what-works). What is thin
 > is table mileage, not coverage.
 
 ## Requirements
 
-Foundry VTT **v13 or newer**. The system uses ApplicationV2 sheets and `TypeDataModel`
-schemas throughout, with no v12 compatibility layer.
+Foundry VTT **v13 or newer** — verified on **13.351** and **14.365**. The system uses
+ApplicationV2 sheets and `TypeDataModel` schemas throughout, with no v12 compatibility layer.
+
+⚠ If you run both generations, do not share one copy of the compendium content between them:
+Foundry 14 migrates pack data in place and 13 will not read it afterwards.
 
 ## Installation
 

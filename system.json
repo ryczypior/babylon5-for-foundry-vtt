@@ -2,7 +2,7 @@
   "id": "babylon5",
   "title": "Babylon 5 2nd Edition (Unofficial)",
   "description": "Unofficial system for the Babylon 5 Roleplaying Game, 2nd Edition (Mongoose Publishing, d20 System).",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "authors": [
     {
       "name": "Ryczypior",
@@ -58,7 +58,7 @@
   "primaryTokenAttribute": "attributes.hp",
   "compatibility": {
     "minimum": "13",
-    "verified": "13.351"
+    "verified": "14.365"
   },
   "socket": false,
   "url": "https://github.com/ryczypior/babylon5-for-foundry-vtt",

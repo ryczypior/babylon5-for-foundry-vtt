@@ -103,6 +103,12 @@ przedmioty.
 Zamknij Foundry, usuń katalog \`Data/modules/${MODULE_ID}\` i rozpakuj nowe archiwum. Wersja modułu
 idzie w parze z wersją systemu, więc archiwum ${version} pasuje do systemu ${version}.
 
+## Dwie generacje Foundry naraz
+
+⚠ **Nie używaj jednej kopii paczek pod Foundry 13 i 14.** Przy pierwszym uruchomieniu Foundry 14
+**migruje zawartość paczek w miejscu** i tak zmienionych nie wczyta już wersja 13 — migracja idzie
+tylko w jedną stronę. Jeśli grasz na obu, rozpakuj archiwum osobno do katalogu danych każdej z nich.
+
 ## Gdy kompendiów nie widać
 
 - Moduł włącza się **w konkretnym świecie**, nie globalnie — sprawdź *Manage Modules* w tym świecie,
