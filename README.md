@@ -83,6 +83,9 @@ which you can build yourself:
 3. `npm run content` — writes a local `babylon5-content` module into your Foundry data directory
    that declares those packs and links them, then enable it in the world's module settings.
 
+`npm run content:zip -- <dir>` packages the same module as a self-contained archive (packs copied,
+not linked) with install notes, for moving content between machines.
+
 Everything else — sheets, derived values, rolls, prerequisites, the order system — works normally
 with no content installed. Items and actors can be created by hand on any sheet.
 
@@ -110,6 +113,7 @@ npm run build     # compile SCSS → styles/babylon5.css (commit the result)
 npm run watch     # SCSS watcher
 npm run pack      # rebuild the compendium packs from packs/_source/*.json
 npm run content   # write the local babylon5-content module that declares those packs
+npm run content:zip -- <dir>   # package that module as a drop-in archive, with Polish install notes
 npm run link      # symlink this repo into your Foundry data directory
 ```
 

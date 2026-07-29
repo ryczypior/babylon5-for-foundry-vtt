@@ -9,7 +9,8 @@
     "watch": "sass styles/babylon5.scss styles/babylon5.css --watch",
     "link": "node tools/link-to-foundry.mjs",
     "pack": "node tools/build-packs.mjs",
-    "content": "node tools/build-content-module.mjs"
+    "content": "node tools/build-content-module.mjs",
+    "content:zip": "node tools/pack-content-zip.mjs"
   },
   "devDependencies": {
     "classic-level": "^3.0.0",
