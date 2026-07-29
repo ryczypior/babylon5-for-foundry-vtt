@@ -22,6 +22,73 @@ export const GENERAL_DCS = {
 /** Each point burned adds this much to the result — and is gone from the score for good. */
 export const BURN_MULTIPLIER = 2;
 
+/* -------------------------------------------- */
+/*  Resource tables (§A.16)                     */
+/* -------------------------------------------- */
+
+/**
+ * Drawing on a faction's resources is the first of the three things Influence does, and the DC
+ * comes from that faction's **own** table (book pp. 110–119) rather than from the generic list —
+ * "Every faction also has its own resource table with specific DCs; those override the generic
+ * list". The 31 printed tables ship as the `influences` pack; an entry typed in by hand simply
+ * has none, and falls back to `GENERAL_DCS`.
+ *
+ * Three of the printed Influences deliberately have no table at all — a Specific Megacorporation,
+ * a Specific House and a Specific Race are defined by what the group in question happens to own,
+ * and the book resolves them by ruling ("a lift to the Rim through IPX ≈ DC 15; borrowing a
+ * freighter from IPX is impossible, IPX has none"). Those entries carry an empty list on purpose.
+ */
+
+/** The lowest and highest a check's dice can come up, which is what makes a request certain. */
+function diceRange(dice) {
+  const [count, faces] = dice.split("d").map(Number);
+  return { min: count, max: count * faces };
+}
+
+/** The faction's own table, lowest DC first, each row carrying its index for the roll button. */
+export function resourceList(item) {
+  return (item.system.resources ?? [])
+    .map((resource, index) => ({ ...resource, index }))
+    .sort((a, b) => a.dc - b.dc);
+}
+
+/**
+ * What one request would take, given what the character brings to the check.
+ *
+ * `needed` is the roll the dice have to produce — the whole point of printing it is that a
+ * request whose `needed` is at or below the dice's floor is *already* granted, and one above
+ * their ceiling cannot be had without burning. That is the same arithmetic `burnToClose` does
+ * after a failure, done before one.
+ *
+ * @param {number} dc     the resource's DC
+ * @param {number} score  the Influence score
+ * @param {number} penalty  the repeat penalty already owed (a negative number)
+ * @param {string} dice   the dice this entry rolls — 3d6 with Heart of Izil'zha
+ */
+export function resourceOutlook(dc, { score = 0, penalty = 0, dice = "2d6" } = {}) {
+  const { min, max } = diceRange(dice);
+  const needed = dc - score - penalty;
+  return {
+    needed,
+    certain: needed <= min,
+    impossible: needed > max,
+    // Burning every point left is the last thing that can close a gap the dice cannot.
+    reachableByBurning: needed <= max + score * BURN_MULTIPLIER
+  };
+}
+
+/**
+ * How to label an outlook, or `null` when the needed roll says it better than words do.
+ *
+ * "Out of reach" and "only by burning" are worth telling apart: the second is a request the
+ * character can still have today, at a permanent price.
+ */
+export function outlookKey(outlook) {
+  if (outlook.certain) return "B5.Influence.granted";
+  if (!outlook.impossible) return null;
+  return outlook.reachableByBurning ? "B5.Influence.onlyByBurning" : "B5.Influence.outOfReach";
+}
+
 /**
  * *Heart of Izil'zha*, the Ranger's 10th-level feature, rolls 3d6 instead of 2d6 — but only on
  * checks that use **Ranger Influence**. The feature also lets that Influence pressure every

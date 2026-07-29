@@ -239,6 +239,13 @@ B5.influenceCategories = ["political", "social", "economic", "military", "specia
 
 B5.influenceRaces = ["earth", "centauri", "narn", "minbari", "league", "general"];
 
+/**
+ * A few Influences only exist on one side of the Interstellar Alliance's founding: the Rangers,
+ * the Vorlons and the Shadows before it, the Alliance itself after (book p. 110). It is a label,
+ * not a gate — the era a table plays in is the table's business.
+ */
+B5.influenceEras = ["any", "pre2261", "post2261"];
+
 /* -------------------------------------------- */
 /*  Telepathy (book pp. 120–131)                */
 /* -------------------------------------------- */

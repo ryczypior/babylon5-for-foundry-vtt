@@ -7,6 +7,10 @@
     </span>
   </div>
 
+  {{#if request}}
+    <div class="b5-order-line b5-influence-request">{{request}}</div>
+  {{/if}}
+
   {{#if parts}}
     <div class="b5-order-line b5-influence-parts">
       {{#each parts}}{{label}} {{b5Signed value}}{{#unless @last}} · {{/unless}}{{/each}}

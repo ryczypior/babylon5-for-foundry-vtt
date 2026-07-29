@@ -94,6 +94,22 @@
       "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
     },
     {
+      "name": "influences",
+      "label": "Influences",
+      "path": "packs/influences",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "influences-pl",
+      "label": "Wpływy (PL)",
+      "path": "packs/influences-pl",
+      "type": "Item",
+      "system": "babylon5",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
       "name": "craft",
       "label": "Craft",
       "path": "packs/craft",
@@ -114,12 +130,13 @@
     {
       "name": "Babylon 5",
       "sorting": "m",
-      "packs": ["classes", "races", "feats", "equipment", "telepathy", "craft"],
+      "packs": ["classes", "races", "feats", "equipment", "telepathy", "influences", "craft"],
       "folders": [
         {
           "name": "Polski",
           "sorting": "m",
-          "packs": ["classes-pl", "races-pl", "feats-pl", "equipment-pl", "telepathy-pl", "craft-pl"]
+          "packs": ["classes-pl", "races-pl", "feats-pl", "equipment-pl", "telepathy-pl",
+            "influences-pl", "craft-pl"]
         }
       ]
     }

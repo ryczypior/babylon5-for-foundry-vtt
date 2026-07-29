@@ -23,6 +23,7 @@ const PACKS = [
   { source: "feats.json", en: "feats", pl: "feats-pl" },
   { source: "equipment.json", en: "equipment", pl: "equipment-pl" },
   { source: "telepathy.json", en: "telepathy", pl: "telepathy-pl" },
+  { source: "influences.json", en: "influences", pl: "influences-pl" },
   { source: "craft.json", en: "craft", pl: "craft-pl", document: "Actor" }
 ];
 

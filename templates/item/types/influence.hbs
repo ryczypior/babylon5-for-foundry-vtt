@@ -22,6 +22,15 @@
         {{/each}}
       </select>
     </label>
+    <label data-tooltip="B5.Tooltip.influenceEra">{{localize "B5.Field.era"}}
+      <select name="system.era">
+        {{#each config.influenceEras as |e|}}
+          <option value="{{e}}" {{#if (b5Eq e ../system.era)}}selected{{/if}}>
+            {{localize (concat "B5.InfluenceEra." e)}}
+          </option>
+        {{/each}}
+      </select>
+    </label>
     <label>{{localize "B5.Field.base"}}
       <input type="number" name="system.base" value="{{system.base}}">
     </label>
@@ -35,6 +44,63 @@
       <input type="number" name="system.usesThisWeek" value="{{system.usesThisWeek}}">
     </label>
     <label>{{localize "B5.Field.score"}}<span class="b5-total">{{system.value}}</span></label>
+  </div>
+</div>
+
+{{!-- The faction's own resource table (book §A.16). It overrides the generic DC list, which is
+      why the check dialog offers these rows first. Authored in the compendium source rather than
+      here: they are an array, and array-valued inputs corrupt on expandObject. --}}
+<div class="b5-card">
+  <h3>{{localize "B5.Influence.resources"}}</h3>
+
+  {{#if resourceRows.length}}
+    <table class="b5-resources">
+      <thead>
+        <tr>
+          <th>{{localize "B5.Field.dc"}}</th>
+          <th>{{localize "B5.Influence.resource"}}</th>
+          {{#if isOwned}}<th data-tooltip="B5.Tooltip.resourceNeeded">
+            {{localize "B5.Influence.needed"}}</th><th></th>{{/if}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each resourceRows as |row|}}
+          <tr>
+            <th class="b5-row-label">{{row.dc}}</th>
+            <td class="b5-resource-text">{{row.description}}</td>
+            {{#if ../isOwned}}
+              <td class="{{#if row.outlook.certain}}b5-ok-flag{{/if}}{{#if row.outlook.impossible}}b5-warning-inline{{/if}}">
+                {{#if row.labelKey}}{{localize row.labelKey}}{{else}}{{row.outlook.needed}}+{{/if}}
+              </td>
+              <td class="b5-row-actions">
+                <button type="button" data-action="drawResource" data-index="{{row.index}}"
+                        data-tooltip="B5.Tooltip.drawResource">
+                  <i class="fa-solid fa-hand-holding-heart"></i>
+                </button>
+              </td>
+            {{/if}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{#if isOwned}}
+      <p class="b5-hint">{{localize "B5.Hint.resourceOutlook"}}</p>
+    {{/if}}
+  {{else}}
+    <p class="b5-hint">{{localize "B5.Hint.noResourceTable"}}</p>
+  {{/if}}
+</div>
+
+<div class="b5-card">
+  <div class="b5-grid-2">
+    <div>
+      <h3>{{localize "B5.Field.obtainedBy"}}</h3>
+      <prose-mirror name="system.obtainedBy" value="{{source.obtainedBy}}"></prose-mirror>
+    </div>
+    <div>
+      <h3>{{localize "B5.Field.contacts"}}</h3>
+      <prose-mirror name="system.contacts" value="{{source.contacts}}"></prose-mirror>
+    </div>
   </div>
 </div>
 

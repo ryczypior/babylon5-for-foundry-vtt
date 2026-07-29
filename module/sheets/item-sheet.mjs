@@ -1,4 +1,6 @@
 import { B5 } from "../config.mjs";
+import B5InfluenceTests from "../tests/influence-tests.mjs";
+import { influenceDice, outlookKey, resourceList, resourceOutlook } from "../system/influence.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
@@ -15,7 +17,8 @@ export default class B5ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2)
     window: { resizable: true },
     form: { submitOnChange: true, closeOnSubmit: false },
     actions: {
-      editImage: B5ItemSheet.#onEditImage
+      editImage: B5ItemSheet.#onEditImage,
+      drawResource: B5ItemSheet.#onDrawResource
     }
   };
 
@@ -44,7 +47,36 @@ export default class B5ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2)
       })
     };
 
+    if (this.item.type === "influence") this.#prepareResources(context);
+
     return context;
+  }
+
+  /**
+   * The faction's resource table (book §A.16), plus — on an owned entry — what each row would
+   * still take. The outlook needs the owner's dice and repeat penalty, so it cannot be derived on
+   * the Item: `Heart of Izil'zha` and the softened repeat penalty are both the actor's business.
+   */
+  #prepareResources(context) {
+    const item = this.item;
+    const actor = item.actor;
+    context.isOwned = !!actor;
+
+    const dice = actor ? influenceDice(actor, item, B5.INFLUENCE_DICE) : B5.INFLUENCE_DICE;
+    context.resourceRows = resourceList(item).map(row => {
+      if (!actor) return { ...row, outlook: null, labelKey: null };
+      const outlook = resourceOutlook(row.dc, {
+        score: item.system.value, penalty: item.system.repeatPenalty, dice
+      });
+      return { ...row, outlook, labelKey: outlookKey(outlook) };
+    });
+  }
+
+  /** Draw on one row of the faction's resource table — the Influence check with its DC filled in. */
+  static async #onDrawResource(event, target) {
+    const actor = this.item.actor;
+    if (!actor?.isOwner) return;
+    await B5InfluenceTests.drawResource(actor, this.item.id, Number(target.dataset.index));
   }
 
   static async #onEditImage(event, target) {

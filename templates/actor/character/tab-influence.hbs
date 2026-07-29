@@ -41,6 +41,13 @@
                 </span>
               {{/if}}</td>
             <td class="b5-row-actions">
+              {{#if item.system.resources.length}}
+                {{!-- The faction's own resource table lives on its item sheet; the check dialog
+                      offers the same rows, so this is the browse route, not the only one. --}}
+                <button type="button" data-action="editItem" data-tooltip="B5.Tooltip.resourceTable">
+                  <i class="fa-solid fa-hand-holding-heart"></i>
+                </button>
+              {{/if}}
               <button type="button" data-action="aidInfluence" data-tooltip="B5.Tooltip.aid">
                 <i class="fa-solid fa-hands-holding"></i>
               </button>

@@ -212,7 +212,23 @@ export class InfluenceData extends TypeDataModel {
       misc: int(),
       value: int(),                          // derived
       usesThisWeek: int(),                   // drives the −4 repeat penalty
-      pressures: html()
+      /** The printed prose lines of a faction's description (book pp. 110–119). */
+      obtainedBy: html(),
+      contacts: html(),
+      pressures: html(),
+      /** any | pre2261 | post2261 — the Rangers, the Vorlons and the Shadows are era-bound. */
+      era: str("any"),
+      /**
+       * The faction's own resource table (book §A.16): what may be asked for, and at what DC.
+       * These **override** the generic DC list, so a faction that has a table is asked from it.
+       *
+       * Authored in the compendium source rather than on the sheet, like the telepathic
+       * abilities' variations: array-valued inputs corrupt on `expandObject`.
+       */
+      resources: new fields.ArrayField(
+        new fields.SchemaField({ dc: int(10), description: str() }),
+        { initial: [] }
+      )
     };
   }
 

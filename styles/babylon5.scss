@@ -377,6 +377,13 @@
     overflow-x: auto;
   }
 
+  // A resource table's rows are sentences, not numbers: they wrap and read left, and the DC
+  // column takes only what it needs.
+  .b5-resources {
+    th.b5-row-label { width: 3rem; text-align: center; }
+    td.b5-resource-text { white-space: normal; text-align: left; }
+  }
+
   .b5-total { font-weight: 700; color: var(--b5-accent-bright); }
   .b5-readonly { display: inline-block; min-width: 1.5rem; }
   .b5-center { text-align: center; }
@@ -1028,6 +1035,9 @@
 .b5-influence-card {
 
   .b5-influence-parts { font-size: 0.72rem; opacity: 0.8; }
+
+  // What was asked for. Printed above the modifiers, because it is what the roll is about.
+  .b5-influence-request { font-size: 0.8rem; font-style: italic; }
 
   .b5-influence-burn {
     display: flex;

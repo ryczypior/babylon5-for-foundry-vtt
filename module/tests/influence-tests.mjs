@@ -2,13 +2,21 @@ import { B5 } from "../config.mjs";
 import { partsTotal } from "../system/roll-modifiers.mjs";
 import { liveTotal, modifierFooter, modifierGroups, readModifierParts } from "./roll-dialog.mjs";
 import {
-  AID_BONUS, AID_DC, BURN_MULTIPLIER, GENERAL_DCS, burnToClose, influenceDice
+  AID_BONUS, AID_DC, BURN_MULTIPLIER, GENERAL_DCS, burnToClose, influenceDice,
+  outlookKey, resourceList, resourceOutlook
 } from "../system/influence.mjs";
 import {
   PRESSURE_STEP, halveScore, pressureLegality, rangerRestriction, resolveLink, specialParts
 } from "../system/pressure.mjs";
 
 const { DialogV2 } = foundry.applications.api;
+
+/**
+ * Resource descriptions are authored prose that ends up inside an attribute and an option label,
+ * and several of them carry an apostrophe (Kha'Ri, Anla'Shok). Escaping keeps a stray quote from
+ * closing the attribute early.
+ */
+const escapeHTML = text => foundry.utils.escapeHTML(String(text ?? ""));
 
 /**
  * Influence checks and the burn that follows a failed one (book pp. 106–119).
@@ -27,16 +35,39 @@ export default class B5InfluenceTests {
   /*  The check                                   */
   /* -------------------------------------------- */
 
-  static async promptCheck(actor, itemId) {
+  /**
+   * @param {number|null} dc       a DC decided before the dialog opened (a resource row clicked)
+   * @param {string} request       what is being asked for, printed on the card
+   */
+  static async promptCheck(actor, itemId, { dc: presetDc = null, request = "" } = {}) {
     const item = actor.items.get(itemId);
     if (item?.type !== "influence" || !actor.isOwner) return null;
 
-    const dcOptions = Object.entries(GENERAL_DCS)
-      .map(([key, dc]) => `<option value="${dc}">${game.i18n.localize(`B5.InfluenceDc.${key}`)} — ${dc}</option>`)
-      .join("");
-
     const base = item.system.value + item.system.repeatPenalty;
     const dice = influenceDice(actor, item, B5.INFLUENCE_DICE);
+
+    // The faction's own table overrides the generic list (book p. 107), so it is offered first
+    // and each row says what the dice still have to produce.
+    const ownOptions = resourceList(item).map(resource => {
+      const outlook = resourceOutlook(resource.dc, {
+        score: item.system.value, penalty: item.system.repeatPenalty, dice
+      });
+      const key = outlookKey(outlook);
+      const marker = key ? game.i18n.localize(key) : `${outlook.needed}+`;
+      return `<option value="${resource.dc}" data-request="${escapeHTML(resource.description)}">`
+        + `${escapeHTML(resource.description)} — ${resource.dc} (${marker})</option>`;
+    }).join("");
+
+    const generalOptions = Object.entries(GENERAL_DCS).map(([key, dc]) => {
+      const label = game.i18n.localize(`B5.InfluenceDc.${key}`);
+      return `<option value="${dc}" data-request="${escapeHTML(label)}">${label} — ${dc}</option>`;
+    }).join("");
+
+    const dcOptions = ownOptions
+      ? `<optgroup label="${escapeHTML(item.name)}">${ownOptions}</optgroup>`
+        + `<optgroup label="${game.i18n.localize("B5.Influence.generalList")}">${generalOptions}</optgroup>`
+      : generalOptions;
+
     const content = `
       <p class="b5-hint b5-modifier-head">
         ${item.name} — ${game.i18n.localize("B5.Field.score")} <strong>${item.system.value}</strong>
@@ -46,10 +77,14 @@ export default class B5InfluenceTests {
             uses: item.system.usesThisWeek, penalty: item.system.repeatPenalty })}`
           : ""}
       </p>
-      <div class="form-group"><label>${game.i18n.localize("B5.Influence.activity")}</label>
+      ${request ? `<p class="b5-hint">${game.i18n.format("B5.Influence.requesting",
+        { request: escapeHTML(request) })}</p>` : ""}
+      <div class="form-group"><label>${game.i18n.localize(ownOptions
+        ? "B5.Influence.resource" : "B5.Influence.activity")}</label>
         <select name="preset"><option value="">—</option>${dcOptions}</select></div>
       <div class="form-group"><label>${game.i18n.localize("B5.Field.dc")}</label>
-        <input type="number" name="dc" placeholder="${game.i18n.localize("B5.Influence.dcHint")}"></div>
+        <input type="number" name="dc" value="${presetDc ?? ""}"
+          placeholder="${game.i18n.localize("B5.Influence.dcHint")}"></div>
       ${modifierGroups(actor, { kind: "influence" })}
       ${modifierFooter(base)}`;
 
@@ -64,6 +99,8 @@ export default class B5InfluenceTests {
           const form = button.form;
           const data = new foundry.applications.ux.FormDataExtended(form).object;
           data.parts = readModifierParts(form);
+          // What was picked, not just its DC — the card names the request.
+          data.request = form.elements.preset?.selectedOptions?.[0]?.dataset.request ?? "";
           return data;
         }
       },
@@ -76,12 +113,25 @@ export default class B5InfluenceTests {
       : (result.preset ? Number(result.preset) : null);
 
     return this.check(actor, itemId, {
-      dc, parts: result.parts ?? [], rollMode: result.rollMode
+      dc, parts: result.parts ?? [], rollMode: result.rollMode,
+      request: result.request || request
     });
   }
 
+  /**
+   * Draw on a faction's resources (book §A.16): the same check, with the DC and the request taken
+   * from the row that was clicked. The dialog still opens, because a resource draw takes the
+   * situational modifiers like any other attempt.
+   */
+  static async drawResource(actor, itemId, index) {
+    const item = actor.items.get(itemId);
+    const resource = item?.system.resources?.[index];
+    if (!resource) return null;
+    return this.promptCheck(actor, itemId, { dc: resource.dc, request: resource.description });
+  }
+
   /** Roll it, count the attempt against the week, and post the card. */
-  static async check(actor, itemId, { dc = null, parts = [], rollMode = null } = {}) {
+  static async check(actor, itemId, { dc = null, parts = [], rollMode = null, request = "" } = {}) {
     const item = actor.items.get(itemId);
     if (item?.type !== "influence") return null;
 
@@ -98,7 +148,7 @@ export default class B5InfluenceTests {
       ? burnToClose(roll.total, dc, item.system.value)
       : null;
 
-    await this.#postCard(actor, item, { roll, dc, success, parts, burn }, rollMode);
+    await this.#postCard(actor, item, { roll, dc, success, parts, burn, request }, rollMode);
     return { roll, dc, success, burn };
   }
 
@@ -438,10 +488,11 @@ export default class B5InfluenceTests {
     await ChatMessage.create(data);
   }
 
-  static async #postCard(actor, item, { roll, dc, success, parts, burn }, rollMode) {
+  static async #postCard(actor, item, { roll, dc, success, parts, burn, request }, rollMode) {
     const content = await foundry.applications.handlebars.renderTemplate(
       "systems/babylon5/templates/chat/influence.hbs", {
         name: item.name,
+        request,
         category: game.i18n.localize(`B5.InfluenceCategory.${item.system.category}`),
         dice: roll.formula.split(" ")[0],
         upgraded: !roll.formula.startsWith(B5.INFLUENCE_DICE),
